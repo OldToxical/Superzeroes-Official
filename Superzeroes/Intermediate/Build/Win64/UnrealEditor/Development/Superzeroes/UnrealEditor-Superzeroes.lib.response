@@ -1,0 +1,15 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-Superzeroes.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"E:\Epic\UNreal\Projects\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"E:\Epic\UNreal\Projects\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Superzeroes.cpp.obj"
+"E:\Epic\UNreal\Projects\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\SuperzeroesGameModeBase.cpp.obj"
+"E:\Epic\UNreal\Projects\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Superzeroes.init.gen.cpp.obj"
+"E:\Epic\UNreal\Projects\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\SuperzeroesGameModeBase.gen.cpp.obj"
+"E:\Epic\UNreal\Projects\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Default.rc2.res"
+/OUT:"E:\Epic\UNreal\Projects\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\UnrealEditor-Superzeroes.lib"

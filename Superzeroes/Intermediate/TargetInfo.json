@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "Superzeroes",
+			"Path": "E:\\Epic\\UNreal\\Projects\\Superzeroes\\Source\\Superzeroes.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "SuperzeroesEditor",
+			"Path": "E:\\Epic\\UNreal\\Projects\\Superzeroes\\Source\\SuperzeroesEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}
