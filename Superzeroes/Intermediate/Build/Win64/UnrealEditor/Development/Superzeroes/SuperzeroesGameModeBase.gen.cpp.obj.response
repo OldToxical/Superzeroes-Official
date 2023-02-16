@@ -1,4 +1,4 @@
-C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes\SuperzeroesGameModeBase.gen.cpp
+E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes\SuperzeroesGameModeBase.gen.cpp
 /I .
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\Engine
 /I Runtime
@@ -251,8 +251,12 @@ C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor
 /I Runtime\ClothingSystemRuntimeInterface\Public
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\AnimationDataController
 /I Developer\AnimationDataController\Public
-/I C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes
-/I C:\DES310\Superzeroes-Official\Superzeroes\Source
+/I E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes
+/I E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Source
+/I ..\Plugins\2D\Paper2D\Intermediate\Build\Win64\UnrealEditor\Inc\Paper2D
+/I ..\Plugins\2D\Paper2D\Source
+/I ..\Plugins\2D\Paper2D\Source\Paper2D\Classes
+/I ..\Plugins\2D\Paper2D\Source\Paper2D\Public
 /I ThirdParty\mimalloc\include
 /I ThirdParty\LibTiff\Source\Win64
 /I ThirdParty\LibTiff\Source
@@ -267,18 +271,18 @@ C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor
 /I ThirdParty\PhysX3\PhysX_3.4\Include\common
 /I ThirdParty\PhysX3\PhysX_3.4\Include\extensions
 /I ThirdParty\PhysX3\PhysX_3.4\Include\geometry
-/I "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\INCLUDE"
+/I "D:\Visual Studio\VC\Tools\MSVC\14.33.31629\INCLUDE"
 /I "C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\winrt"
-/FI"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
-/FI"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Definitions.Superzeroes.h"
-/Yu"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
-/Fp"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.pch"
-/Fo"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\SuperzeroesGameModeBase.gen.cpp.obj"
-/sourceDependencies C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\SuperzeroesGameModeBase.gen.cpp.json
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt"
+/FI"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
+/FI"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Definitions.Superzeroes.h"
+/Yu"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
+/Fp"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.pch"
+/Fo"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\SuperzeroesGameModeBase.gen.cpp.obj"
+/sourceDependencies E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\SuperzeroesGameModeBase.gen.cpp.json
 /Zc:inline
 /nologo
 /Oi

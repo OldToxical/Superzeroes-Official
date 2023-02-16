@@ -17,13 +17,13 @@ void EmptyLinkFunctionForGeneratedCodeSuperzeroes_init() {}
 				nullptr,
 				0,
 				PKG_CompiledIn | 0x00000000,
-				0x0CB34BDD,
-				0xEB0C1515,
+				0xDB284DD3,
+				0x62FA66C9,
 				METADATA_PARAMS(nullptr, 0)
 			};
 			UECodeGen_Private::ConstructUPackage(Z_Registration_Info_UPackage__Script_Superzeroes.OuterSingleton, PackageParams);
 		}
 		return Z_Registration_Info_UPackage__Script_Superzeroes.OuterSingleton;
 	}
-	static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_Superzeroes(Z_Construct_UPackage__Script_Superzeroes, TEXT("/Script/Superzeroes"), Z_Registration_Info_UPackage__Script_Superzeroes, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0x0CB34BDD, 0xEB0C1515));
+	static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_Superzeroes(Z_Construct_UPackage__Script_Superzeroes, TEXT("/Script/Superzeroes"), Z_Registration_Info_UPackage__Script_Superzeroes, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0xDB284DD3, 0x62FA66C9));
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

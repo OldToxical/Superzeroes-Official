@@ -3,9 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "PaperCharacter.h"
+#include "ZipZap.h"
 #include "BoomBoom.generated.h"
 
+/**
+ * 
+ */
 UCLASS()
 class SUPERZEROES_API ABoomBoom : public ACharacter
 {
@@ -15,17 +19,42 @@ public:
 	// Sets default values for this character's properties
 	ABoomBoom();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	//kur
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	class UCharacterMovementComponent* charMove;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbookComponent* flipbook;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* idle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* run;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	class UPaperFlipbook* jumping;
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateAnimation();
+	UFUNCTION(BlueprintCallable)
+	void UpdateRotation();
+	UFUNCTION(BlueprintCallable)
+	void move(float scaleVal);
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		FRotator rotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		AZipZap* zipZap;
+
+private:
+	// Functions for controlling Zip Zap
+	void moveZipZap(float scaleVal);
 };
