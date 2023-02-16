@@ -26,6 +26,12 @@
     <Filter Include="Source\Superzeroes">
       <UniqueIdentifier>{E0C9F8E6-ABD9-3218-9125-675B09D18D52}</UniqueIdentifier>
     </Filter>
+    <ClCompile Include="..\..\Source\Superzeroes\BoomBoom.cpp">
+      <Filter>Source\Superzeroes</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Superzeroes\BoomBoom.h">
+      <Filter>Source\Superzeroes</Filter>
+    </ClInclude>
     <None Include="..\..\Source\Superzeroes\Superzeroes.Build.cs">
       <Filter>Source\Superzeroes</Filter>
     </None>

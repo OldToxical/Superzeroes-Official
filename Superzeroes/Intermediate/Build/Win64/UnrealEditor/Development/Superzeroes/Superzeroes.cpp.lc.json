@@ -1,0 +1,14 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\des310\\superzeroes-official\\superzeroes\\source\\superzeroes\\superzeroes.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\des310\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\superzeroeseditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "c:\\des310\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\development\\superzeroes\\definitions.superzeroes.h",
+            "c:\\des310\\superzeroes-official\\superzeroes\\source\\superzeroes\\superzeroes.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
