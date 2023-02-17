@@ -7,11 +7,19 @@
 #include "ZipZap.h"
 #include "BoomBoom.generated.h"
 
-/**
- * 
- */
+UENUM()
+enum class State
+{
+	Idle,
+	Running,
+	Jumping,
+	Attacking,
+	Combo_1,
+	Combo_2
+};
+
 UCLASS()
-class SUPERZEROES_API ABoomBoom : public ACharacter
+class SUPERZEROES_API ABoomBoom : public APaperCharacter
 {
 	GENERATED_BODY()
 
@@ -36,6 +44,12 @@ public:
 	class UPaperFlipbook* run;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	class UPaperFlipbook* jumping;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* simpleAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* strongAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* strongAttackCharge;
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateAnimation();
@@ -43,6 +57,10 @@ public:
 	void UpdateRotation();
 	UFUNCTION(BlueprintCallable)
 	void move(float scaleVal);
+	UFUNCTION(BlueprintCallable)
+	void Attack(float scaleVal);
+	UFUNCTION(BlueprintCallable)
+	void EndAttack();
 
 protected:
 	// Called when the game starts or when spawned
@@ -54,7 +72,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AZipZap* zipZap;
 
-private:
-	// Functions for controlling Zip Zap
-	void moveZipZap(float scaleVal);
+	UPROPERTY(EditAnywhere)
+		float attackInputTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		State characterState;
 };

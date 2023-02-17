@@ -11,13 +11,23 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 // Cross Module References
 	SUPERZEROES_API UClass* Z_Construct_UClass_AZipZap_NoRegister();
 	SUPERZEROES_API UClass* Z_Construct_UClass_AZipZap();
-	ENGINE_API UClass* Z_Construct_UClass_ACharacter();
+	PAPER2D_API UClass* Z_Construct_UClass_APaperCharacter();
 	UPackage* Z_Construct_UPackage__Script_Superzeroes();
+	ENGINE_API UClass* Z_Construct_UClass_UInputComponent_NoRegister();
 	ENGINE_API UClass* Z_Construct_UClass_UCharacterMovementComponent_NoRegister();
 	PAPER2D_API UClass* Z_Construct_UClass_UPaperFlipbookComponent_NoRegister();
 	PAPER2D_API UClass* Z_Construct_UClass_UPaperFlipbook_NoRegister();
 	COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FRotator();
+	SUPERZEROES_API UClass* Z_Construct_UClass_ABoomBoom_NoRegister();
 // End Cross Module References
+	DEFINE_FUNCTION(AZipZap::execSetupPlayerInput)
+	{
+		P_GET_OBJECT(UInputComponent,Z_Param_input_);
+		P_FINISH;
+		P_NATIVE_BEGIN;
+		P_THIS->SetupPlayerInput(Z_Param_input_);
+		P_NATIVE_END;
+	}
 	DEFINE_FUNCTION(AZipZap::execmove)
 	{
 		P_GET_PROPERTY(FFloatProperty,Z_Param_scaleVal);
@@ -45,6 +55,7 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		UClass* Class = AZipZap::StaticClass();
 		static const FNameNativePtrPair Funcs[] = {
 			{ "move", &AZipZap::execmove },
+			{ "SetupPlayerInput", &AZipZap::execSetupPlayerInput },
 			{ "UpdateAnimation", &AZipZap::execUpdateAnimation },
 			{ "UpdateRotation", &AZipZap::execUpdateRotation },
 		};
@@ -79,6 +90,46 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		if (!ReturnFunction)
 		{
 			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_AZipZap_move_Statics::FuncParams);
+		}
+		return ReturnFunction;
+	}
+	struct Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics
+	{
+		struct ZipZap_eventSetupPlayerInput_Parms
+		{
+			UInputComponent* input_;
+		};
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_input__MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_input_;
+		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
+#endif
+		static const UECodeGen_Private::FFunctionParams FuncParams;
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::NewProp_input__MetaData[] = {
+		{ "EditInline", "true" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::NewProp_input_ = { "input_", nullptr, (EPropertyFlags)0x0010000000080080, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ZipZap_eventSetupPlayerInput_Parms, input_), Z_Construct_UClass_UInputComponent_NoRegister, METADATA_PARAMS(Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::NewProp_input__MetaData, UE_ARRAY_COUNT(Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::NewProp_input__MetaData)) };
+	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::PropPointers[] = {
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::NewProp_input_,
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::Function_MetaDataParams[] = {
+		{ "ModuleRelativePath", "ZipZap.h" },
+	};
+#endif
+	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_AZipZap, nullptr, "SetupPlayerInput", nullptr, nullptr, sizeof(Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::ZipZap_eventSetupPlayerInput_Parms), Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::PropPointers, UE_ARRAY_COUNT(Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::PropPointers), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::Function_MetaDataParams)) };
+	UFunction* Z_Construct_UFunction_AZipZap_SetupPlayerInput()
+	{
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_AZipZap_SetupPlayerInput_Statics::FuncParams);
 		}
 		return ReturnFunction;
 	}
@@ -162,22 +213,30 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_rotation_MetaData[];
 #endif
 		static const UECodeGen_Private::FStructPropertyParams NewProp_rotation;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_boomBoom_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_boomBoom;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_Input_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_Input;
 		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
 	};
 	UObject* (*const Z_Construct_UClass_AZipZap_Statics::DependentSingletons[])() = {
-		(UObject* (*)())Z_Construct_UClass_ACharacter,
+		(UObject* (*)())Z_Construct_UClass_APaperCharacter,
 		(UObject* (*)())Z_Construct_UPackage__Script_Superzeroes,
 	};
 	const FClassFunctionLinkInfo Z_Construct_UClass_AZipZap_Statics::FuncInfo[] = {
 		{ &Z_Construct_UFunction_AZipZap_move, "move" }, // 1163909924
+		{ &Z_Construct_UFunction_AZipZap_SetupPlayerInput, "SetupPlayerInput" }, // 329815324
 		{ &Z_Construct_UFunction_AZipZap_UpdateAnimation, "UpdateAnimation" }, // 1364801997
 		{ &Z_Construct_UFunction_AZipZap_UpdateRotation, "UpdateRotation" }, // 1669919017
 	};
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AZipZap_Statics::Class_MetaDataParams[] = {
-		{ "Comment", "/**\n * \n */" },
 		{ "HideCategories", "Navigation" },
 		{ "IncludePath", "ZipZap.h" },
 		{ "ModuleRelativePath", "ZipZap.h" },
@@ -227,6 +286,21 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 	};
 #endif
 	const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_AZipZap_Statics::NewProp_rotation = { "rotation", nullptr, (EPropertyFlags)0x0020080000020015, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(AZipZap, rotation), Z_Construct_UScriptStruct_FRotator, METADATA_PARAMS(Z_Construct_UClass_AZipZap_Statics::NewProp_rotation_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_AZipZap_Statics::NewProp_rotation_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AZipZap_Statics::NewProp_boomBoom_MetaData[] = {
+		{ "Category", "ZipZap" },
+		{ "ModuleRelativePath", "ZipZap.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_AZipZap_Statics::NewProp_boomBoom = { "boomBoom", nullptr, (EPropertyFlags)0x0020080000000005, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(AZipZap, boomBoom), Z_Construct_UClass_ABoomBoom_NoRegister, METADATA_PARAMS(Z_Construct_UClass_AZipZap_Statics::NewProp_boomBoom_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_AZipZap_Statics::NewProp_boomBoom_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AZipZap_Statics::NewProp_Input_MetaData[] = {
+		{ "Category", "ZipZap" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "ZipZap.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_AZipZap_Statics::NewProp_Input = { "Input", nullptr, (EPropertyFlags)0x002008000008000d, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(AZipZap, Input), Z_Construct_UClass_UInputComponent_NoRegister, METADATA_PARAMS(Z_Construct_UClass_AZipZap_Statics::NewProp_Input_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_AZipZap_Statics::NewProp_Input_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_AZipZap_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_charMove,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_flipbook,
@@ -234,6 +308,8 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_run,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_jumping,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_rotation,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_boomBoom,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_Input,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_AZipZap_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<AZipZap>::IsAbstract,
@@ -271,9 +347,9 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_AZipZap, AZipZap::StaticClass, TEXT("AZipZap"), &Z_Registration_Info_UClass_AZipZap, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AZipZap), 3794307696U) },
+		{ Z_Construct_UClass_AZipZap, AZipZap::StaticClass, TEXT("AZipZap"), &Z_Registration_Info_UClass_AZipZap, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AZipZap), 613616388U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_26957163(TEXT("/Script/Superzeroes"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_3901603978(TEXT("/Script/Superzeroes"),
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

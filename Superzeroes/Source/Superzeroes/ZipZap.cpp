@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
+#include "BoomBoom.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -32,6 +33,11 @@ void AZipZap::BeginPlay()
 	Super::BeginPlay();
 	flipbook->SetFlipbook(idle);
 	rotation = FRotator::ZeroRotator;
+
+	if (boomBoom != NULL)
+	{
+		MoveIgnoreActorAdd(boomBoom->GetOwner());
+	}
 }
 
 // Called every frame
@@ -68,6 +74,23 @@ void AZipZap::UpdateAnimation()
 void AZipZap::move(float scaleVal)
 {
 	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
+}
+
+void AZipZap::SetupPlayerInput(UInputComponent* input_)
+{
+	Input = input_;
+	
+	if (Input != NULL)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("baca"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("ne baca"));
+	}
+
+	Input->BindAxis("MoveZipZap", this, &AZipZap::move);
+	Input->BindAction("JumpZipZap", IE_Pressed, this, &ACharacter::Jump);
 }
 
 void AZipZap::UpdateRotation()

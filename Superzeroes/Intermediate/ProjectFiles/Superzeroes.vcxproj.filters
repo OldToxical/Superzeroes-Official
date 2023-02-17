@@ -23,9 +23,42 @@
     <None Include="..\..\Config\DefaultGame.ini">
       <Filter>Config</Filter>
     </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Config\HoloLens">
+      <UniqueIdentifier>{4C8DD267-CDE7-336F-8602-F5F485D22BAB}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\HoloLens\HoloLensEngine.ini">
+      <Filter>Config\HoloLens</Filter>
+    </None>
     <Filter Include="Source\Superzeroes">
       <UniqueIdentifier>{E0C9F8E6-ABD9-3218-9125-675B09D18D52}</UniqueIdentifier>
     </Filter>
+    <ClCompile Include="..\..\Source\Superzeroes\BoomBoom.cpp">
+      <Filter>Source\Superzeroes</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Superzeroes\BoomBoom.h">
+      <Filter>Source\Superzeroes</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\Superzeroes\MainCamera.cpp">
+      <Filter>Source\Superzeroes</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Superzeroes\MainCamera.h">
+      <Filter>Source\Superzeroes</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\Superzeroes\Enemy.cpp">
+      <Filter>Source\Superzeroes</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Superzeroes\Enemy.h">
+      <Filter>Source\Superzeroes</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\Superzeroes\Frog_Test.cpp">
+      <Filter>Source\Superzeroes</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Superzeroes\Frog_Test.h">
+      <Filter>Source\Superzeroes</Filter>
+    </ClInclude>
     <None Include="..\..\Source\Superzeroes\Superzeroes.Build.cs">
       <Filter>Source\Superzeroes</Filter>
     </None>
@@ -41,31 +74,9 @@
     <ClInclude Include="..\..\Source\Superzeroes\SuperzeroesGameModeBase.h">
       <Filter>Source\Superzeroes</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\Source\Superzeroes\BoomBoom.cpp">
-      <Filter>Source\Superzeroes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Superzeroes\Enemy.cpp">
-      <Filter>Source\Superzeroes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Superzeroes\Frog_Test.cpp">
-      <Filter>Source\Superzeroes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Superzeroes\ZipZap.cpp">
       <Filter>Source\Superzeroes</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Source\Superzeroes\BoomBoom.h">
-      <Filter>Source\Superzeroes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Superzeroes\Enemy.h">
-      <Filter>Source\Superzeroes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Superzeroes\Frog_Test.h">
-      <Filter>Source\Superzeroes</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Superzeroes\ZipZap.h">
       <Filter>Source\Superzeroes</Filter>
     </ClInclude>

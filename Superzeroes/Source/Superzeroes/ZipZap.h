@@ -9,8 +9,11 @@
 /**
  * 
  */
+
+class ABoomBoom;
+
 UCLASS()
-class SUPERZEROES_API AZipZap : public ACharacter
+class SUPERZEROES_API AZipZap : public APaperCharacter
 {
 	GENERATED_BODY()
 
@@ -40,10 +43,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void move(float scaleVal);
 
+	void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
+	UFUNCTION(BlueprintCallable)
+	void SetupPlayerInput(UInputComponent* input_);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FRotator rotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ABoomBoom* boomBoom;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UInputComponent* Input;
 };

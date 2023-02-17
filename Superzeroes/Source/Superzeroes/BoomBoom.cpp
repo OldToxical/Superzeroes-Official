@@ -30,8 +30,18 @@ ABoomBoom::ABoomBoom()
 void ABoomBoom::BeginPlay()
 {
 	Super::BeginPlay();
+	SetupPlayerInputComponent(Super::InputComponent);
 	flipbook->SetFlipbook(idle);
 	rotation = FRotator::ZeroRotator;
+	attackInputTimer = 0.f;
+	
+	if (zipZap != NULL)
+	{
+		MoveIgnoreActorAdd(zipZap->GetOwner());
+		zipZap->SetBoomBoomReference(this);
+		zipZap->SetupPlayerInput(Super::InputComponent);
+	}
+
 }
 
 // Called every frame
@@ -49,7 +59,9 @@ void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveBoomBoom", this, &ABoomBoom::move);
-	PlayerInputComponent->BindAxis("MoveZipZap", this, &ABoomBoom::moveZipZap);
+	PlayerInputComponent->BindAxis("AttackBoomBoom", this, &ABoomBoom::Attack);
+	PlayerInputComponent->BindAction("JumpBoomBoom", IE_Pressed, this, &ACharacter::Jump);
+
 }
 
 void ABoomBoom::UpdateAnimation()
@@ -59,10 +71,12 @@ void ABoomBoom::UpdateAnimation()
 	//if character is moving, change to running animation
 	if (charMove->Velocity.Size() > 0.0)
 	{
+		characterState = State::Running;
 		flipbook->SetFlipbook(run); 
 		//if character is jumping, change to jump animation
 		if (charMove->IsFalling())
 		{
+			characterState = State::Jumping;
 			flipbook->SetFlipbook(jumping);
 		}
 		//UE_LOG(LogTemp, Warning, TEXT("schmoving"));
@@ -70,7 +84,11 @@ void ABoomBoom::UpdateAnimation()
 	
 	else
 	{ //otherwise, change to idle animation
-		flipbook->SetFlipbook(idle);
+		if (characterState != State::Attacking)
+		{
+			characterState = State::Idle;
+			flipbook->SetFlipbook(idle);
+		}
 	}
 }
 
@@ -79,12 +97,40 @@ void ABoomBoom::move(float scaleVal)
 	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
 }
 
-void ABoomBoom::moveZipZap(float scaleVal)
+void ABoomBoom::Attack(float scaleVal)
 {
-	if (zipZap != NULL)
+	if (scaleVal > 0.f)
 	{
-		zipZap->move(scaleVal);
+		characterState = State::Attacking;
+		attackInputTimer += GetWorld()->GetDeltaSeconds();
+
+		if (attackInputTimer > 0.5f)
+		{
+			flipbook->SetFlipbook(strongAttackCharge);
+		}
 	}
+	else
+	{
+		if (attackInputTimer > 0.f && attackInputTimer < 0.5f)
+		{
+			flipbook->SetLooping(false);
+			flipbook->SetFlipbook(simpleAttack);
+		}
+		else if (attackInputTimer >= 0.5f)
+		{
+			flipbook->SetLooping(false);
+			flipbook->SetFlipbook(strongAttack);
+		}
+
+		attackInputTimer = 0.f;
+	}
+}
+
+void ABoomBoom::EndAttack()
+{
+	flipbook->SetLooping(true);
+	flipbook->Play();
+	characterState = State::Idle;
 }
 
 void ABoomBoom::UpdateRotation()
