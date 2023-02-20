@@ -9,7 +9,16 @@
 /**
  * 
  */
-
+UENUM()
+enum class State2
+{
+	Idle,
+	Running,
+	Jumping,
+	Attacking,
+	Combo_Savage,
+	Combo_2
+};
 class ABoomBoom;
 
 UCLASS()
@@ -29,19 +38,32 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UPaperFlipbookComponent* flipbook;
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UPaperFlipbook* idle;
+		class UPaperFlipbook* idle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UPaperFlipbook* run;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	class UPaperFlipbook* jumping;
+		class UPaperFlipbook* run;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* jumping;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* simpleAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* strongAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* strongAttackCharge;
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateAnimation();
 	UFUNCTION(BlueprintCallable)
-	void UpdateRotation();
+		void UpdateState();
+	UFUNCTION(BlueprintCallable)
+		void UpdateComboAttack_Savage();
 	UFUNCTION(BlueprintCallable)
 	void move(float scaleVal);
+	UFUNCTION(BlueprintCallable)
+		void Attack(float scaleVal);
+	UFUNCTION(BlueprintCallable)
+		void EndAttack();
 	UFUNCTION(BlueprintCallable)
 	void InitiateComboAttack_Savage();
 
@@ -55,10 +77,25 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FRotator rotation;
+	// Enum instance for the character's state
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		State2 characterState;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		ABoomBoom* boomBoom;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UInputComponent* Input;
+	
+	// Variable to keep track of how long the "Attack" buton is being held down
+	UPROPERTY(EditAnywhere)
+		float attackInputTimer;
+
+	// Variable for the character's speed
+	UPROPERTY(EditAnywhere)
+		float characterSpeed;
+	// Variable to keep track of how long the savage attack is to be executed
+	UPROPERTY(EditAnywhere)
+		float ComboAttack_Savage_ExecutionTimer;
 };

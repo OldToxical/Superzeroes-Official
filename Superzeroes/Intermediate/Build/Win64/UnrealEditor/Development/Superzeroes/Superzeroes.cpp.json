@@ -1,12 +1,12 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\source\\superzeroes\\superzeroes.cpp",
+        "Source": "d:\\users\\joe\\documents\\superzeroes-official\\superzeroes\\source\\superzeroes\\superzeroes.cpp",
         "ProvidedModule": "",
-        "PCH": "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\superzeroeseditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "PCH": "d:\\users\\joe\\documents\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\superzeroeseditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
         "Includes": [
-            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\development\\superzeroes\\definitions.superzeroes.h",
-            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\source\\superzeroes\\superzeroes.h"
+            "d:\\users\\joe\\documents\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\development\\superzeroes\\definitions.superzeroes.h",
+            "d:\\users\\joe\\documents\\superzeroes-official\\superzeroes\\source\\superzeroes\\superzeroes.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []

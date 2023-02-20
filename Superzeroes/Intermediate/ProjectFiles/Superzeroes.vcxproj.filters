@@ -41,12 +41,6 @@
     <ClInclude Include="..\..\Source\Superzeroes\BoomBoom.h">
       <Filter>Source\Superzeroes</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\Source\Superzeroes\MainCamera.cpp">
-      <Filter>Source\Superzeroes</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\Source\Superzeroes\MainCamera.h">
-      <Filter>Source\Superzeroes</Filter>
-    </ClInclude>
     <ClCompile Include="..\..\Source\Superzeroes\Enemy.cpp">
       <Filter>Source\Superzeroes</Filter>
     </ClCompile>
@@ -57,6 +51,18 @@
       <Filter>Source\Superzeroes</Filter>
     </ClCompile>
     <ClInclude Include="..\..\Source\Superzeroes\Frog_Test.h">
+      <Filter>Source\Superzeroes</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\Superzeroes\MainCamera.cpp">
+      <Filter>Source\Superzeroes</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Superzeroes\MainCamera.h">
+      <Filter>Source\Superzeroes</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\Superzeroes\MyClass.cpp">
+      <Filter>Source\Superzeroes</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Superzeroes\MyClass.h">
       <Filter>Source\Superzeroes</Filter>
     </ClInclude>
     <None Include="..\..\Source\Superzeroes\Superzeroes.Build.cs">

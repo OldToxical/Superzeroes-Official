@@ -1,8 +1,8 @@
 {
 	"SourceFiles": [
-		"E:\\Epic\\UNreal\\Projects\\Superzeroes-Official\\Superzeroes\\Source\\Superzeroes\\Superzeroes.Build.cs",
-		"E:\\Epic\\UNreal\\Projects\\Superzeroes-Official\\Superzeroes\\Source\\Superzeroes.Target.cs",
-		"E:\\Epic\\UNreal\\Projects\\Superzeroes-Official\\Superzeroes\\Source\\SuperzeroesEditor.Target.cs"
+		"D:\\Users\\Joe\\Documents\\Superzeroes-Official\\Superzeroes\\Source\\Superzeroes\\Superzeroes.Build.cs",
+		"D:\\Users\\Joe\\Documents\\Superzeroes-Official\\Superzeroes\\Source\\Superzeroes.Target.cs",
+		"D:\\Users\\Joe\\Documents\\Superzeroes-Official\\Superzeroes\\Source\\SuperzeroesEditor.Target.cs"
 	],
 	"EngineVersion": "5.0.3"
 }

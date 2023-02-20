@@ -1,23 +1,23 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\boomboom.gen.cpp",
+        "Source": "d:\\users\\joe\\documents\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\boomboom.gen.cpp",
         "ProvidedModule": "",
-        "PCH": "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\superzeroeseditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "PCH": "d:\\users\\joe\\documents\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\superzeroeseditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
         "Includes": [
-            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\development\\superzeroes\\definitions.superzeroes.h",
-            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\source\\superzeroes\\boomboom.h",
-            "e:\\epic\\unreal\\ue_5.0\\engine\\plugins\\2d\\paper2d\\source\\paper2d\\classes\\papercharacter.h",
-            "e:\\epic\\unreal\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\character.h",
-            "e:\\epic\\unreal\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\charactermovementreplication.h",
-            "e:\\epic\\unreal\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\charactermovementreplication.generated.h",
-            "e:\\epic\\unreal\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\rootmotionsource.h",
-            "e:\\epic\\unreal\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\rootmotionsource.generated.h",
-            "e:\\epic\\unreal\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\character.generated.h",
-            "e:\\epic\\unreal\\ue_5.0\\engine\\plugins\\2d\\paper2d\\intermediate\\build\\win64\\unrealeditor\\inc\\paper2d\\papercharacter.generated.h",
-            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\source\\superzeroes\\zipzap.h",
-            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\zipzap.generated.h",
-            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\boomboom.generated.h"
+            "d:\\users\\joe\\documents\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\development\\superzeroes\\definitions.superzeroes.h",
+            "d:\\users\\joe\\documents\\superzeroes-official\\superzeroes\\source\\superzeroes\\boomboom.h",
+            "d:\\program files\\epic games\\ue_5.0\\engine\\plugins\\2d\\paper2d\\source\\paper2d\\classes\\papercharacter.h",
+            "d:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\character.h",
+            "d:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\charactermovementreplication.h",
+            "d:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\charactermovementreplication.generated.h",
+            "d:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\rootmotionsource.h",
+            "d:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\rootmotionsource.generated.h",
+            "d:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\character.generated.h",
+            "d:\\program files\\epic games\\ue_5.0\\engine\\plugins\\2d\\paper2d\\intermediate\\build\\win64\\unrealeditor\\inc\\paper2d\\papercharacter.generated.h",
+            "d:\\users\\joe\\documents\\superzeroes-official\\superzeroes\\source\\superzeroes\\zipzap.h",
+            "d:\\users\\joe\\documents\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\zipzap.generated.h",
+            "d:\\users\\joe\\documents\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\boomboom.generated.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []
