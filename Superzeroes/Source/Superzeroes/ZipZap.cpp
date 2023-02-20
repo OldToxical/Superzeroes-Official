@@ -76,21 +76,26 @@ void AZipZap::move(float scaleVal)
 	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
 }
 
+void AZipZap::InitiateComboAttack_Savage()
+{
+	if (boomBoom != NULL)
+	{
+		float proximityToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
+
+		if (proximityToBoomBoom <= 30.f)
+		{
+			boomBoom->InitiateComboAttack_Savage(rotation.Yaw);
+		}
+	}
+}
+
 void AZipZap::SetupPlayerInput(UInputComponent* input_)
 {
 	Input = input_;
-	
-	if (Input != NULL)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("baca"));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("ne baca"));
-	}
 
 	Input->BindAxis("MoveZipZap", this, &AZipZap::move);
 	Input->BindAction("JumpZipZap", IE_Pressed, this, &ACharacter::Jump);
+	Input->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
 }
 
 void AZipZap::UpdateRotation()

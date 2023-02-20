@@ -28,6 +28,13 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		P_THIS->SetupPlayerInput(Z_Param_input_);
 		P_NATIVE_END;
 	}
+	DEFINE_FUNCTION(AZipZap::execInitiateComboAttack_Savage)
+	{
+		P_FINISH;
+		P_NATIVE_BEGIN;
+		P_THIS->InitiateComboAttack_Savage();
+		P_NATIVE_END;
+	}
 	DEFINE_FUNCTION(AZipZap::execmove)
 	{
 		P_GET_PROPERTY(FFloatProperty,Z_Param_scaleVal);
@@ -54,12 +61,35 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 	{
 		UClass* Class = AZipZap::StaticClass();
 		static const FNameNativePtrPair Funcs[] = {
+			{ "InitiateComboAttack_Savage", &AZipZap::execInitiateComboAttack_Savage },
 			{ "move", &AZipZap::execmove },
 			{ "SetupPlayerInput", &AZipZap::execSetupPlayerInput },
 			{ "UpdateAnimation", &AZipZap::execUpdateAnimation },
 			{ "UpdateRotation", &AZipZap::execUpdateRotation },
 		};
 		FNativeFunctionRegistrar::RegisterFunctions(Class, Funcs, UE_ARRAY_COUNT(Funcs));
+	}
+	struct Z_Construct_UFunction_AZipZap_InitiateComboAttack_Savage_Statics
+	{
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
+#endif
+		static const UECodeGen_Private::FFunctionParams FuncParams;
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_AZipZap_InitiateComboAttack_Savage_Statics::Function_MetaDataParams[] = {
+		{ "ModuleRelativePath", "ZipZap.h" },
+	};
+#endif
+	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_AZipZap_InitiateComboAttack_Savage_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_AZipZap, nullptr, "InitiateComboAttack_Savage", nullptr, nullptr, 0, nullptr, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_AZipZap_InitiateComboAttack_Savage_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_AZipZap_InitiateComboAttack_Savage_Statics::Function_MetaDataParams)) };
+	UFunction* Z_Construct_UFunction_AZipZap_InitiateComboAttack_Savage()
+	{
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_AZipZap_InitiateComboAttack_Savage_Statics::FuncParams);
+		}
+		return ReturnFunction;
 	}
 	struct Z_Construct_UFunction_AZipZap_move_Statics
 	{
@@ -230,6 +260,7 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		(UObject* (*)())Z_Construct_UPackage__Script_Superzeroes,
 	};
 	const FClassFunctionLinkInfo Z_Construct_UClass_AZipZap_Statics::FuncInfo[] = {
+		{ &Z_Construct_UFunction_AZipZap_InitiateComboAttack_Savage, "InitiateComboAttack_Savage" }, // 2906266353
 		{ &Z_Construct_UFunction_AZipZap_move, "move" }, // 1163909924
 		{ &Z_Construct_UFunction_AZipZap_SetupPlayerInput, "SetupPlayerInput" }, // 329815324
 		{ &Z_Construct_UFunction_AZipZap_UpdateAnimation, "UpdateAnimation" }, // 1364801997
@@ -347,9 +378,9 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_AZipZap, AZipZap::StaticClass, TEXT("AZipZap"), &Z_Registration_Info_UClass_AZipZap, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AZipZap), 613616388U) },
+		{ Z_Construct_UClass_AZipZap, AZipZap::StaticClass, TEXT("AZipZap"), &Z_Registration_Info_UClass_AZipZap, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AZipZap), 1829432839U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_3901603978(TEXT("/Script/Superzeroes"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_1634234336(TEXT("/Script/Superzeroes"),
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

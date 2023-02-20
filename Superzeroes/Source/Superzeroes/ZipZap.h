@@ -42,6 +42,8 @@ public:
 	void UpdateRotation();
 	UFUNCTION(BlueprintCallable)
 	void move(float scaleVal);
+	UFUNCTION(BlueprintCallable)
+	void InitiateComboAttack_Savage();
 
 	void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
 	UFUNCTION(BlueprintCallable)

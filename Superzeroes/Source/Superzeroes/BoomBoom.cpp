@@ -12,8 +12,18 @@ ABoomBoom::ABoomBoom()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true; 
-
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
+	ComboAttack_Savage_ExecutionTimer = SavageComboExecutionTime;
+	attackInputTimer = 0.f;
+	charMove = NULL;
+	characterState = State::Idle;
+	jumping = NULL;
+	run = NULL;
+	simpleAttack = NULL;
+	strongAttack = NULL;
+	strongAttackCharge = NULL;
+	zipZap = NULL;
+
 	if (flipbook)
 	{
 		flipbook->bOwnerNoSee = false;
@@ -26,6 +36,20 @@ ABoomBoom::ABoomBoom()
 	}
 }
 
+ABoomBoom::~ABoomBoom()
+{
+	flipbook = NULL;
+	charMove = NULL;
+	jumping = NULL;
+	run = NULL;
+	simpleAttack = NULL;
+	strongAttack = NULL;
+	strongAttackCharge = NULL;
+	zipZap = NULL;
+
+	Destroy();
+}
+
 // Called when the game starts or when spawned
 void ABoomBoom::BeginPlay()
 {
@@ -33,7 +57,7 @@ void ABoomBoom::BeginPlay()
 	SetupPlayerInputComponent(Super::InputComponent);
 	flipbook->SetFlipbook(idle);
 	rotation = FRotator::ZeroRotator;
-	attackInputTimer = 0.f;
+	charMove = GetCharacterMovement();
 	
 	if (zipZap != NULL)
 	{
@@ -49,9 +73,10 @@ void ABoomBoom::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UpdateState();
 	UpdateAnimation();
-	UpdateRotation();
 }
+
 
 // Called to bind functionality to input
 void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -61,30 +86,40 @@ void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("MoveBoomBoom", this, &ABoomBoom::move);
 	PlayerInputComponent->BindAxis("AttackBoomBoom", this, &ABoomBoom::Attack);
 	PlayerInputComponent->BindAction("JumpBoomBoom", IE_Pressed, this, &ACharacter::Jump);
+}
 
+void ABoomBoom::UpdateState()
+{
+	charMove->MaxWalkSpeed = characterSpeed;
+
+	// Execute the savage attack's function, if the character is in its state
+	if (characterState == State::Combo_Savage)
+	{
+		UpdateComboAttack_Savage();
+	}
 }
 
 void ABoomBoom::UpdateAnimation()
 {
-	//get character movement component
-	charMove = GetCharacterMovement();
-	//if character is moving, change to running animation
-	if (charMove->Velocity.Size() > 0.0)
+	// If character is moving, change to running animation
+	if (charMove->Velocity.Size() > 0.f)
 	{
-		characterState = State::Running;
-		flipbook->SetFlipbook(run); 
-		//if character is jumping, change to jump animation
-		if (charMove->IsFalling())
+		if (characterState != State::Combo_Savage)
 		{
-			characterState = State::Jumping;
-			flipbook->SetFlipbook(jumping);
+			characterState = State::Running;
+			flipbook->SetFlipbook(run);
+
+			//If character is jumping, change to jump animation
+			if (charMove->IsFalling())
+			{
+				characterState = State::Jumping;
+				flipbook->SetFlipbook(jumping);
+			}
 		}
-		//UE_LOG(LogTemp, Warning, TEXT("schmoving"));
 	}
-	
-	else
-	{ //otherwise, change to idle animation
-		if (characterState != State::Attacking)
+	else // Otherwise, change to idle animation
+	{ 
+		if (characterState != State::Attacking && characterState != State::Combo_Savage)
 		{
 			characterState = State::Idle;
 			flipbook->SetFlipbook(idle);
@@ -94,58 +129,105 @@ void ABoomBoom::UpdateAnimation()
 
 void ABoomBoom::move(float scaleVal)
 {
-	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
+	// Add movement force only if the character is not in a state of savage attack
+	if (characterState != State::Combo_Savage)
+	{
+		characterSpeed = 300.f;
+		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
+	}
+	
+	// Determine the character's facing direction, regardless of the state
+	if (scaleVal > 0.f)
+	{
+		rotation.Yaw = 0.f;
+		flipbook->SetWorldRotation(rotation);
+	}
+	else if (scaleVal < 0.f)
+	{
+		rotation.Yaw = 180.0f;
+		flipbook->SetWorldRotation(rotation);
+	}
 }
 
 void ABoomBoom::Attack(float scaleVal)
 {
-	if (scaleVal > 0.f)
+	// Allow the execution of the simple attack only if the character is not in a state of savage attack
+	if (characterState != State::Combo_Savage)
 	{
-		characterState = State::Attacking;
-		attackInputTimer += GetWorld()->GetDeltaSeconds();
+		// If the attack button is pressed (or held), keep track of how long the user is holding the button down
+		if (scaleVal > 0.f)
+		{
+			// Whatever the length is, change the state to "attacking"
+			characterState = State::Attacking;
 
-		if (attackInputTimer > 0.5f)
-		{
-			flipbook->SetFlipbook(strongAttackCharge);
-		}
-	}
-	else
-	{
-		if (attackInputTimer > 0.f && attackInputTimer < 0.5f)
-		{
-			flipbook->SetLooping(false);
-			flipbook->SetFlipbook(simpleAttack);
-		}
-		else if (attackInputTimer >= 0.5f)
-		{
-			flipbook->SetLooping(false);
-			flipbook->SetFlipbook(strongAttack);
-		}
+			// Increase the time the button has been held down
+			attackInputTimer += GetWorld()->GetDeltaSeconds();
 
-		attackInputTimer = 0.f;
+			// If the user is holding the button for too long, change the state of the character to "charging". From this point on, a strong attack will be executed once the button is released
+			if (attackInputTimer > StrongAttackMinimumInputTime)
+			{
+				flipbook->SetFlipbook(strongAttackCharge);
+			}
+		}
+		else // The button is not pressed. If the value of "attackInputTimer" is bigger than 0.f, this means the button was released during the current iteration, so let's determine what attack to execute
+		{
+			// Simple attack
+			if (attackInputTimer > 0.f && attackInputTimer < StrongAttackMinimumInputTime)
+			{
+				// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
+				flipbook->SetLooping(false);
+				flipbook->SetFlipbook(simpleAttack);
+			}
+			else if (attackInputTimer >= StrongAttackMinimumInputTime) // Strong attack
+			{
+				// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
+				flipbook->SetLooping(false);
+				flipbook->SetFlipbook(strongAttack);
+			}
+
+			// Reset the timer, doesn't matter if the button was released or wasn't pressed at all during this iteration, it's currently not pressed.
+			attackInputTimer = 0.f;
+		}
 	}
 }
 
 void ABoomBoom::EndAttack()
 {
+	// Once an attack animation has finished, reset the character's state to "idle" and his flipbook's looping property to true, since only the attack animations shouldn't loop
 	flipbook->SetLooping(true);
 	flipbook->Play();
 	characterState = State::Idle;
 }
 
-void ABoomBoom::UpdateRotation()
+void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 {
-	//get character movement component
-	charMove = GetCharacterMovement();
-	//if character is moving right, set sprite to face right
-	if (charMove->Velocity.X > 0.0)
+	// Zip Zap has tased Boom Boom and he must start running like crazy in the direction Zip Zap was facing when he tased him
+	rotation.Yaw = directionRotation;
+	flipbook->SetWorldRotation(rotation);
+	characterSpeed = 450.f;
+	characterState = State::Combo_Savage;
+}
+
+void ABoomBoom::UpdateComboAttack_Savage()
+{
+	// The length of the attack is finite, decrease the timer that keeps of this each iteration
+	ComboAttack_Savage_ExecutionTimer -= GetWorld()->GetDeltaSeconds();
+
+	// There is still time to be executed
+	if (ComboAttack_Savage_ExecutionTimer > 0.f)
 	{
-		rotation.Yaw = 0.0f;
+		if (flipbook->GetComponentRotation().Yaw < 180.f) // The user wants Boom Boom to run right
+		{
+			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), 1.f, false);
+		}
+		else // The user wants Boom Boom to run left
+		{
+			AddMovementInput(FVector(-1.0f, 0.0f, 0.0f), 1.f, false);
+		}
 	}
-	//if character is moving left, set sprite to face left
-	if (charMove->Velocity.X < 0.0)
+	else // There's no more time, end the savage attack
 	{
-		rotation.Yaw = 180.0f;
+		ComboAttack_Savage_ExecutionTimer = SavageComboExecutionTime;
+		characterState = State::Idle;
 	}
-	GetCapsuleComponent()->SetRelativeRotation(rotation);
 }
