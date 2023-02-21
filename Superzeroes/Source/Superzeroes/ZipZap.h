@@ -9,10 +9,10 @@
 /**
  * 
  */
-UENUM()
-enum class State2
+UENUM(BlueprintType)
+enum class State2 : uint8
 {
-	Idle,
+	Idle ,
 	Running,
 	Jumping,
 	Attacking,
@@ -98,4 +98,7 @@ protected:
 	// Variable to keep track of how long the savage attack is to be executed
 	UPROPERTY(EditAnywhere)
 		float ComboAttack_Savage_ExecutionTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		class UBoxComponent* hitbox;
 };

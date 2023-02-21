@@ -118,7 +118,7 @@ template<> SUPERZEROES_API UClass* StaticClass<class AZipZap>();
 	op(State2::Combo_Savage) \
 	op(State2::Combo_2) 
 
-enum class State2;
+enum class State2 : uint8;
 template<> SUPERZEROES_API UEnum* StaticEnum<State2>();
 
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

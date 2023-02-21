@@ -1,4 +1,4 @@
-E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Source\Superzeroes\Frog_Test.cpp
+D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Source\Superzeroes\Frog_Test.cpp
 /I .
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\Engine
 /I Runtime
@@ -251,8 +251,8 @@ E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Source\Superzeroes\Frog
 /I Runtime\ClothingSystemRuntimeInterface\Public
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\AnimationDataController
 /I Developer\AnimationDataController\Public
-/I E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes
-/I E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Source
+/I D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes
+/I D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Source
 /I ..\Plugins\2D\Paper2D\Intermediate\Build\Win64\UnrealEditor\Inc\Paper2D
 /I ..\Plugins\2D\Paper2D\Source
 /I ..\Plugins\2D\Paper2D\Source\Paper2D\Classes
@@ -271,18 +271,18 @@ E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Source\Superzeroes\Frog
 /I ThirdParty\PhysX3\PhysX_3.4\Include\common
 /I ThirdParty\PhysX3\PhysX_3.4\Include\extensions
 /I ThirdParty\PhysX3\PhysX_3.4\Include\geometry
-/I "D:\Visual Studio\VC\Tools\MSVC\14.33.31629\INCLUDE"
-/I "C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt"
-/FI"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
-/FI"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Definitions.Superzeroes.h"
-/Yu"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
-/Fp"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.pch"
-/Fo"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Frog_Test.cpp.obj"
-/sourceDependencies E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Frog_Test.cpp.json
+/I "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\INCLUDE"
+/I "C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.2\include\um"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\ucrt"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\shared"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\um"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\winrt"
+/FI"D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
+/FI"D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Definitions.Superzeroes.h"
+/Yu"D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
+/Fp"D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.pch"
+/Fo"D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Frog_Test.cpp.obj"
+/sourceDependencies D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Frog_Test.cpp.json
 /Zc:inline
 /nologo
 /Oi

@@ -3,6 +3,7 @@
 
 #include "ZipZap.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "BoomBoom.h"
@@ -25,6 +26,10 @@ AZipZap::AZipZap()
 		flipbook->SetCollisionProfileName(CollisionProfileName);
 		flipbook->SetGenerateOverlapEvents(false);
 	}
+	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
+	hitbox->SetRelativeScale3D(FVector(0.25, 0.25, 0.25));
+	hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
+	hitbox->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -95,11 +100,13 @@ void AZipZap::move(float scaleVal)
 	{
 		rotation.Yaw = 0.f;
 		flipbook->SetWorldRotation(rotation);
+		hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
 	}
 	else if (scaleVal < 0.f)
 	{
 		rotation.Yaw = 180.0f;
 		flipbook->SetWorldRotation(rotation);
+		hitbox->SetRelativeLocation(FVector(-8.0, 0.0, 0.0));
 	}
 }
 
