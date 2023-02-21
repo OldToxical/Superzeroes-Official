@@ -16,6 +16,7 @@ enum class State2 : uint8
 	Running,
 	Jumping,
 	Attacking,
+	Charge_Attacking,
 	Combo_Savage,
 	Combo_2
 };

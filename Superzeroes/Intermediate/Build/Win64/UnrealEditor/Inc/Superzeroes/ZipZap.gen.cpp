@@ -48,6 +48,7 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		{ "State2::Running", (int64)State2::Running },
 		{ "State2::Jumping", (int64)State2::Jumping },
 		{ "State2::Attacking", (int64)State2::Attacking },
+		{ "State2::Charge_Attacking", (int64)State2::Charge_Attacking },
 		{ "State2::Combo_Savage", (int64)State2::Combo_Savage },
 		{ "State2::Combo_2", (int64)State2::Combo_2 },
 	};
@@ -56,6 +57,8 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		{ "Attacking.Comment", "/**\n * \n */" },
 		{ "Attacking.Name", "State2::Attacking" },
 		{ "BlueprintType", "true" },
+		{ "Charge_Attacking.Comment", "/**\n * \n */" },
+		{ "Charge_Attacking.Name", "State2::Charge_Attacking" },
 		{ "Combo_2.Comment", "/**\n * \n */" },
 		{ "Combo_2.Name", "State2::Combo_2" },
 		{ "Combo_Savage.Comment", "/**\n * \n */" },
@@ -554,7 +557,7 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		{ "ToolTip", "Enum instance for the character's state" },
 	};
 #endif
-	const UECodeGen_Private::FEnumPropertyParams Z_Construct_UClass_AZipZap_Statics::NewProp_characterState = { "characterState", nullptr, (EPropertyFlags)0x0020080000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(AZipZap, characterState), Z_Construct_UEnum_Superzeroes_State2, METADATA_PARAMS(Z_Construct_UClass_AZipZap_Statics::NewProp_characterState_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_AZipZap_Statics::NewProp_characterState_MetaData)) }; // 3257533648
+	const UECodeGen_Private::FEnumPropertyParams Z_Construct_UClass_AZipZap_Statics::NewProp_characterState = { "characterState", nullptr, (EPropertyFlags)0x0020080000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(AZipZap, characterState), Z_Construct_UEnum_Superzeroes_State2, METADATA_PARAMS(Z_Construct_UClass_AZipZap_Statics::NewProp_characterState_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_AZipZap_Statics::NewProp_characterState_MetaData)) }; // 937798813
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AZipZap_Statics::NewProp_boomBoom_MetaData[] = {
 		{ "Category", "ZipZap" },
@@ -661,12 +664,12 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FEnumRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::EnumInfo[] = {
-		{ State2_StaticEnum, TEXT("State2"), &Z_Registration_Info_UEnum_State2, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 3257533648U) },
+		{ State2_StaticEnum, TEXT("State2"), &Z_Registration_Info_UEnum_State2, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 937798813U) },
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_AZipZap, AZipZap::StaticClass, TEXT("AZipZap"), &Z_Registration_Info_UClass_AZipZap, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AZipZap), 1984555542U) },
+		{ Z_Construct_UClass_AZipZap, AZipZap::StaticClass, TEXT("AZipZap"), &Z_Registration_Info_UClass_AZipZap, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AZipZap), 3190424186U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_3869568498(TEXT("/Script/Superzeroes"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_1797397113(TEXT("/Script/Superzeroes"),
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo),
 		nullptr, 0,
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::EnumInfo));

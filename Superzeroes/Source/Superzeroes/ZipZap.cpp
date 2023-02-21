@@ -78,7 +78,7 @@ void AZipZap::UpdateAnimation()
 	
 	else
 	{ //otherwise, change to idle animation
-		if (characterState != State2::Attacking && characterState != State2::Combo_Savage)
+		if (characterState != State2::Attacking && characterState != State2::Combo_Savage && characterState != State2::Charge_Attacking)
 		{
 			characterState = State2::Idle;
 			flipbook->SetFlipbook(idle);
@@ -164,6 +164,7 @@ void AZipZap::Attack(float scaleVal)
 			}
 			else if (attackInputTimer >= StrongAttackMinimumInputTime) // Strong attack
 			{
+				characterState = State2::Charge_Attacking;
 				// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
 				flipbook->SetLooping(false);
 				flipbook->SetFlipbook(strongAttack);
