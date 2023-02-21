@@ -7,12 +7,12 @@
 #include "ZipZap.generated.h"
 
 /**
- * 
+ *
  */
 UENUM(BlueprintType)
 enum class State2 : uint8
 {
-	Idle ,
+	Idle,
 	Running,
 	Jumping,
 	Attacking,
@@ -34,10 +34,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
-	class UCharacterMovementComponent* charMove;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		class UCharacterMovementComponent* charMove;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UPaperFlipbookComponent* flipbook;
+		class UPaperFlipbookComponent* flipbook;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -54,23 +54,23 @@ public:
 		class UPaperFlipbook* strongAttackCharge;
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateAnimation();
+		void UpdateAnimation();
 	UFUNCTION(BlueprintCallable)
 		void UpdateState();
 	UFUNCTION(BlueprintCallable)
 		void UpdateComboAttack_Savage();
 	UFUNCTION(BlueprintCallable)
-	void move(float scaleVal);
+		void move(float scaleVal);
 	UFUNCTION(BlueprintCallable)
 		void Attack(float scaleVal);
 	UFUNCTION(BlueprintCallable)
 		void EndAttack();
 	UFUNCTION(BlueprintCallable)
-	void InitiateComboAttack_Savage();
+		void InitiateComboAttack_Savage();
 
 	void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
 	UFUNCTION(BlueprintCallable)
-	void SetupPlayerInput(UInputComponent* input_);
+		void SetupPlayerInput(UInputComponent* input_);
 
 protected:
 	// Called when the game starts or when spawned
@@ -88,7 +88,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UInputComponent* Input;
-	
+
 	// Variable to keep track of how long the "Attack" buton is being held down
 	UPROPERTY(EditAnywhere)
 		float attackInputTimer;

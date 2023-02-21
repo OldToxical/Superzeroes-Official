@@ -1,4 +1,4 @@
-M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes\Enemy.gen.cpp
+C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes\Enemy.gen.cpp
 /I .
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\Engine
 /I Runtime
@@ -251,8 +251,8 @@ M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Su
 /I Runtime\ClothingSystemRuntimeInterface\Public
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\AnimationDataController
 /I Developer\AnimationDataController\Public
-/I M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes
-/I M:\Superzeroes-Official\Superzeroes\Source
+/I C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes
+/I C:\DES310\Superzeroes-Official\Superzeroes\Source
 /I ..\Plugins\2D\Paper2D\Intermediate\Build\Win64\UnrealEditor\Inc\Paper2D
 /I ..\Plugins\2D\Paper2D\Source
 /I ..\Plugins\2D\Paper2D\Source\Paper2D\Classes
@@ -271,18 +271,18 @@ M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Su
 /I ThirdParty\PhysX3\PhysX_3.4\Include\common
 /I ThirdParty\PhysX3\PhysX_3.4\Include\extensions
 /I ThirdParty\PhysX3\PhysX_3.4\Include\geometry
-/I "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.29.30133\INCLUDE"
+/I "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\INCLUDE"
 /I "C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt"
-/FI"M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
-/FI"M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Definitions.Superzeroes.h"
-/Yu"M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
-/Fp"M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.pch"
-/Fo"M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Enemy.gen.cpp.obj"
-/sourceDependencies M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Enemy.gen.cpp.json
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\winrt"
+/FI"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
+/FI"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Definitions.Superzeroes.h"
+/Yu"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
+/Fp"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.pch"
+/Fo"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Enemy.gen.cpp.obj"
+/sourceDependencies C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Enemy.gen.cpp.json
 /Zc:inline
 /nologo
 /Oi

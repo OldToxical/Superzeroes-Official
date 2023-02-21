@@ -9,6 +9,8 @@
 
 #define SavageComboExecutionTime 10
 #define StrongAttackMinimumInputTime 0.5
+#define SimpleAttackSequenceTimeout 0.5
+#define SimpleAttackAnimationLength 0.13
 
 UENUM()
 enum class State
@@ -38,40 +40,44 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Components
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
-	class UCharacterMovementComponent* charMove;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		class UCharacterMovementComponent* charMove;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UPaperFlipbookComponent* flipbook;
+		class UPaperFlipbookComponent* flipbook;
 
 	// Animations
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UPaperFlipbook* idle;
+		class UPaperFlipbook* idle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UPaperFlipbook* run;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	class UPaperFlipbook* jumping;
+		class UPaperFlipbook* run;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UPaperFlipbook* simpleAttack;
+		class UPaperFlipbook* jumping;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UPaperFlipbook* strongAttack;
+		class UPaperFlipbook* simpleAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UPaperFlipbook* strongAttackCharge;
+		class UPaperFlipbook* simpleAttackSequence;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* strongAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* strongAttackCharge;
 
 	// Functions
 	UFUNCTION(BlueprintCallable)
-	void UpdateAnimation();
+		void UpdateAnimation();
 	UFUNCTION(BlueprintCallable)
-	void UpdateState();
+		void UpdateState();
 	UFUNCTION(BlueprintCallable)
-	void UpdateComboAttack_Savage();
+		void UpdateComboAttack_Savage();
 	UFUNCTION(BlueprintCallable)
-	void move(float scaleVal);
+		void move(float scaleVal);
 	UFUNCTION(BlueprintCallable)
-	void Attack(float scaleVal);
+		void ExecuteJump();
 	UFUNCTION(BlueprintCallable)
-	void EndAttack();
+		void Attack(float scaleVal);
 	UFUNCTION(BlueprintCallable)
-	void InitiateComboAttack_Savage(float directionRotation);
+		void EndAttack();
+	UFUNCTION(BlueprintCallable)
+		void InitiateComboAttack_Savage(float directionRotation);
 
 protected:
 	// Called when the game starts or when spawned
@@ -100,4 +106,12 @@ protected:
 	// Variable to keep track of how long the savage attack is to be executed
 	UPROPERTY(EditAnywhere)
 		float ComboAttack_Savage_ExecutionTimer;
+
+	// Variable to keep track of what time should pass to execute sequence of simple attack
+	UPROPERTY(EditAnywhere)
+		float simpleAttack_sequenceTimeoutTimer;
+
+	// Variable to keep track whether the simple attack was sequenced
+	UPROPERTY(EditAnywhere)
+		bool isSimpleAttackSequenced;
 };

@@ -13,7 +13,7 @@
 AZipZap::AZipZap()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true; 
+	PrimaryActorTick.bCanEverTick = true;
 	ComboAttack_Savage_ExecutionTimer = 10.0f;
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	if (flipbook)
@@ -75,7 +75,7 @@ void AZipZap::UpdateAnimation()
 		}
 		//UE_LOG(LogTemp, Warning, TEXT("schmoving"));
 	}
-	
+
 	else
 	{ //otherwise, change to idle animation
 		if (characterState != State2::Attacking && characterState != State2::Combo_Savage && characterState != State2::Charge_Attacking)
@@ -188,14 +188,14 @@ void AZipZap::UpdateState()
 {
 	charMove->MaxWalkSpeed = characterSpeed;
 
-	
+
 }
 
 void AZipZap::UpdateComboAttack_Savage()
 {
 	// The length of the attack is finite, decrease the timer that keeps of this each iteration
 	ComboAttack_Savage_ExecutionTimer -= GetWorld()->GetDeltaSeconds();
-	
+
 	//Do we want Zip Zap to do anything during this combo attack? Commented it out just in case
 
 	// There is still time to be executed
