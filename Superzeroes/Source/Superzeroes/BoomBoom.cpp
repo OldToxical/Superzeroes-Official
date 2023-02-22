@@ -166,6 +166,7 @@ void ABoomBoom::ExecuteJump()
 	if ((characterState != State::Combo_Savage) && (characterState != State::Attacking))
 	{
 		Jump();
+		flipbook->SetFlipbook(jumping);
 	}
 }
 
