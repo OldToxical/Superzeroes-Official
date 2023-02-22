@@ -59,14 +59,20 @@ public:
 		void UpdateState();
 	UFUNCTION(BlueprintCallable)
 		void UpdateComboAttack_Savage();
+
 	UFUNCTION(BlueprintCallable)
 		void move(float scaleVal);
+	UFUNCTION(BlueprintCallable)
+		void ExecuteJump();
 	UFUNCTION(BlueprintCallable)
 		void Attack(float scaleVal);
 	UFUNCTION(BlueprintCallable)
 		void EndAttack();
+
 	UFUNCTION(BlueprintCallable)
 		void InitiateComboAttack_Savage();
+	UFUNCTION(BlueprintCallable)
+		void HitCheck();
 
 	void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
 	UFUNCTION(BlueprintCallable)

@@ -18,9 +18,11 @@ class UInputComponent;
 #define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_RPC_WRAPPERS \
  \
 	DECLARE_FUNCTION(execSetupPlayerInput); \
+	DECLARE_FUNCTION(execHitCheck); \
 	DECLARE_FUNCTION(execInitiateComboAttack_Savage); \
 	DECLARE_FUNCTION(execEndAttack); \
 	DECLARE_FUNCTION(execAttack); \
+	DECLARE_FUNCTION(execExecuteJump); \
 	DECLARE_FUNCTION(execmove); \
 	DECLARE_FUNCTION(execUpdateComboAttack_Savage); \
 	DECLARE_FUNCTION(execUpdateState); \
@@ -30,9 +32,11 @@ class UInputComponent;
 #define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_RPC_WRAPPERS_NO_PURE_DECLS \
  \
 	DECLARE_FUNCTION(execSetupPlayerInput); \
+	DECLARE_FUNCTION(execHitCheck); \
 	DECLARE_FUNCTION(execInitiateComboAttack_Savage); \
 	DECLARE_FUNCTION(execEndAttack); \
 	DECLARE_FUNCTION(execAttack); \
+	DECLARE_FUNCTION(execExecuteJump); \
 	DECLARE_FUNCTION(execmove); \
 	DECLARE_FUNCTION(execUpdateComboAttack_Savage); \
 	DECLARE_FUNCTION(execUpdateState); \

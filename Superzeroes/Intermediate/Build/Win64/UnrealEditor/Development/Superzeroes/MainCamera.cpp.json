@@ -1,13 +1,13 @@
 {
-    "Version": "1.2",
+    "Version": "1.1",
     "Data": {
-        "Source": "c:\\des310\\superzeroes-official\\superzeroes\\source\\superzeroes\\maincamera.cpp",
+        "Source": "m:\\superzeroes-official\\superzeroes\\source\\superzeroes\\maincamera.cpp",
         "ProvidedModule": "",
-        "PCH": "c:\\des310\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\superzeroeseditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "PCH": "m:\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\superzeroeseditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
         "Includes": [
-            "c:\\des310\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\development\\superzeroes\\definitions.superzeroes.h",
-            "c:\\des310\\superzeroes-official\\superzeroes\\source\\superzeroes\\maincamera.h",
-            "c:\\des310\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\maincamera.generated.h"
+            "m:\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\development\\superzeroes\\definitions.superzeroes.h",
+            "m:\\superzeroes-official\\superzeroes\\source\\superzeroes\\maincamera.h",
+            "m:\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\maincamera.generated.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []

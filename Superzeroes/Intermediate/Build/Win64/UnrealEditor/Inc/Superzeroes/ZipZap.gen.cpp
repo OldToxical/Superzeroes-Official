@@ -101,6 +101,13 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		P_THIS->SetupPlayerInput(Z_Param_input_);
 		P_NATIVE_END;
 	}
+	DEFINE_FUNCTION(AZipZap::execHitCheck)
+	{
+		P_FINISH;
+		P_NATIVE_BEGIN;
+		P_THIS->HitCheck();
+		P_NATIVE_END;
+	}
 	DEFINE_FUNCTION(AZipZap::execInitiateComboAttack_Savage)
 	{
 		P_FINISH;
@@ -121,6 +128,13 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		P_FINISH;
 		P_NATIVE_BEGIN;
 		P_THIS->Attack(Z_Param_scaleVal);
+		P_NATIVE_END;
+	}
+	DEFINE_FUNCTION(AZipZap::execExecuteJump)
+	{
+		P_FINISH;
+		P_NATIVE_BEGIN;
+		P_THIS->ExecuteJump();
 		P_NATIVE_END;
 	}
 	DEFINE_FUNCTION(AZipZap::execmove)
@@ -158,6 +172,8 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		static const FNameNativePtrPair Funcs[] = {
 			{ "Attack", &AZipZap::execAttack },
 			{ "EndAttack", &AZipZap::execEndAttack },
+			{ "ExecuteJump", &AZipZap::execExecuteJump },
+			{ "HitCheck", &AZipZap::execHitCheck },
 			{ "InitiateComboAttack_Savage", &AZipZap::execInitiateComboAttack_Savage },
 			{ "move", &AZipZap::execmove },
 			{ "SetupPlayerInput", &AZipZap::execSetupPlayerInput },
@@ -218,6 +234,50 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		if (!ReturnFunction)
 		{
 			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_AZipZap_EndAttack_Statics::FuncParams);
+		}
+		return ReturnFunction;
+	}
+	struct Z_Construct_UFunction_AZipZap_ExecuteJump_Statics
+	{
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
+#endif
+		static const UECodeGen_Private::FFunctionParams FuncParams;
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_AZipZap_ExecuteJump_Statics::Function_MetaDataParams[] = {
+		{ "ModuleRelativePath", "ZipZap.h" },
+	};
+#endif
+	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_AZipZap_ExecuteJump_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_AZipZap, nullptr, "ExecuteJump", nullptr, nullptr, 0, nullptr, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_AZipZap_ExecuteJump_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_AZipZap_ExecuteJump_Statics::Function_MetaDataParams)) };
+	UFunction* Z_Construct_UFunction_AZipZap_ExecuteJump()
+	{
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_AZipZap_ExecuteJump_Statics::FuncParams);
+		}
+		return ReturnFunction;
+	}
+	struct Z_Construct_UFunction_AZipZap_HitCheck_Statics
+	{
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
+#endif
+		static const UECodeGen_Private::FFunctionParams FuncParams;
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_AZipZap_HitCheck_Statics::Function_MetaDataParams[] = {
+		{ "ModuleRelativePath", "ZipZap.h" },
+	};
+#endif
+	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_AZipZap_HitCheck_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_AZipZap, nullptr, "HitCheck", nullptr, nullptr, 0, nullptr, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_AZipZap_HitCheck_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_AZipZap_HitCheck_Statics::Function_MetaDataParams)) };
+	UFunction* Z_Construct_UFunction_AZipZap_HitCheck()
+	{
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_AZipZap_HitCheck_Statics::FuncParams);
 		}
 		return ReturnFunction;
 	}
@@ -469,6 +529,8 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 	const FClassFunctionLinkInfo Z_Construct_UClass_AZipZap_Statics::FuncInfo[] = {
 		{ &Z_Construct_UFunction_AZipZap_Attack, "Attack" }, // 291063423
 		{ &Z_Construct_UFunction_AZipZap_EndAttack, "EndAttack" }, // 2437475914
+		{ &Z_Construct_UFunction_AZipZap_ExecuteJump, "ExecuteJump" }, // 3039473597
+		{ &Z_Construct_UFunction_AZipZap_HitCheck, "HitCheck" }, // 3501749777
 		{ &Z_Construct_UFunction_AZipZap_InitiateComboAttack_Savage, "InitiateComboAttack_Savage" }, // 2906266353
 		{ &Z_Construct_UFunction_AZipZap_move, "move" }, // 1163909924
 		{ &Z_Construct_UFunction_AZipZap_SetupPlayerInput, "SetupPlayerInput" }, // 329815324
@@ -667,9 +729,9 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		{ State2_StaticEnum, TEXT("State2"), &Z_Registration_Info_UEnum_State2, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 3667271570U) },
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_AZipZap, AZipZap::StaticClass, TEXT("AZipZap"), &Z_Registration_Info_UClass_AZipZap, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AZipZap), 4077965059U) },
+		{ Z_Construct_UClass_AZipZap, AZipZap::StaticClass, TEXT("AZipZap"), &Z_Registration_Info_UClass_AZipZap, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AZipZap), 1147960482U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_2039672459(TEXT("/Script/Superzeroes"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_211792407(TEXT("/Script/Superzeroes"),
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo),
 		nullptr, 0,
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::EnumInfo));

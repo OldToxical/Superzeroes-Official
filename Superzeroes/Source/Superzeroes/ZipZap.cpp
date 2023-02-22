@@ -8,6 +8,7 @@
 #include "PaperFlipbookComponent.h"
 #include "BoomBoom.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AZipZap::AZipZap()
@@ -53,6 +54,11 @@ void AZipZap::Tick(float DeltaTime)
 
 	UpdateAnimation();
 	UpdateState();
+	//if zip zap is attacking, check the hitbox for collision 
+	if (characterState == State2::Attacking)
+	{
+		HitCheck();
+	}
 }
 
 void AZipZap::UpdateAnimation()
@@ -61,17 +67,12 @@ void AZipZap::UpdateAnimation()
 	//if character is moving, change to running animation
 	if (charMove->Velocity.Size() > 0.0)
 	{
-		if (characterState != State2::Combo_Savage)
+		if (characterState != State2::Combo_Savage && characterState != State2::Attacking && !charMove->IsFalling())
 		{
 			characterState = State2::Running;
+			flipbook->SetLooping(true);
 			flipbook->SetFlipbook(run);
 
-			//If character is jumping, change to jump animation
-			if (charMove->IsFalling())
-			{
-				characterState = State2::Jumping;
-				flipbook->SetFlipbook(jumping);
-			}
 		}
 		//UE_LOG(LogTemp, Warning, TEXT("schmoving"));
 	}
@@ -81,6 +82,7 @@ void AZipZap::UpdateAnimation()
 		if (characterState != State2::Attacking && characterState != State2::Combo_Savage && characterState != State2::Charge_Attacking)
 		{
 			characterState = State2::Idle;
+			flipbook->SetLooping(true);
 			flipbook->SetFlipbook(idle);
 		}
 	}
@@ -129,7 +131,7 @@ void AZipZap::SetupPlayerInput(UInputComponent* input_)
 
 	Input->BindAxis("MoveZipZap", this, &AZipZap::move);
 	Input->BindAxis("AttackZipZap", this, &AZipZap::Attack);
-	Input->BindAction("JumpZipZap", IE_Pressed, this, &ACharacter::Jump);
+	Input->BindAction("JumpZipZap", IE_Pressed, this, &AZipZap::ExecuteJump);
 	Input->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
 }
 
@@ -179,7 +181,7 @@ void AZipZap::Attack(float scaleVal)
 void AZipZap::EndAttack()
 {
 	// Once an attack animation has finished, reset the character's state to "idle" and his flipbook's looping property to true, since only the attack animations shouldn't loop
-	flipbook->SetLooping(true);
+	//flipbook->SetLooping(true);
 	flipbook->Play();
 	characterState = State2::Idle;
 }
@@ -187,8 +189,30 @@ void AZipZap::EndAttack()
 void AZipZap::UpdateState()
 {
 	charMove->MaxWalkSpeed = characterSpeed;
+}
 
+void AZipZap::ExecuteJump()
+{
+	if ((characterState != State2::Combo_Savage) && (characterState != State2::Attacking) && !charMove->IsFalling())
+	{
+		Jump();
+		characterState = State2::Jumping;
+		flipbook->SetLooping(false);
+		flipbook->SetFlipbook(jumping);
+	}
+}
 
+void AZipZap::HitCheck()
+{	//get if Boom Boom is overlapping with the attack hitbox
+	TArray<AActor*> output;
+	GetOverlappingActors(output, ABoomBoom::StaticClass());
+	//go through each overlapping body
+	for (int i = 0; i < output.Num(); i++)
+	{
+		ABoomBoom* bb;
+		bb = (ABoomBoom*)UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass());
+		bb->InitiateComboAttack_Savage(0.0f);
+	}
 }
 
 void AZipZap::UpdateComboAttack_Savage()

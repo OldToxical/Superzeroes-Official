@@ -1,4 +1,4 @@
-D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes\MainCamera.gen.cpp
+C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes\MainCamera.gen.cpp
 /I .
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\Engine
 /I Runtime
@@ -251,8 +251,8 @@ D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64
 /I Runtime\ClothingSystemRuntimeInterface\Public
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\AnimationDataController
 /I Developer\AnimationDataController\Public
-/I D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes
-/I D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Source
+/I C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes
+/I C:\DES310\Superzeroes-Official\Superzeroes\Source
 /I ..\Plugins\2D\Paper2D\Intermediate\Build\Win64\UnrealEditor\Inc\Paper2D
 /I ..\Plugins\2D\Paper2D\Source
 /I ..\Plugins\2D\Paper2D\Source\Paper2D\Classes
@@ -272,17 +272,17 @@ D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64
 /I ThirdParty\PhysX3\PhysX_3.4\Include\extensions
 /I ThirdParty\PhysX3\PhysX_3.4\Include\geometry
 /I "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\INCLUDE"
-/I "C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.2\include\um"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\ucrt"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\shared"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\um"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\winrt"
-/FI"D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
-/FI"D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Definitions.Superzeroes.h"
-/Yu"D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
-/Fp"D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.pch"
-/Fo"D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\MainCamera.gen.cpp.obj"
-/sourceDependencies D:\Users\Joe\Documents\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\MainCamera.gen.cpp.json
+/I "C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um"
+/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\winrt"
+/FI"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
+/FI"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Definitions.Superzeroes.h"
+/Yu"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
+/Fp"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.pch"
+/Fo"C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\MainCamera.gen.cpp.obj"
+/sourceDependencies C:\DES310\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\MainCamera.gen.cpp.json
 /Zc:inline
 /nologo
 /Oi

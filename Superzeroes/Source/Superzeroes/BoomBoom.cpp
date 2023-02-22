@@ -206,7 +206,7 @@ void ABoomBoom::Attack(float scaleVal)
 				else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
 				{
 					flipbook->SetLooping(false);
-					flipbook->SetFlipbook(simpleAttackSequence);
+					flipbook->SetFlipbook(strongAttack);
 					isSimpleAttackSequenced = false;
 				}
 
