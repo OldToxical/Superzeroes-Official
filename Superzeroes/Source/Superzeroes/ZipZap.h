@@ -6,6 +6,8 @@
 #include "PaperCharacter.h"
 #include "ZipZap.generated.h"
 
+#define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 42
+
 /**
  *
  */
@@ -52,6 +54,8 @@ public:
 		class UPaperFlipbook* strongAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* strongAttackCharge;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* initiateBoomBoomSavageComboAttack;
 
 	UFUNCTION(BlueprintCallable)
 		void UpdateAnimation();

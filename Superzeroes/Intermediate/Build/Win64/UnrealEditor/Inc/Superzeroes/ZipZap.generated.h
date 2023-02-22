@@ -14,8 +14,8 @@ class UInputComponent;
 #endif
 #define SUPERZEROES_ZipZap_generated_h
 
-#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_SPARSE_DATA
-#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_RPC_WRAPPERS \
+#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_SPARSE_DATA
+#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_RPC_WRAPPERS \
  \
 	DECLARE_FUNCTION(execSetupPlayerInput); \
 	DECLARE_FUNCTION(execHitCheck); \
@@ -29,7 +29,7 @@ class UInputComponent;
 	DECLARE_FUNCTION(execUpdateAnimation);
 
 
-#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_RPC_WRAPPERS_NO_PURE_DECLS \
  \
 	DECLARE_FUNCTION(execSetupPlayerInput); \
 	DECLARE_FUNCTION(execHitCheck); \
@@ -43,7 +43,7 @@ class UInputComponent;
 	DECLARE_FUNCTION(execUpdateAnimation);
 
 
-#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_INCLASS_NO_PURE_DECLS \
+#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesAZipZap(); \
 	friend struct Z_Construct_UClass_AZipZap_Statics; \
@@ -52,7 +52,7 @@ public: \
 	DECLARE_SERIALIZER(AZipZap)
 
 
-#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_INCLASS \
+#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_INCLASS \
 private: \
 	static void StaticRegisterNativesAZipZap(); \
 	friend struct Z_Construct_UClass_AZipZap_Statics; \
@@ -61,7 +61,7 @@ public: \
 	DECLARE_SERIALIZER(AZipZap)
 
 
-#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_STANDARD_CONSTRUCTORS \
+#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_STANDARD_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API AZipZap(const FObjectInitializer& ObjectInitializer); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(AZipZap) \
@@ -74,7 +74,7 @@ private: \
 public:
 
 
-#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_ENHANCED_CONSTRUCTORS \
+#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_ENHANCED_CONSTRUCTORS \
 private: \
 	/** Private move- and copy-constructors, should never be used */ \
 	NO_API AZipZap(AZipZap&&); \
@@ -85,25 +85,25 @@ public: \
 	DEFINE_DEFAULT_CONSTRUCTOR_CALL(AZipZap)
 
 
-#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_25_PROLOG
-#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_GENERATED_BODY_LEGACY \
+#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_27_PROLOG
+#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_GENERATED_BODY_LEGACY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_SPARSE_DATA \
-	FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_RPC_WRAPPERS \
-	FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_INCLASS \
-	FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_STANDARD_CONSTRUCTORS \
+	FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_SPARSE_DATA \
+	FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_RPC_WRAPPERS \
+	FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_INCLASS \
+	FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_STANDARD_CONSTRUCTORS \
 public: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 
-#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_GENERATED_BODY \
+#define FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_SPARSE_DATA \
-	FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_INCLASS_NO_PURE_DECLS \
-	FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_ENHANCED_CONSTRUCTORS \
+	FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_SPARSE_DATA \
+	FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_INCLASS_NO_PURE_DECLS \
+	FID_Superzeroes_Source_Superzeroes_ZipZap_h_30_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

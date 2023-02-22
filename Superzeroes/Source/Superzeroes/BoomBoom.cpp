@@ -114,7 +114,7 @@ void ABoomBoom::UpdateState()
 void ABoomBoom::UpdateAnimation()
 {
 	// If character is moving, change to running animation
-	if (charMove->Velocity.Size() > 0.f)
+	if (charMove->Velocity.X != 0.f)
 	{
 		if (characterState != State::Combo_Savage && characterState != State::Attacking)
 		{
@@ -122,16 +122,16 @@ void ABoomBoom::UpdateAnimation()
 			flipbook->SetFlipbook(run);
 
 			//If character is jumping, change to jump animation
-			if (charMove->IsFalling())
-			{
-				characterState = State::Jumping;
-				flipbook->SetFlipbook(jumping);
-			}
+			//if (charMove->IsFalling())
+			//{
+			//	characterState = State::Jumping;
+			//	flipbook->SetFlipbook(jumping);
+			//}
 		}
 	}
 	else // Otherwise, change to idle animation
 	{
-		if (characterState != State::Attacking && characterState != State::Combo_Savage)
+		if (characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Jumping)
 		{
 			characterState = State::Idle;
 			flipbook->SetFlipbook(idle);
@@ -163,9 +163,11 @@ void ABoomBoom::move(float scaleVal)
 
 void ABoomBoom::ExecuteJump()
 {
-	if ((characterState != State::Combo_Savage) && (characterState != State::Attacking))
+	if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling())
 	{
 		Jump();
+		characterState = State::Jumping;
+		flipbook->SetLooping(false);
 		flipbook->SetFlipbook(jumping);
 	}
 }
@@ -206,7 +208,7 @@ void ABoomBoom::Attack(float scaleVal)
 				else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
 				{
 					flipbook->SetLooping(false);
-					flipbook->SetFlipbook(strongAttack);
+					flipbook->SetFlipbook(simpleAttackSequence);
 					isSimpleAttackSequenced = false;
 				}
 
@@ -221,7 +223,7 @@ void ABoomBoom::Attack(float scaleVal)
 			}
 			else if (simpleAttack_sequenceTimeoutTimer <= 0.f && characterState == State::Attacking)
 			{
-				EndAttack();
+				//EndAttack();
 			}
 
 			// Reset the timer, doesn't matter if the button was released or wasn't pressed at all during this iteration, it's currently not pressed.
@@ -251,6 +253,7 @@ void ABoomBoom::UpdateComboAttack_Savage()
 {
 	// The length of the attack is finite, decrease the timer that keeps of this each iteration
 	ComboAttack_Savage_ExecutionTimer -= GetWorld()->GetDeltaSeconds();
+	flipbook->SetFlipbook(savageComboAttack);
 
 	// There is still time to be executed
 	if (ComboAttack_Savage_ExecutionTimer > 0.f)

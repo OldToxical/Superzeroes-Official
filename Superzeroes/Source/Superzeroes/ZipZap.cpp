@@ -63,26 +63,27 @@ void AZipZap::Tick(float DeltaTime)
 
 void AZipZap::UpdateAnimation()
 {
-	//get character movement component
-	//if character is moving, change to running animation
-	if (charMove->Velocity.Size() > 0.0)
+	// If character is moving, change to running animation
+	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != State2::Combo_Savage && characterState != State2::Attacking && !charMove->IsFalling())
+		if (characterState != State2::Combo_Savage && characterState != State2::Attacking)
 		{
 			characterState = State2::Running;
-			flipbook->SetLooping(true);
 			flipbook->SetFlipbook(run);
 
+			//If character is jumping, change to jump animation
+			//if (charMove->IsFalling())
+			//{
+			//	characterState = State::Jumping;
+			//	flipbook->SetFlipbook(jumping);
+			//}
 		}
-		//UE_LOG(LogTemp, Warning, TEXT("schmoving"));
 	}
-
-	else
-	{ //otherwise, change to idle animation
-		if (characterState != State2::Attacking && characterState != State2::Combo_Savage && characterState != State2::Charge_Attacking)
+	else // Otherwise, change to idle animation
+	{
+		if (characterState != State2::Attacking && characterState != State2::Jumping)
 		{
 			characterState = State2::Idle;
-			flipbook->SetLooping(true);
 			flipbook->SetFlipbook(idle);
 		}
 	}
@@ -118,9 +119,11 @@ void AZipZap::InitiateComboAttack_Savage()
 	{
 		float proximityToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
 
-		if (proximityToBoomBoom <= 30.f)
+		if (proximityToBoomBoom <= MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack)
 		{
 			boomBoom->InitiateComboAttack_Savage(rotation.Yaw);
+			flipbook->SetLooping(false);
+			flipbook->SetFlipbook(initiateBoomBoomSavageComboAttack);
 		}
 	}
 }
@@ -181,7 +184,7 @@ void AZipZap::Attack(float scaleVal)
 void AZipZap::EndAttack()
 {
 	// Once an attack animation has finished, reset the character's state to "idle" and his flipbook's looping property to true, since only the attack animations shouldn't loop
-	//flipbook->SetLooping(true);
+	flipbook->SetLooping(true);
 	flipbook->Play();
 	characterState = State2::Idle;
 }

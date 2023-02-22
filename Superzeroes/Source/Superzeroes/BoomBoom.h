@@ -9,8 +9,8 @@
 
 #define SavageComboExecutionTime 10
 #define StrongAttackMinimumInputTime 0.5
-#define SimpleAttackSequenceTimeout 0.5
-#define SimpleAttackAnimationLength 0.13
+#define SimpleAttackSequenceTimeout 0.6
+#define SimpleAttackAnimationLength 0.27
 
 UENUM()
 enum class State
@@ -60,6 +60,8 @@ public:
 		class UPaperFlipbook* strongAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* strongAttackCharge;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* savageComboAttack;
 
 	// Functions
 	UFUNCTION(BlueprintCallable)
