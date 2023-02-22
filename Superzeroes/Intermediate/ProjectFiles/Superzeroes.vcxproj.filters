@@ -59,12 +59,6 @@
     <ClInclude Include="..\..\Source\Superzeroes\MainCamera.h">
       <Filter>Source\Superzeroes</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\Source\Superzeroes\MyClass.cpp">
-      <Filter>Source\Superzeroes</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\Source\Superzeroes\MyClass.h">
-      <Filter>Source\Superzeroes</Filter>
-    </ClInclude>
     <None Include="..\..\Source\Superzeroes\Superzeroes.Build.cs">
       <Filter>Source\Superzeroes</Filter>
     </None>
