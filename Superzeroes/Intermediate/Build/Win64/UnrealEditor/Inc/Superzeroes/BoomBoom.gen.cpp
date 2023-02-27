@@ -19,6 +19,7 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 	PAPER2D_API UClass* Z_Construct_UClass_UPaperFlipbook_NoRegister();
 	COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FRotator();
 	SUPERZEROES_API UClass* Z_Construct_UClass_AZipZap_NoRegister();
+	ENGINE_API UClass* Z_Construct_UClass_UParticleSystemComponent_NoRegister();
 // End Cross Module References
 	static FEnumRegistrationInfo Z_Registration_Info_UEnum_State;
 	static UEnum* State_StaticEnum()
@@ -47,12 +48,10 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 		{ "State::Jumping", (int64)State::Jumping },
 		{ "State::Attacking", (int64)State::Attacking },
 		{ "State::Combo_Savage", (int64)State::Combo_Savage },
-		{ "State::Combo_2", (int64)State::Combo_2 },
 	};
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UEnum_Superzeroes_State_Statics::Enum_MetaDataParams[] = {
 		{ "Attacking.Name", "State::Attacking" },
-		{ "Combo_2.Name", "State::Combo_2" },
 		{ "Combo_Savage.Name", "State::Combo_Savage" },
 		{ "Idle.Name", "State::Idle" },
 		{ "Jumping.Name", "State::Jumping" },
@@ -79,6 +78,20 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 			UECodeGen_Private::ConstructUEnum(Z_Registration_Info_UEnum_State.InnerSingleton, Z_Construct_UEnum_Superzeroes_State_Statics::EnumParams);
 		}
 		return Z_Registration_Info_UEnum_State.InnerSingleton;
+	}
+	DEFINE_FUNCTION(ABoomBoom::execIsFacingZipZap)
+	{
+		P_FINISH;
+		P_NATIVE_BEGIN;
+		*(bool*)Z_Param__Result=P_THIS->IsFacingZipZap();
+		P_NATIVE_END;
+	}
+	DEFINE_FUNCTION(ABoomBoom::execInitiateZipZapComboAttack_Projectile)
+	{
+		P_FINISH;
+		P_NATIVE_BEGIN;
+		P_THIS->InitiateZipZapComboAttack_Projectile();
+		P_NATIVE_END;
 	}
 	DEFINE_FUNCTION(ABoomBoom::execInitiateComboAttack_Savage)
 	{
@@ -147,6 +160,8 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 			{ "EndAttack", &ABoomBoom::execEndAttack },
 			{ "ExecuteJump", &ABoomBoom::execExecuteJump },
 			{ "InitiateComboAttack_Savage", &ABoomBoom::execInitiateComboAttack_Savage },
+			{ "InitiateZipZapComboAttack_Projectile", &ABoomBoom::execInitiateZipZapComboAttack_Projectile },
+			{ "IsFacingZipZap", &ABoomBoom::execIsFacingZipZap },
 			{ "move", &ABoomBoom::execmove },
 			{ "UpdateAnimation", &ABoomBoom::execUpdateAnimation },
 			{ "UpdateComboAttack_Savage", &ABoomBoom::execUpdateComboAttack_Savage },
@@ -259,6 +274,65 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 		if (!ReturnFunction)
 		{
 			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_ABoomBoom_InitiateComboAttack_Savage_Statics::FuncParams);
+		}
+		return ReturnFunction;
+	}
+	struct Z_Construct_UFunction_ABoomBoom_InitiateZipZapComboAttack_Projectile_Statics
+	{
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
+#endif
+		static const UECodeGen_Private::FFunctionParams FuncParams;
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_ABoomBoom_InitiateZipZapComboAttack_Projectile_Statics::Function_MetaDataParams[] = {
+		{ "ModuleRelativePath", "BoomBoom.h" },
+	};
+#endif
+	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_ABoomBoom_InitiateZipZapComboAttack_Projectile_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_ABoomBoom, nullptr, "InitiateZipZapComboAttack_Projectile", nullptr, nullptr, 0, nullptr, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_ABoomBoom_InitiateZipZapComboAttack_Projectile_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_ABoomBoom_InitiateZipZapComboAttack_Projectile_Statics::Function_MetaDataParams)) };
+	UFunction* Z_Construct_UFunction_ABoomBoom_InitiateZipZapComboAttack_Projectile()
+	{
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_ABoomBoom_InitiateZipZapComboAttack_Projectile_Statics::FuncParams);
+		}
+		return ReturnFunction;
+	}
+	struct Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics
+	{
+		struct BoomBoom_eventIsFacingZipZap_Parms
+		{
+			bool ReturnValue;
+		};
+		static void NewProp_ReturnValue_SetBit(void* Obj);
+		static const UECodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
+#endif
+		static const UECodeGen_Private::FFunctionParams FuncParams;
+	};
+	void Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::NewProp_ReturnValue_SetBit(void* Obj)
+	{
+		((BoomBoom_eventIsFacingZipZap_Parms*)Obj)->ReturnValue = 1;
+	}
+	const UECodeGen_Private::FBoolPropertyParams Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, 1, sizeof(bool), sizeof(BoomBoom_eventIsFacingZipZap_Parms), &Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::NewProp_ReturnValue_SetBit, METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::PropPointers[] = {
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::NewProp_ReturnValue,
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::Function_MetaDataParams[] = {
+		{ "ModuleRelativePath", "BoomBoom.h" },
+	};
+#endif
+	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_ABoomBoom, nullptr, "IsFacingZipZap", nullptr, nullptr, sizeof(Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::BoomBoom_eventIsFacingZipZap_Parms), Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::PropPointers, UE_ARRAY_COUNT(Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::PropPointers), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::Function_MetaDataParams)) };
+	UFunction* Z_Construct_UFunction_ABoomBoom_IsFacingZipZap()
+	{
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_ABoomBoom_IsFacingZipZap_Statics::FuncParams);
 		}
 		return ReturnFunction;
 	}
@@ -444,10 +518,27 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 #endif
 		static const UECodeGen_Private::FFloatPropertyParams NewProp_simpleAttack_sequenceTimeoutTimer;
 #if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_jumpPreludeTimer_MetaData[];
+#endif
+		static const UECodeGen_Private::FFloatPropertyParams NewProp_jumpPreludeTimer;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_punchPreludeTimer_MetaData[];
+#endif
+		static const UECodeGen_Private::FFloatPropertyParams NewProp_punchPreludeTimer;
+#if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_isSimpleAttackSequenced_MetaData[];
 #endif
 		static void NewProp_isSimpleAttackSequenced_SetBit(void* Obj);
 		static const UECodeGen_Private::FBoolPropertyParams NewProp_isSimpleAttackSequenced;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_launchZipZap_MetaData[];
+#endif
+		static void NewProp_launchZipZap_SetBit(void* Obj);
+		static const UECodeGen_Private::FBoolPropertyParams NewProp_launchZipZap;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_smokeParticle_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_smokeParticle;
 		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
@@ -461,6 +552,8 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 		{ &Z_Construct_UFunction_ABoomBoom_EndAttack, "EndAttack" }, // 2072088278
 		{ &Z_Construct_UFunction_ABoomBoom_ExecuteJump, "ExecuteJump" }, // 2004191873
 		{ &Z_Construct_UFunction_ABoomBoom_InitiateComboAttack_Savage, "InitiateComboAttack_Savage" }, // 3490288423
+		{ &Z_Construct_UFunction_ABoomBoom_InitiateZipZapComboAttack_Projectile, "InitiateZipZapComboAttack_Projectile" }, // 2403777421
+		{ &Z_Construct_UFunction_ABoomBoom_IsFacingZipZap, "IsFacingZipZap" }, // 3789750892
 		{ &Z_Construct_UFunction_ABoomBoom_move, "move" }, // 1235895177
 		{ &Z_Construct_UFunction_ABoomBoom_UpdateAnimation, "UpdateAnimation" }, // 2598635088
 		{ &Z_Construct_UFunction_ABoomBoom_UpdateComboAttack_Savage, "UpdateComboAttack_Savage" }, // 4245808976
@@ -567,7 +660,7 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 		{ "ToolTip", "Enum instance for the character's state" },
 	};
 #endif
-	const UECodeGen_Private::FEnumPropertyParams Z_Construct_UClass_ABoomBoom_Statics::NewProp_characterState = { "characterState", nullptr, (EPropertyFlags)0x0020080000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ABoomBoom, characterState), Z_Construct_UEnum_Superzeroes_State, METADATA_PARAMS(Z_Construct_UClass_ABoomBoom_Statics::NewProp_characterState_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ABoomBoom_Statics::NewProp_characterState_MetaData)) }; // 4061636609
+	const UECodeGen_Private::FEnumPropertyParams Z_Construct_UClass_ABoomBoom_Statics::NewProp_characterState = { "characterState", nullptr, (EPropertyFlags)0x0020080000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ABoomBoom, characterState), Z_Construct_UEnum_Superzeroes_State, METADATA_PARAMS(Z_Construct_UClass_ABoomBoom_Statics::NewProp_characterState_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ABoomBoom_Statics::NewProp_characterState_MetaData)) }; // 4236421620
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ABoomBoom_Statics::NewProp_zipZap_MetaData[] = {
 		{ "Category", "BoomBoom" },
@@ -614,6 +707,24 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 #endif
 	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ABoomBoom_Statics::NewProp_simpleAttack_sequenceTimeoutTimer = { "simpleAttack_sequenceTimeoutTimer", nullptr, (EPropertyFlags)0x0020080000000001, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ABoomBoom, simpleAttack_sequenceTimeoutTimer), METADATA_PARAMS(Z_Construct_UClass_ABoomBoom_Statics::NewProp_simpleAttack_sequenceTimeoutTimer_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ABoomBoom_Statics::NewProp_simpleAttack_sequenceTimeoutTimer_MetaData)) };
 #if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ABoomBoom_Statics::NewProp_jumpPreludeTimer_MetaData[] = {
+		{ "Category", "BoomBoom" },
+		{ "Comment", "// Variable to keep track of what time should pass to execute the jump\n" },
+		{ "ModuleRelativePath", "BoomBoom.h" },
+		{ "ToolTip", "Variable to keep track of what time should pass to execute the jump" },
+	};
+#endif
+	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ABoomBoom_Statics::NewProp_jumpPreludeTimer = { "jumpPreludeTimer", nullptr, (EPropertyFlags)0x0020080000000001, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ABoomBoom, jumpPreludeTimer), METADATA_PARAMS(Z_Construct_UClass_ABoomBoom_Statics::NewProp_jumpPreludeTimer_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ABoomBoom_Statics::NewProp_jumpPreludeTimer_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ABoomBoom_Statics::NewProp_punchPreludeTimer_MetaData[] = {
+		{ "Category", "BoomBoom" },
+		{ "Comment", "// Variable to keep track of what time should pass to execute the impact of the punch\n" },
+		{ "ModuleRelativePath", "BoomBoom.h" },
+		{ "ToolTip", "Variable to keep track of what time should pass to execute the impact of the punch" },
+	};
+#endif
+	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ABoomBoom_Statics::NewProp_punchPreludeTimer = { "punchPreludeTimer", nullptr, (EPropertyFlags)0x0020080000000001, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ABoomBoom, punchPreludeTimer), METADATA_PARAMS(Z_Construct_UClass_ABoomBoom_Statics::NewProp_punchPreludeTimer_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ABoomBoom_Statics::NewProp_punchPreludeTimer_MetaData)) };
+#if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ABoomBoom_Statics::NewProp_isSimpleAttackSequenced_MetaData[] = {
 		{ "Category", "BoomBoom" },
 		{ "Comment", "// Variable to keep track whether the simple attack was sequenced\n" },
@@ -626,6 +737,29 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 		((ABoomBoom*)Obj)->isSimpleAttackSequenced = 1;
 	}
 	const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_ABoomBoom_Statics::NewProp_isSimpleAttackSequenced = { "isSimpleAttackSequenced", nullptr, (EPropertyFlags)0x0020080000000001, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, 1, sizeof(bool), sizeof(ABoomBoom), &Z_Construct_UClass_ABoomBoom_Statics::NewProp_isSimpleAttackSequenced_SetBit, METADATA_PARAMS(Z_Construct_UClass_ABoomBoom_Statics::NewProp_isSimpleAttackSequenced_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ABoomBoom_Statics::NewProp_isSimpleAttackSequenced_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ABoomBoom_Statics::NewProp_launchZipZap_MetaData[] = {
+		{ "Category", "BoomBoom" },
+		{ "Comment", "// Variable to keep track whether the punch will result in launching zip zap or applying damage to an enemy\n" },
+		{ "ModuleRelativePath", "BoomBoom.h" },
+		{ "ToolTip", "Variable to keep track whether the punch will result in launching zip zap or applying damage to an enemy" },
+	};
+#endif
+	void Z_Construct_UClass_ABoomBoom_Statics::NewProp_launchZipZap_SetBit(void* Obj)
+	{
+		((ABoomBoom*)Obj)->launchZipZap = 1;
+	}
+	const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_ABoomBoom_Statics::NewProp_launchZipZap = { "launchZipZap", nullptr, (EPropertyFlags)0x0020080000000001, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, 1, sizeof(bool), sizeof(ABoomBoom), &Z_Construct_UClass_ABoomBoom_Statics::NewProp_launchZipZap_SetBit, METADATA_PARAMS(Z_Construct_UClass_ABoomBoom_Statics::NewProp_launchZipZap_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ABoomBoom_Statics::NewProp_launchZipZap_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ABoomBoom_Statics::NewProp_smokeParticle_MetaData[] = {
+		{ "Category", "BoomBoom" },
+		{ "Comment", "// Particles' variables\n" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "BoomBoom.h" },
+		{ "ToolTip", "Particles' variables" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ABoomBoom_Statics::NewProp_smokeParticle = { "smokeParticle", nullptr, (EPropertyFlags)0x002008000008000c, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ABoomBoom, smokeParticle), Z_Construct_UClass_UParticleSystemComponent_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ABoomBoom_Statics::NewProp_smokeParticle_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ABoomBoom_Statics::NewProp_smokeParticle_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_ABoomBoom_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_charMove,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_flipbook,
@@ -645,7 +779,11 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_attackInputTimer,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_ComboAttack_Savage_ExecutionTimer,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_simpleAttack_sequenceTimeoutTimer,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_jumpPreludeTimer,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_punchPreludeTimer,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_isSimpleAttackSequenced,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_launchZipZap,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_smokeParticle,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_ABoomBoom_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<ABoomBoom>::IsAbstract,
@@ -684,12 +822,12 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FEnumRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_Statics::EnumInfo[] = {
-		{ State_StaticEnum, TEXT("State"), &Z_Registration_Info_UEnum_State, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4061636609U) },
+		{ State_StaticEnum, TEXT("State"), &Z_Registration_Info_UEnum_State, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4236421620U) },
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_ABoomBoom, ABoomBoom::StaticClass, TEXT("ABoomBoom"), &Z_Registration_Info_UClass_ABoomBoom, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ABoomBoom), 661183313U) },
+		{ Z_Construct_UClass_ABoomBoom, ABoomBoom::StaticClass, TEXT("ABoomBoom"), &Z_Registration_Info_UClass_ABoomBoom, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ABoomBoom), 1714243952U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_4273304359(TEXT("/Script/Superzeroes"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_1423634719(TEXT("/Script/Superzeroes"),
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_Statics::ClassInfo),
 		nullptr, 0,
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_Statics::EnumInfo));

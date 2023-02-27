@@ -16,6 +16,8 @@ ABoomBoom::ABoomBoom()
 	ComboAttack_Savage_ExecutionTimer = SavageComboExecutionTime;
 	attackInputTimer = 0.f;
 	simpleAttack_sequenceTimeoutTimer = 0.f;
+	jumpPreludeTimer = 0.f;
+	punchPreludeTimer = 0.f;
 	charMove = NULL;
 	characterState = State::Idle;
 	jumping = NULL;
@@ -26,6 +28,7 @@ ABoomBoom::ABoomBoom()
 	strongAttackCharge = NULL;
 	zipZap = NULL;
 	isSimpleAttackSequenced = false;
+	launchZipZap = false;
 
 	if (flipbook)
 	{
@@ -88,6 +91,7 @@ void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("MoveBoomBoom", this, &ABoomBoom::move);
 	PlayerInputComponent->BindAxis("AttackBoomBoom", this, &ABoomBoom::Attack);
 	PlayerInputComponent->BindAction("JumpBoomBoom", IE_Pressed, this, &ABoomBoom::ExecuteJump);
+	PlayerInputComponent->BindAction("InitiateComboAttack_Projectile", IE_Pressed, this, &ABoomBoom::InitiateZipZapComboAttack_Projectile);
 }
 
 void ABoomBoom::UpdateState()
@@ -109,6 +113,41 @@ void ABoomBoom::UpdateState()
 	{
 		isSimpleAttackSequenced = false;
 	}
+
+	// Always apply impact of the punch when the correct animation frame is being executed
+	if (punchPreludeTimer > 0.f)
+	{
+		punchPreludeTimer -= GetWorld()->GetDeltaSeconds();
+	}
+	else if (punchPreludeTimer < 0.f)
+	{
+		if (launchZipZap)
+		{
+			zipZap->InitiateComboAttack_Projectile(rotation.Yaw);
+			launchZipZap = false;
+			punchPreludeTimer = 0.f;
+		}
+		else
+		{
+			// Apply damage (will be implemented at a later stage)
+			punchPreludeTimer = 0.f;
+		}
+		
+	}
+
+	// Always decrease the jump prelude timer
+	if (jumpPreludeTimer > 0.f)
+	{
+		jumpPreludeTimer -= GetWorld()->GetDeltaSeconds();
+	}
+	else
+	{
+		if (characterState == State::Jumping && !charMove->IsFalling())
+		{
+			Jump();
+			jumpPreludeTimer = 1.5f;
+		}
+	}
 }
 
 void ABoomBoom::UpdateAnimation()
@@ -116,17 +155,10 @@ void ABoomBoom::UpdateAnimation()
 	// If character is moving, change to running animation
 	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != State::Combo_Savage && characterState != State::Attacking)
+		if (characterState != State::Combo_Savage && characterState != State::Attacking && characterState != State::Jumping)
 		{
 			characterState = State::Running;
 			flipbook->SetFlipbook(run);
-
-			//If character is jumping, change to jump animation
-			//if (charMove->IsFalling())
-			//{
-			//	characterState = State::Jumping;
-			//	flipbook->SetFlipbook(jumping);
-			//}
 		}
 	}
 	else // Otherwise, change to idle animation
@@ -165,7 +197,7 @@ void ABoomBoom::ExecuteJump()
 {
 	if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling())
 	{
-		Jump();
+		jumpPreludeTimer = 0.47f;
 		characterState = State::Jumping;
 		flipbook->SetLooping(false);
 		flipbook->SetFlipbook(jumping);
@@ -204,12 +236,15 @@ void ABoomBoom::Attack(float scaleVal)
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(simpleAttack);
 					isSimpleAttackSequenced = true;
+					punchPreludeTimer = AcutalPunchDelay;
+					launchZipZap = false;
 				}
 				else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
 				{
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(simpleAttackSequence);
 					isSimpleAttackSequenced = false;
+					// Apply damage (will be implemented at a later stage) -------------------------------------------------------------------------------- !!!
 				}
 
 				// Regardless whether the attack was executed for the first time or second, 
@@ -237,6 +272,12 @@ void ABoomBoom::EndAttack()
 	// Once an attack animation has finished, reset the character's state to "idle" and his flipbook's looping property to true, since only the attack animations shouldn't loop
 	flipbook->SetLooping(true);
 	flipbook->Play();
+
+	if (characterState == State::Jumping)
+	{
+		smokeParticle->ActivateSystem();
+	}
+
 	characterState = State::Idle;
 }
 
@@ -247,6 +288,49 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 	flipbook->SetWorldRotation(rotation);
 	characterSpeed = 450.f;
 	characterState = State::Combo_Savage;
+}
+
+void ABoomBoom::InitiateZipZapComboAttack_Projectile()
+{
+	if (zipZap != NULL)
+	{
+		float proximityToZipZap = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
+
+		if (proximityToZipZap <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack)
+		{
+			if (IsFacingZipZap())
+			{
+				punchPreludeTimer = AcutalPunchDelay;
+				launchZipZap = true;
+				flipbook->SetLooping(false);
+				flipbook->SetFlipbook(simpleAttack);
+				characterState = State::Attacking;
+			}
+		}
+	}
+}
+
+bool ABoomBoom::IsFacingZipZap()
+{
+	// Zip Zap is on the left and Boom Boom is looking left
+	if ((zipZap->GetActorLocation().X < GetActorLocation().X) && rotation.Yaw > 0.f)
+	{
+		return true;
+	}
+	else if ((zipZap->GetActorLocation().X < GetActorLocation().X) && rotation.Yaw <= 0.f) // Zip Zap is on the left and Boom Boom is looking right
+	{
+		return false;
+	}
+	else if ((zipZap->GetActorLocation().X > GetActorLocation().X) && rotation.Yaw > 0.f) // Zip Zap is on the right and Boom Boom is looking left
+	{
+		return false;
+	}
+	else if ((zipZap->GetActorLocation().X > GetActorLocation().X) && rotation.Yaw <= 0.f) // Zip Zap is on the right and Boom Boom is looking right
+	{
+		return true;
+	}
+
+	return false;
 }
 
 void ABoomBoom::UpdateComboAttack_Savage()

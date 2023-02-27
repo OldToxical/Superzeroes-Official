@@ -15,7 +15,9 @@ AZipZap::AZipZap()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	ComboAttack_Savage_ExecutionTimer = 10.0f;
+	jumpPreludeTimer = 0.f;
+	projectileAttackResetStateTimeoutTimer = 0.f;
+	isElectrified = false;
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	if (flipbook)
 	{
@@ -54,11 +56,13 @@ void AZipZap::Tick(float DeltaTime)
 
 	UpdateAnimation();
 	UpdateState();
-	//if zip zap is attacking, check the hitbox for collision 
+
+	//Boom Boom's savage attack is triggered using a different button for zip zap's attacking
+	/*// If zip zap is attacking, check the hitbox for collision
 	if (characterState == State2::Attacking)
 	{
 		HitCheck();
-	}
+	}*/
 }
 
 void AZipZap::UpdateAnimation()
@@ -66,22 +70,15 @@ void AZipZap::UpdateAnimation()
 	// If character is moving, change to running animation
 	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != State2::Combo_Savage && characterState != State2::Attacking)
+		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping)
 		{
 			characterState = State2::Running;
 			flipbook->SetFlipbook(run);
-
-			//If character is jumping, change to jump animation
-			//if (charMove->IsFalling())
-			//{
-			//	characterState = State::Jumping;
-			//	flipbook->SetFlipbook(jumping);
-			//}
 		}
 	}
 	else // Otherwise, change to idle animation
 	{
-		if (characterState != State2::Attacking && characterState != State2::Jumping)
+		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping)
 		{
 			characterState = State2::Idle;
 			flipbook->SetFlipbook(idle);
@@ -92,24 +89,24 @@ void AZipZap::UpdateAnimation()
 void AZipZap::move(float scaleVal)
 {
 	// Add movement force only if the character is not in a state of savage attack
-	if (characterState != State2::Combo_Savage)
+	if (characterState != State2::Combo_Projectile)
 	{
 		characterSpeed = 350.f;
 		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
-	}
 
-	// Determine the character's facing direction, regardless of the state
-	if (scaleVal > 0.f)
-	{
-		rotation.Yaw = 0.f;
-		flipbook->SetWorldRotation(rotation);
-		hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
-	}
-	else if (scaleVal < 0.f)
-	{
-		rotation.Yaw = 180.0f;
-		flipbook->SetWorldRotation(rotation);
-		hitbox->SetRelativeLocation(FVector(-8.0, 0.0, 0.0));
+		// Handle rotation
+		if (scaleVal > 0.f)
+		{
+			rotation.Yaw = 0.f;
+			flipbook->SetWorldRotation(rotation);
+			hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
+		}
+		else if (scaleVal < 0.f)
+		{
+			rotation.Yaw = 180.0f;
+			flipbook->SetWorldRotation(rotation);
+			hitbox->SetRelativeLocation(FVector(-8.0, 0.0, 0.0));
+		}
 	}
 }
 
@@ -121,10 +118,48 @@ void AZipZap::InitiateComboAttack_Savage()
 
 		if (proximityToBoomBoom <= MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack)
 		{
-			boomBoom->InitiateComboAttack_Savage(rotation.Yaw);
-			flipbook->SetLooping(false);
-			flipbook->SetFlipbook(initiateBoomBoomSavageComboAttack);
+			if (IsFacingBoomBoom())
+			{
+				boomBoom->InitiateComboAttack_Savage(rotation.Yaw);
+				flipbook->SetLooping(false);
+				flipbook->SetFlipbook(initiateBoomBoomSavageComboAttack);
+			}
 		}
+	}
+}
+
+void AZipZap::InitiateComboAttack_Projectile(float directionRotation)
+{
+	// Boom Boom hit Zip Zap and strong force should be applied to him so that he can fly away like a projectile
+	rotation.Yaw = directionRotation;
+	flipbook->SetWorldRotation(rotation);
+	flipbook->SetFlipbook(projectileFly);
+	characterSpeed = 450.f;
+	charMove->GravityScale = 0.7f;
+	characterState = State2::Combo_Projectile;
+	projectileAttackResetStateTimeoutTimer = 0.2f;
+
+	// Calculate impulse vector
+	float X_ImpulseDirection = 500.f;
+
+	if (rotation.Yaw > 0) // Looking left
+	{
+		X_ImpulseDirection *= -1.f;
+	}
+
+	LaunchCharacter(FVector(X_ImpulseDirection, 0.f, 300.f), false, false);
+}
+
+void AZipZap::UpdateComboAttack_Projectile()
+{
+	HitCheck();
+}
+
+void AZipZap::Electrify()
+{
+	if (characterState == State2::Combo_Projectile)
+	{
+		isElectrified = true;
 	}
 }
 
@@ -133,51 +168,21 @@ void AZipZap::SetupPlayerInput(UInputComponent* input_)
 	Input = input_;
 
 	Input->BindAxis("MoveZipZap", this, &AZipZap::move);
-	Input->BindAxis("AttackZipZap", this, &AZipZap::Attack);
+	Input->BindAction("AttackZipZap", IE_Pressed, this, &AZipZap::Attack);
 	Input->BindAction("JumpZipZap", IE_Pressed, this, &AZipZap::ExecuteJump);
 	Input->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
+	Input->BindAction("ElectrifyZipZap", IE_Pressed, this, &AZipZap::Electrify);
 }
 
-void AZipZap::Attack(float scaleVal)
+void AZipZap::Attack()
 {
 	// Allow the execution of the simple attack only if the character is not in a state of savage attack
-	if (characterState != State2::Combo_Savage)
+	if (characterState != State2::Combo_Projectile)
 	{
-		// If the attack button is pressed (or held), keep track of how long the user is holding the button down
-		if (scaleVal > 0.f)
-		{
-			// Whatever the length is, change the state to "attacking"
-			characterState = State2::Attacking;
-
-			// Increase the time the button has been held down
-			attackInputTimer += GetWorld()->GetDeltaSeconds();
-
-			// If the user is holding the button for too long, change the state of the character to "charging". From this point on, a strong attack will be executed once the button is released
-			if (attackInputTimer > StrongAttackMinimumInputTime)
-			{
-				flipbook->SetFlipbook(strongAttackCharge);
-			}
-		}
-		else // The button is not pressed. If the value of "attackInputTimer" is bigger than 0.f, this means the button was released during the current iteration, so let's determine what attack to execute
-		{
-			// Simple attack
-			if (attackInputTimer > 0.f && attackInputTimer < StrongAttackMinimumInputTime)
-			{
-				// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
-				flipbook->SetLooping(false);
-				flipbook->SetFlipbook(simpleAttack);
-			}
-			else if (attackInputTimer >= StrongAttackMinimumInputTime) // Strong attack
-			{
-				characterState = State2::Charge_Attacking;
-				// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
-				flipbook->SetLooping(false);
-				flipbook->SetFlipbook(strongAttack);
-			}
-
-			// Reset the timer, doesn't matter if the button was released or wasn't pressed at all during this iteration, it's currently not pressed.
-			attackInputTimer = 0.f;
-		}
+		// Change the state to "attacking"
+		characterState = State2::Attacking;
+		flipbook->SetLooping(false);
+		flipbook->SetFlipbook(simpleAttack);
 	}
 }
 
@@ -192,13 +197,43 @@ void AZipZap::EndAttack()
 void AZipZap::UpdateState()
 {
 	charMove->MaxWalkSpeed = characterSpeed;
+
+	if (characterState == State2::Combo_Projectile)
+	{
+		UpdateComboAttack_Projectile();
+	}
+
+	// Always decrease the jump prelude timer
+	if (jumpPreludeTimer > 0.f)
+	{
+		jumpPreludeTimer -= GetWorld()->GetDeltaSeconds();
+	}
+	else
+	{
+		if (characterState == State2::Jumping && !charMove->IsFalling())
+		{
+			Jump();
+			jumpPreludeTimer = 1.5f;
+		}
+	}
+
+	// Enable movement once the projectile combo attack stopped
+	if (characterState == State2::Combo_Projectile && !charMove->IsFalling())
+	{
+		projectileAttackResetStateTimeoutTimer -= GetWorld()->GetDeltaSeconds();
+
+		if (projectileAttackResetStateTimeoutTimer <= 0.f)
+		{
+			StopProjectileAttack();
+		}
+	}
 }
 
 void AZipZap::ExecuteJump()
 {
-	if ((characterState != State2::Combo_Savage) && (characterState != State2::Attacking) && !charMove->IsFalling())
+	if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling())
 	{
-		Jump();
+		jumpPreludeTimer = 0.27f;
 		characterState = State2::Jumping;
 		flipbook->SetLooping(false);
 		flipbook->SetFlipbook(jumping);
@@ -206,40 +241,45 @@ void AZipZap::ExecuteJump()
 }
 
 void AZipZap::HitCheck()
-{	//get if Boom Boom is overlapping with the attack hitbox
+{	
 	TArray<AActor*> output;
-	GetOverlappingActors(output, ABoomBoom::StaticClass());
-	//go through each overlapping body
+	// To be changed when enemies are present: detect hits only with enemies and deal damage
+	/*GetOverlappingActors(output, ABoomBoom::StaticClass());
+	// Go through each overlapping body
 	for (int i = 0; i < output.Num(); i++)
 	{
 		ABoomBoom* bb;
 		bb = (ABoomBoom*)UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass());
 		bb->InitiateComboAttack_Savage(0.0f);
-	}
+	}*/
 }
 
-void AZipZap::UpdateComboAttack_Savage()
+void AZipZap::StopProjectileAttack()
 {
-	// The length of the attack is finite, decrease the timer that keeps of this each iteration
-	ComboAttack_Savage_ExecutionTimer -= GetWorld()->GetDeltaSeconds();
+	characterState = State2::Idle;
+	charMove->GravityScale = 1.f;
+	isElectrified = false;
+}
 
-	//Do we want Zip Zap to do anything during this combo attack? Commented it out just in case
-
-	// There is still time to be executed
-	/*if (ComboAttack_Savage_ExecutionTimer > 0.f)
+bool AZipZap::IsFacingBoomBoom()
+{
+	// Boom Boom is on the left and Zip Zap is looking left
+	if ((boomBoom->GetActorLocation().X < GetActorLocation().X) && rotation.Yaw > 0.f)
 	{
-		if (flipbook->GetComponentRotation().Yaw < 180.f) // The user wants Boom Boom to run right
-		{
-			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), 1.f, false);
-		}
-		else // The user wants Boom Boom to run left
-		{
-			AddMovementInput(FVector(-1.0f, 0.0f, 0.0f), 1.f, false);
-		}
+		return true;
 	}
-	else // There's no more time, end the savage attack
+	else if ((boomBoom->GetActorLocation().X < GetActorLocation().X) && rotation.Yaw <= 0.f) // Boom Boom is on the left and Zip Zap is looking right
 	{
-		ComboAttack_Savage_ExecutionTimer = SavageComboExecutionTime;
-		characterState = State2::Idle;
-	}*/
+		return false;
+	}
+	else if ((boomBoom->GetActorLocation().X > GetActorLocation().X) && rotation.Yaw > 0.f) // Boom Boom is on the right and Zip Zap is looking left
+	{
+		return false;
+	}
+	else if ((boomBoom->GetActorLocation().X > GetActorLocation().X) && rotation.Yaw <= 0.f) // Boom Boom is on the right and Zip Zap is looking right
+	{
+		return true;
+	}
+
+	return false;
 }

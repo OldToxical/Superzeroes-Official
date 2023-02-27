@@ -17,6 +17,13 @@
             "e:\\epic\\unreal\\ue_5.0\\engine\\plugins\\2d\\paper2d\\intermediate\\build\\win64\\unrealeditor\\inc\\paper2d\\papercharacter.generated.h",
             "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\source\\superzeroes\\zipzap.h",
             "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\zipzap.generated.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\particles\\particlesystemcomponent.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\particles\\particlesystem.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\particles\\particleperfstats.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\particlesystem.generated.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\particles\\emitter.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\emitter.generated.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\particlesystemcomponent.generated.h",
             "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\boomboom.generated.h"
         ],
         "ImportedModules": [],

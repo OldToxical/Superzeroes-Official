@@ -2,12 +2,12 @@
 	"Targets": [
 		{
 			"Name": "Superzeroes",
-			"Path": "C:\\DES310\\Superzeroes-Official\\Superzeroes\\Source\\Superzeroes.Target.cs",
+			"Path": "E:\\Epic\\UNreal\\Projects\\Superzeroes-Official\\Superzeroes\\Source\\Superzeroes.Target.cs",
 			"Type": "Game"
 		},
 		{
 			"Name": "SuperzeroesEditor",
-			"Path": "C:\\DES310\\Superzeroes-Official\\Superzeroes\\Source\\SuperzeroesEditor.Target.cs",
+			"Path": "E:\\Epic\\UNreal\\Projects\\Superzeroes-Official\\Superzeroes\\Source\\SuperzeroesEditor.Target.cs",
 			"Type": "Editor"
 		}
 	]

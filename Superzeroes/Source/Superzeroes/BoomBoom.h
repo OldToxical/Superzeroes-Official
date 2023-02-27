@@ -5,12 +5,17 @@
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
 #include "ZipZap.h"
+#include "Particles/ParticleSystemComponent.h"
+//#include "NiagaraFunctionLibrary.h"
+//#include "NiagaraComponent.h"
 #include "BoomBoom.generated.h"
 
 #define SavageComboExecutionTime 10
 #define StrongAttackMinimumInputTime 0.5
 #define SimpleAttackSequenceTimeout 0.6
 #define SimpleAttackAnimationLength 0.27
+#define MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack 42
+#define AcutalPunchDelay 0.2
 
 UENUM()
 enum class State
@@ -19,8 +24,7 @@ enum class State
 	Running,
 	Jumping,
 	Attacking,
-	Combo_Savage,
-	Combo_2
+	Combo_Savage
 };
 
 UCLASS()
@@ -80,6 +84,10 @@ public:
 		void EndAttack();
 	UFUNCTION(BlueprintCallable)
 		void InitiateComboAttack_Savage(float directionRotation);
+	UFUNCTION(BlueprintCallable)
+		void InitiateZipZapComboAttack_Projectile();
+	UFUNCTION(BlueprintCallable)
+		bool IsFacingZipZap();
 
 protected:
 	// Called when the game starts or when spawned
@@ -113,7 +121,23 @@ protected:
 	UPROPERTY(EditAnywhere)
 		float simpleAttack_sequenceTimeoutTimer;
 
+	// Variable to keep track of what time should pass to execute the jump
+	UPROPERTY(EditAnywhere)
+		float jumpPreludeTimer;
+
+	// Variable to keep track of what time should pass to execute the impact of the punch
+	UPROPERTY(EditAnywhere)
+		float punchPreludeTimer;
+
 	// Variable to keep track whether the simple attack was sequenced
 	UPROPERTY(EditAnywhere)
 		bool isSimpleAttackSequenced;
+
+	// Variable to keep track whether the punch will result in launching zip zap or applying damage to an enemy
+	UPROPERTY(EditAnywhere)
+		bool launchZipZap;
+
+	// Particles' variables
+	UPROPERTY(BlueprintReadWrite)
+		UParticleSystemComponent* smokeParticle;
 };

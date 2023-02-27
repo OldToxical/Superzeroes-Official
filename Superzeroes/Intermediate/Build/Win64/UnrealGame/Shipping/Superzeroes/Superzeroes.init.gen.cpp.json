@@ -1,0 +1,13 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealgame\\inc\\superzeroes\\superzeroes.init.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\superzeroes\\shipping\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealgame\\shipping\\superzeroes\\definitions.superzeroes.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

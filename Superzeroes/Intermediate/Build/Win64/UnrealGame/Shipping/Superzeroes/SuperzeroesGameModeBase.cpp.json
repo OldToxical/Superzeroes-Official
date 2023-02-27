@@ -1,0 +1,19 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\source\\superzeroes\\superzeroesgamemodebase.cpp",
+        "ProvidedModule": "",
+        "PCH": "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\superzeroes\\shipping\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealgame\\shipping\\superzeroes\\definitions.superzeroes.h",
+            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\source\\superzeroes\\superzeroesgamemodebase.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\gamemodebase.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\engine\\serverstatreplicator.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealgame\\inc\\engine\\serverstatreplicator.generated.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealgame\\inc\\engine\\gamemodebase.generated.h",
+            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealgame\\inc\\superzeroes\\superzeroesgamemodebase.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

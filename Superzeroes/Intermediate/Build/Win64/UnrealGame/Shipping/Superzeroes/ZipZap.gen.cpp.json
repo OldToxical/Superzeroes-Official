@@ -1,0 +1,23 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealgame\\inc\\superzeroes\\zipzap.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\superzeroes\\shipping\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealgame\\shipping\\superzeroes\\definitions.superzeroes.h",
+            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\source\\superzeroes\\zipzap.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\plugins\\2d\\paper2d\\source\\paper2d\\classes\\papercharacter.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\character.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\charactermovementreplication.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealgame\\inc\\engine\\charactermovementreplication.generated.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\rootmotionsource.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealgame\\inc\\engine\\rootmotionsource.generated.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealgame\\inc\\engine\\character.generated.h",
+            "e:\\epic\\unreal\\ue_5.0\\engine\\plugins\\2d\\paper2d\\intermediate\\build\\win64\\unrealgame\\inc\\paper2d\\papercharacter.generated.h",
+            "e:\\epic\\unreal\\projects\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealgame\\inc\\superzeroes\\zipzap.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

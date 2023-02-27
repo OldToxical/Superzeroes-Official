@@ -18,9 +18,7 @@ enum class State2 : uint8
 	Running,
 	Jumping,
 	Attacking,
-	Charge_Attacking,
-	Combo_Savage,
-	Combo_2
+	Combo_Projectile
 };
 class ABoomBoom;
 
@@ -41,7 +39,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbookComponent* flipbook;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* idle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -51,34 +48,38 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* simpleAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* strongAttack;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* strongAttackCharge;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* initiateBoomBoomSavageComboAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* projectileFly;
 
 	UFUNCTION(BlueprintCallable)
 		void UpdateAnimation();
 	UFUNCTION(BlueprintCallable)
 		void UpdateState();
 	UFUNCTION(BlueprintCallable)
-		void UpdateComboAttack_Savage();
-
-	UFUNCTION(BlueprintCallable)
 		void move(float scaleVal);
 	UFUNCTION(BlueprintCallable)
 		void ExecuteJump();
 	UFUNCTION(BlueprintCallable)
-		void Attack(float scaleVal);
+		void Attack();
 	UFUNCTION(BlueprintCallable)
 		void EndAttack();
-
 	UFUNCTION(BlueprintCallable)
 		void InitiateComboAttack_Savage();
 	UFUNCTION(BlueprintCallable)
+		void InitiateComboAttack_Projectile(float directionRotation);
+	UFUNCTION(BlueprintCallable)
+		void UpdateComboAttack_Projectile();
+	UFUNCTION(BlueprintCallable)
+		void Electrify();
+	UFUNCTION(BlueprintCallable)
 		void HitCheck();
-
-	void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
+	UFUNCTION(BlueprintCallable)
+		void HitCheck();
+	UFUNCTION(BlueprintCallable)
+		bool IsFacingBoomBoom();
+	UFUNCTION(BlueprintCallable)
+	    void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
 	UFUNCTION(BlueprintCallable)
 		void SetupPlayerInput(UInputComponent* input_);
 
@@ -92,23 +93,27 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		State2 characterState;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		ABoomBoom* boomBoom;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UInputComponent* Input;
 
-	// Variable to keep track of how long the "Attack" buton is being held down
-	UPROPERTY(EditAnywhere)
-		float attackInputTimer;
-
 	// Variable for the character's speed
 	UPROPERTY(EditAnywhere)
 		float characterSpeed;
-	// Variable to keep track of how long the savage attack is to be executed
+
+	// Variable to keep track of what time should pass to execute the jump
 	UPROPERTY(EditAnywhere)
-		float ComboAttack_Savage_ExecutionTimer;
+		float jumpPreludeTimer;
+
+	// Variable to keep track of what time should pass to start following whether zip zap is falling when he's in projectile attack state
+	UPROPERTY(EditAnywhere)
+		float projectileAttackResetStateTimeoutTimer;
+
+	// Variable to keep track whether zip zap is electrified while he's executing his projectile combo attack
+	UPROPERTY(EditAnywhere)
+		bool isElectrified;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UBoxComponent* hitbox;
