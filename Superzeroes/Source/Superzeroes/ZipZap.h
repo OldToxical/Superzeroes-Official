@@ -75,7 +75,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void HitCheck();
 	UFUNCTION(BlueprintCallable)
-		void HitCheck();
+		void StopProjectileAttack();
 	UFUNCTION(BlueprintCallable)
 		bool IsFacingBoomBoom();
 	UFUNCTION(BlueprintCallable)
