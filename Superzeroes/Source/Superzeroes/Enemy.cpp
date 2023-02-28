@@ -6,17 +6,30 @@
 AEnemy::AEnemy()
 {
 	characterMovementComponent = NULL;
+	flipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	idle = NULL;
 	flipbookComponent = NULL;
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	if (flipbookComponent)
+	{
+		flipbookComponent->bOwnerNoSee = false;
+		flipbookComponent->bAffectDynamicIndirectLighting = true;
+		flipbookComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+		flipbookComponent->SetupAttachment(GetCapsuleComponent());
+		static FName CollisionProfileName(TEXT("CharacterMesh"));
+		flipbookComponent->SetCollisionProfileName(CollisionProfileName);
+		flipbookComponent->SetGenerateOverlapEvents(false);
+	}
 }
 
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	flipbookComponent->SetFlipbook(idle);
+	funny = true;
 	UpdateRotation();
 }
 

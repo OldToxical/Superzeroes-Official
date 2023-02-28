@@ -29,6 +29,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbookComponent* flipbookComponent;
 
+	UPROPERTY()
+		bool funny;
+
 	// Animation states
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbook* idle;
