@@ -9,6 +9,7 @@
 #include "BoomBoom.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Toxic.h"
 
 // Sets default values
 AZipZap::AZipZap()
@@ -18,6 +19,9 @@ AZipZap::AZipZap()
 	jumpPreludeTimer = 0.f;
 	projectileAttackResetStateTimeoutTimer = 0.f;
 	isElectrified = false;
+	health = 100.f;
+	toxicDamage = false;
+
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	if (flipbook)
 	{
@@ -33,6 +37,10 @@ AZipZap::AZipZap()
 	hitbox->SetRelativeScale3D(FVector(0.25, 0.25, 0.25));
 	hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
 	hitbox->SetupAttachment(RootComponent);
+
+
+	collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
+	collision->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -42,6 +50,9 @@ void AZipZap::BeginPlay()
 	flipbook->SetFlipbook(idle);
 	rotation = FRotator::ZeroRotator;
 	charMove = GetCharacterMovement();
+
+	collision->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
+	collision->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
 
 	if (boomBoom != NULL)
 	{
@@ -63,6 +74,11 @@ void AZipZap::Tick(float DeltaTime)
 	{
 		HitCheck();
 	}*/
+
+	if (toxicDamage == true)
+	{
+		setHealth(health - 0.3f); //this damages Zip Zap far more than Boom Boom
+	}
 }
 
 void AZipZap::UpdateAnimation()
@@ -152,7 +168,7 @@ void AZipZap::InitiateComboAttack_Projectile(float directionRotation)
 
 void AZipZap::UpdateComboAttack_Projectile()
 {
-	HitCheck();
+	//HitCheck();
 }
 
 void AZipZap::Electrify()
@@ -240,18 +256,42 @@ void AZipZap::ExecuteJump()
 	}
 }
 
-void AZipZap::HitCheck()
+/*void AZipZap::HitCheck()
 {	
 	TArray<AActor*> output;
 	// To be changed when enemies are present: detect hits only with enemies and deal damage
-	/*GetOverlappingActors(output, ABoomBoom::StaticClass());
+	GetOverlappingActors(output, ABoomBoom::StaticClass());
 	// Go through each overlapping body
 	for (int i = 0; i < output.Num(); i++)
 	{
 		ABoomBoom* bb;
 		bb = (ABoomBoom*)UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass());
 		bb->InitiateComboAttack_Savage(0.0f);
-	}*/
+	}
+}*/
+
+void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
+{
+	if (otherActor && (otherActor != this) && otherComp)
+	{
+		if (otherActor->IsA(AToxic::StaticClass()))
+		{
+			toxicDamage = true;
+		}
+	}
+}
+
+void AZipZap::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+	UPrimitiveComponent* otherComp, int32 otherBodyIndex)
+{
+	if (otherActor && (otherActor != this) && otherComp)
+	{
+		if (otherActor->IsA(AToxic::StaticClass()))
+		{
+			toxicDamage = false;
+		}
+	}
 }
 
 void AZipZap::StopProjectileAttack()

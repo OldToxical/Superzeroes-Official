@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "BoomBoom.h"
 #include "ZipZap.h"
+#include "Kismet/GameplayStatics.h"
 
 ATrash::ATrash()
 {
@@ -23,6 +24,7 @@ ATrash::~ATrash()
 void ATrash::BeginPlay()
 {
 	Super::BeginPlay();
+
 	charMove = GetCharacterMovement();
 	hitbox->OnComponentBeginOverlap.AddDynamic(this, &ATrash::overlapBegin);
 	hitbox->OnComponentEndOverlap.AddDynamic(this, &ATrash::overlapEnd);
@@ -35,22 +37,6 @@ void ATrash::Tick(float DeltaTime)
 	AddMovementInput(FVector(0.3f, 0.0f, 0.0f), 1.0, false);
 }
 
-void ATrash::HitCheck()
-{
-	TArray<AActor*> boom;
-	TArray<AActor*> zip;
-	GetOverlappingActors(boom, ABoomBoom::StaticClass());
-	GetOverlappingActors(zip, AZipZap::StaticClass());
-	// Go through each overlapping body
-	for (int i = 0; i < boom.Num(); i++)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("FROTTING!"));
-	}
-	if (zip.Num() > 0 || boom.Num() > 0)
-	{
-		Destroy();
-	}
-}
 
 void ATrash::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
 	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)

@@ -8,6 +8,9 @@
 #include "UObject/ScriptMacros.h"
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
+class UPrimitiveComponent;
+class AActor;
+struct FHitResult;
 class UInputComponent;
 class ABoomBoom;
 #ifdef SUPERZEROES_ZipZap_generated_h
@@ -18,11 +21,14 @@ class ABoomBoom;
 #define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_SPARSE_DATA
 #define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_RPC_WRAPPERS \
  \
+	DECLARE_FUNCTION(execsetHealth); \
+	DECLARE_FUNCTION(execgetHealth); \
+	DECLARE_FUNCTION(execoverlapEnd); \
+	DECLARE_FUNCTION(execoverlapBegin); \
 	DECLARE_FUNCTION(execSetupPlayerInput); \
 	DECLARE_FUNCTION(execSetBoomBoomReference); \
 	DECLARE_FUNCTION(execIsFacingBoomBoom); \
 	DECLARE_FUNCTION(execStopProjectileAttack); \
-	DECLARE_FUNCTION(execHitCheck); \
 	DECLARE_FUNCTION(execElectrify); \
 	DECLARE_FUNCTION(execUpdateComboAttack_Projectile); \
 	DECLARE_FUNCTION(execInitiateComboAttack_Projectile); \
@@ -37,11 +43,14 @@ class ABoomBoom;
 
 #define FID_Superzeroes_Source_Superzeroes_ZipZap_h_28_RPC_WRAPPERS_NO_PURE_DECLS \
  \
+	DECLARE_FUNCTION(execsetHealth); \
+	DECLARE_FUNCTION(execgetHealth); \
+	DECLARE_FUNCTION(execoverlapEnd); \
+	DECLARE_FUNCTION(execoverlapBegin); \
 	DECLARE_FUNCTION(execSetupPlayerInput); \
 	DECLARE_FUNCTION(execSetBoomBoomReference); \
 	DECLARE_FUNCTION(execIsFacingBoomBoom); \
 	DECLARE_FUNCTION(execStopProjectileAttack); \
-	DECLARE_FUNCTION(execHitCheck); \
 	DECLARE_FUNCTION(execElectrify); \
 	DECLARE_FUNCTION(execUpdateComboAttack_Projectile); \
 	DECLARE_FUNCTION(execInitiateComboAttack_Projectile); \

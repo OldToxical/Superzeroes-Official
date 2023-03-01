@@ -44,44 +44,14 @@ void EmptyLinkFunctionForGeneratedCodeTrash() {}
 		P_THIS->overlapBegin(Z_Param_overlappedComp,Z_Param_otherActor,Z_Param_otherComp,Z_Param_otherBodyIndex,Z_Param_bFromSweep,Z_Param_Out_result);
 		P_NATIVE_END;
 	}
-	DEFINE_FUNCTION(ATrash::execHitCheck)
-	{
-		P_FINISH;
-		P_NATIVE_BEGIN;
-		P_THIS->HitCheck();
-		P_NATIVE_END;
-	}
 	void ATrash::StaticRegisterNativesATrash()
 	{
 		UClass* Class = ATrash::StaticClass();
 		static const FNameNativePtrPair Funcs[] = {
-			{ "HitCheck", &ATrash::execHitCheck },
 			{ "overlapBegin", &ATrash::execoverlapBegin },
 			{ "overlapEnd", &ATrash::execoverlapEnd },
 		};
 		FNativeFunctionRegistrar::RegisterFunctions(Class, Funcs, UE_ARRAY_COUNT(Funcs));
-	}
-	struct Z_Construct_UFunction_ATrash_HitCheck_Statics
-	{
-#if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
-#endif
-		static const UECodeGen_Private::FFunctionParams FuncParams;
-	};
-#if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_ATrash_HitCheck_Statics::Function_MetaDataParams[] = {
-		{ "ModuleRelativePath", "Trash.h" },
-	};
-#endif
-	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_ATrash_HitCheck_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_ATrash, nullptr, "HitCheck", nullptr, nullptr, 0, nullptr, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_ATrash_HitCheck_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_ATrash_HitCheck_Statics::Function_MetaDataParams)) };
-	UFunction* Z_Construct_UFunction_ATrash_HitCheck()
-	{
-		static UFunction* ReturnFunction = nullptr;
-		if (!ReturnFunction)
-		{
-			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_ATrash_HitCheck_Statics::FuncParams);
-		}
-		return ReturnFunction;
 	}
 	struct Z_Construct_UFunction_ATrash_overlapBegin_Statics
 	{
@@ -257,7 +227,6 @@ void EmptyLinkFunctionForGeneratedCodeTrash() {}
 		(UObject* (*)())Z_Construct_UPackage__Script_Superzeroes,
 	};
 	const FClassFunctionLinkInfo Z_Construct_UClass_ATrash_Statics::FuncInfo[] = {
-		{ &Z_Construct_UFunction_ATrash_HitCheck, "HitCheck" }, // 1344723158
 		{ &Z_Construct_UFunction_ATrash_overlapBegin, "overlapBegin" }, // 239065457
 		{ &Z_Construct_UFunction_ATrash_overlapEnd, "overlapEnd" }, // 240478545
 	};
@@ -333,9 +302,9 @@ void EmptyLinkFunctionForGeneratedCodeTrash() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_ATrash, ATrash::StaticClass, TEXT("ATrash"), &Z_Registration_Info_UClass_ATrash, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ATrash), 4131756175U) },
+		{ Z_Construct_UClass_ATrash, ATrash::StaticClass, TEXT("ATrash"), &Z_Registration_Info_UClass_ATrash, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ATrash), 2390528609U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_1623263995(TEXT("/Script/Superzeroes"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_1177505883(TEXT("/Script/Superzeroes"),
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

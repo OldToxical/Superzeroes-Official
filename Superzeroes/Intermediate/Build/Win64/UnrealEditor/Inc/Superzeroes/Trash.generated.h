@@ -20,15 +20,13 @@ struct FHitResult;
 #define FID_Superzeroes_Source_Superzeroes_Trash_h_15_RPC_WRAPPERS \
  \
 	DECLARE_FUNCTION(execoverlapEnd); \
-	DECLARE_FUNCTION(execoverlapBegin); \
-	DECLARE_FUNCTION(execHitCheck);
+	DECLARE_FUNCTION(execoverlapBegin);
 
 
 #define FID_Superzeroes_Source_Superzeroes_Trash_h_15_RPC_WRAPPERS_NO_PURE_DECLS \
  \
 	DECLARE_FUNCTION(execoverlapEnd); \
-	DECLARE_FUNCTION(execoverlapBegin); \
-	DECLARE_FUNCTION(execHitCheck);
+	DECLARE_FUNCTION(execoverlapBegin);
 
 
 #define FID_Superzeroes_Source_Superzeroes_Trash_h_15_INCLASS_NO_PURE_DECLS \

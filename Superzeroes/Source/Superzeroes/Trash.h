@@ -27,8 +27,6 @@ public:
 		class UCharacterMovementComponent* charMove;
 
 	UFUNCTION(BlueprintCallable)
-		void HitCheck();
-	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
 			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
 	UFUNCTION(BlueprintCallable)
@@ -40,5 +38,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UBoxComponent* hitbox;
+
 
 };

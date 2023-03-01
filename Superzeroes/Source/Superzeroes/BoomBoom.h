@@ -88,6 +88,18 @@ public:
 		void InitiateZipZapComboAttack_Projectile();
 	UFUNCTION(BlueprintCallable)
 		bool IsFacingZipZap();
+	
+	UFUNCTION(BlueprintCallable)
+		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+	UFUNCTION(BlueprintCallable)
+		void overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex);
+
+	UFUNCTION(BlueprintCallable)
+		float getHealth() { return health; };
+	UFUNCTION(BlueprintCallable)
+		void setHealth(float newHealth) { health = newHealth; };
 
 protected:
 	// Called when the game starts or when spawned
@@ -135,9 +147,19 @@ protected:
 
 	// Variable to keep track whether the punch will result in launching zip zap or applying damage to an enemy
 	UPROPERTY(EditAnywhere)
-		bool launchZipZap;
+		bool launchZipZap;	
+
+	//Variable to keep track of Boom Boom's health
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		float health;
 
 	// Particles' variables
 	UPROPERTY(BlueprintReadWrite)
 		UParticleSystemComponent* smokeParticle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		class UBoxComponent* collision;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		bool toxicDamage;
 };

@@ -72,8 +72,8 @@ public:
 		void UpdateComboAttack_Projectile();
 	UFUNCTION(BlueprintCallable)
 		void Electrify();
-	UFUNCTION(BlueprintCallable)
-		void HitCheck();
+	//UFUNCTION(BlueprintCallable)
+		//void HitCheck();
 	UFUNCTION(BlueprintCallable)
 		void StopProjectileAttack();
 	UFUNCTION(BlueprintCallable)
@@ -82,6 +82,19 @@ public:
 	    void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
 	UFUNCTION(BlueprintCallable)
 		void SetupPlayerInput(UInputComponent* input_);
+
+	UFUNCTION(BlueprintCallable)
+		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+	UFUNCTION(BlueprintCallable)
+		void overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex);
+
+
+	UFUNCTION(BlueprintCallable)
+		float getHealth() { return health; };
+	UFUNCTION(BlueprintCallable)
+		void setHealth(float newHealth) { health = newHealth; };
 
 protected:
 	// Called when the game starts or when spawned
@@ -115,6 +128,16 @@ protected:
 	UPROPERTY(EditAnywhere)
 		bool isElectrified;
 
+	//Variable to keep track of Zip Zap's health
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		float health;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UBoxComponent* hitbox;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		class UBoxComponent* collision;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		bool toxicDamage;
 };

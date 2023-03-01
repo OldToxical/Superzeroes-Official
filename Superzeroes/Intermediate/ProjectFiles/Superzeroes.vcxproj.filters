@@ -80,6 +80,12 @@
     <ClInclude Include="..\..\Source\Superzeroes\SuperzeroesGameModeBase.h">
       <Filter>Source\Superzeroes</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\Superzeroes\Toxic.cpp">
+      <Filter>Source\Superzeroes</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Superzeroes\Toxic.h">
+      <Filter>Source\Superzeroes</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\Source\Superzeroes\Trash.cpp">
       <Filter>Source\Superzeroes</Filter>
     </ClCompile>

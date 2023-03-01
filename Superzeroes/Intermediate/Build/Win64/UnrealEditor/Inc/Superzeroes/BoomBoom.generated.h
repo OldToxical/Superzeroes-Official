@@ -8,6 +8,9 @@
 #include "UObject/ScriptMacros.h"
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
+class UPrimitiveComponent;
+class AActor;
+struct FHitResult;
 #ifdef SUPERZEROES_BoomBoom_generated_h
 #error "BoomBoom.generated.h already included, missing '#pragma once' in BoomBoom.h"
 #endif
@@ -16,6 +19,10 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #define FID_Superzeroes_Source_Superzeroes_BoomBoom_h_33_SPARSE_DATA
 #define FID_Superzeroes_Source_Superzeroes_BoomBoom_h_33_RPC_WRAPPERS \
  \
+	DECLARE_FUNCTION(execsetHealth); \
+	DECLARE_FUNCTION(execgetHealth); \
+	DECLARE_FUNCTION(execoverlapEnd); \
+	DECLARE_FUNCTION(execoverlapBegin); \
 	DECLARE_FUNCTION(execIsFacingZipZap); \
 	DECLARE_FUNCTION(execInitiateZipZapComboAttack_Projectile); \
 	DECLARE_FUNCTION(execInitiateComboAttack_Savage); \
@@ -30,6 +37,10 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 
 #define FID_Superzeroes_Source_Superzeroes_BoomBoom_h_33_RPC_WRAPPERS_NO_PURE_DECLS \
  \
+	DECLARE_FUNCTION(execsetHealth); \
+	DECLARE_FUNCTION(execgetHealth); \
+	DECLARE_FUNCTION(execoverlapEnd); \
+	DECLARE_FUNCTION(execoverlapBegin); \
 	DECLARE_FUNCTION(execIsFacingZipZap); \
 	DECLARE_FUNCTION(execInitiateZipZapComboAttack_Projectile); \
 	DECLARE_FUNCTION(execInitiateComboAttack_Savage); \

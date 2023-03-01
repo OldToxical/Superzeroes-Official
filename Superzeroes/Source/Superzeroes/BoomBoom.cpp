@@ -3,9 +3,11 @@
 
 #include "BoomBoom.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Toxic.h"
 
 // Sets default values
 ABoomBoom::ABoomBoom()
@@ -29,6 +31,7 @@ ABoomBoom::ABoomBoom()
 	zipZap = NULL;
 	isSimpleAttackSequenced = false;
 	launchZipZap = false;
+	health = 100.f;
 
 	if (flipbook)
 	{
@@ -40,6 +43,8 @@ ABoomBoom::ABoomBoom()
 		flipbook->SetCollisionProfileName(CollisionProfileName);
 		flipbook->SetGenerateOverlapEvents(false);
 	}
+	collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
+	collision->SetupAttachment(RootComponent);
 }
 
 ABoomBoom::~ABoomBoom()
@@ -61,6 +66,8 @@ void ABoomBoom::BeginPlay()
 {
 	Super::BeginPlay();
 	SetupPlayerInputComponent(Super::InputComponent);
+	collision->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
+	collision->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
 	flipbook->SetFlipbook(idle);
 	rotation = FRotator::ZeroRotator;
 	charMove = GetCharacterMovement();
@@ -80,6 +87,10 @@ void ABoomBoom::Tick(float DeltaTime)
 
 	UpdateState();
 	UpdateAnimation();
+	if (toxicDamage == true)
+	{
+		setHealth(health - 0.1f); //this damages Boom Boom, but not as much as Zip Zap
+	}
 }
 
 
@@ -355,5 +366,29 @@ void ABoomBoom::UpdateComboAttack_Savage()
 	{
 		ComboAttack_Savage_ExecutionTimer = SavageComboExecutionTime;
 		characterState = State::Idle;
+	}
+}
+
+void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
+{
+	if (otherActor && (otherActor != this) && otherComp)
+	{
+		if (otherActor->IsA(AToxic::StaticClass()))
+		{
+			toxicDamage = true;
+		}
+	}
+}
+
+void ABoomBoom::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+	UPrimitiveComponent* otherComp, int32 otherBodyIndex)
+{
+	if (otherActor && (otherActor != this) && otherComp)
+	{
+		if (otherActor->IsA(AToxic::StaticClass()))
+		{
+			toxicDamage = false;
+		}
 	}
 }
