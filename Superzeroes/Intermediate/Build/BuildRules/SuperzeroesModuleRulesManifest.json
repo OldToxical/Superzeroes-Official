@@ -1,8 +1,8 @@
 {
 	"SourceFiles": [
-		"M:\\Superzeroes-Official\\Superzeroes\\Source\\Superzeroes\\Superzeroes.Build.cs",
-		"M:\\Superzeroes-Official\\Superzeroes\\Source\\Superzeroes.Target.cs",
-		"M:\\Superzeroes-Official\\Superzeroes\\Source\\SuperzeroesEditor.Target.cs"
+		"C:\\Users\\FiercePC\\Documents\\GitHub\\Superzeroes-Official\\Superzeroes\\Source\\Superzeroes\\Superzeroes.Build.cs",
+		"C:\\Users\\FiercePC\\Documents\\GitHub\\Superzeroes-Official\\Superzeroes\\Source\\Superzeroes.Target.cs",
+		"C:\\Users\\FiercePC\\Documents\\GitHub\\Superzeroes-Official\\Superzeroes\\Source\\SuperzeroesEditor.Target.cs"
 	],
 	"EngineVersion": "5.0.3"
 }
