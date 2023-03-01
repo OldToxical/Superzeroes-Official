@@ -57,7 +57,7 @@ void ATrash::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 {
 	if (otherActor && (otherActor != this) && otherComp)
 	{
-		if (otherActor->IsA(ABoomBoom::StaticClass()) || otherActor->IsA(AZipZap::StaticClass()))
+		if (!otherActor->ActorHasTag(TEXT("Floor")))
 		{
 			Destroy();
 		}
