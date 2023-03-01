@@ -24,7 +24,8 @@ enum class State
 	Running,
 	Jumping,
 	Attacking,
-	Combo_Savage
+	Combo_Savage,
+	Hurt
 };
 
 UCLASS()
@@ -66,6 +67,8 @@ public:
 		class UPaperFlipbook* strongAttackCharge;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* savageComboAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* hurt;
 
 	// Functions
 	UFUNCTION(BlueprintCallable)
@@ -162,4 +165,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
+
+	float healTimer;
 };

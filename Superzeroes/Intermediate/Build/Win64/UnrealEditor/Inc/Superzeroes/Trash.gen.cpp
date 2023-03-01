@@ -9,17 +9,73 @@
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 void EmptyLinkFunctionForGeneratedCodeTrash() {}
 // Cross Module References
+	SUPERZEROES_API UEnum* Z_Construct_UEnum_Superzeroes_trashState();
+	UPackage* Z_Construct_UPackage__Script_Superzeroes();
 	SUPERZEROES_API UClass* Z_Construct_UClass_ATrash_NoRegister();
 	SUPERZEROES_API UClass* Z_Construct_UClass_ATrash();
 	PAPER2D_API UClass* Z_Construct_UClass_APaperCharacter();
-	UPackage* Z_Construct_UPackage__Script_Superzeroes();
 	ENGINE_API UClass* Z_Construct_UClass_UPrimitiveComponent_NoRegister();
 	ENGINE_API UClass* Z_Construct_UClass_AActor_NoRegister();
 	ENGINE_API UScriptStruct* Z_Construct_UScriptStruct_FHitResult();
-	PAPER2D_API UClass* Z_Construct_UClass_UPaperSprite_NoRegister();
 	ENGINE_API UClass* Z_Construct_UClass_UCharacterMovementComponent_NoRegister();
 	ENGINE_API UClass* Z_Construct_UClass_UBoxComponent_NoRegister();
 // End Cross Module References
+	static FEnumRegistrationInfo Z_Registration_Info_UEnum_trashState;
+	static UEnum* trashState_StaticEnum()
+	{
+		if (!Z_Registration_Info_UEnum_trashState.OuterSingleton)
+		{
+			Z_Registration_Info_UEnum_trashState.OuterSingleton = GetStaticEnum(Z_Construct_UEnum_Superzeroes_trashState, Z_Construct_UPackage__Script_Superzeroes(), TEXT("trashState"));
+		}
+		return Z_Registration_Info_UEnum_trashState.OuterSingleton;
+	}
+	template<> SUPERZEROES_API UEnum* StaticEnum<trashState>()
+	{
+		return trashState_StaticEnum();
+	}
+	struct Z_Construct_UEnum_Superzeroes_trashState_Statics
+	{
+		static const UECodeGen_Private::FEnumeratorParam Enumerators[];
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam Enum_MetaDataParams[];
+#endif
+		static const UECodeGen_Private::FEnumParams EnumParams;
+	};
+	const UECodeGen_Private::FEnumeratorParam Z_Construct_UEnum_Superzeroes_trashState_Statics::Enumerators[] = {
+		{ "trashState::Idle", (int64)trashState::Idle },
+		{ "trashState::Hurt", (int64)trashState::Hurt },
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UEnum_Superzeroes_trashState_Statics::Enum_MetaDataParams[] = {
+		{ "BlueprintType", "true" },
+		{ "Comment", "/**\n * \n */" },
+		{ "Hurt.Comment", "/**\n * \n */" },
+		{ "Hurt.Name", "trashState::Hurt" },
+		{ "Idle.Comment", "/**\n * \n */" },
+		{ "Idle.Name", "trashState::Idle" },
+		{ "ModuleRelativePath", "Trash.h" },
+	};
+#endif
+	const UECodeGen_Private::FEnumParams Z_Construct_UEnum_Superzeroes_trashState_Statics::EnumParams = {
+		(UObject*(*)())Z_Construct_UPackage__Script_Superzeroes,
+		nullptr,
+		"trashState",
+		"trashState",
+		Z_Construct_UEnum_Superzeroes_trashState_Statics::Enumerators,
+		UE_ARRAY_COUNT(Z_Construct_UEnum_Superzeroes_trashState_Statics::Enumerators),
+		RF_Public|RF_Transient|RF_MarkAsNative,
+		EEnumFlags::None,
+		(uint8)UEnum::ECppForm::EnumClass,
+		METADATA_PARAMS(Z_Construct_UEnum_Superzeroes_trashState_Statics::Enum_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UEnum_Superzeroes_trashState_Statics::Enum_MetaDataParams))
+	};
+	UEnum* Z_Construct_UEnum_Superzeroes_trashState()
+	{
+		if (!Z_Registration_Info_UEnum_trashState.InnerSingleton)
+		{
+			UECodeGen_Private::ConstructUEnum(Z_Registration_Info_UEnum_trashState.InnerSingleton, Z_Construct_UEnum_Superzeroes_trashState_Statics::EnumParams);
+		}
+		return Z_Registration_Info_UEnum_trashState.InnerSingleton;
+	}
 	DEFINE_FUNCTION(ATrash::execoverlapEnd)
 	{
 		P_GET_OBJECT(UPrimitiveComponent,Z_Param_overlappedComp);
@@ -207,10 +263,6 @@ void EmptyLinkFunctionForGeneratedCodeTrash() {}
 		static const UECodeGen_Private::FMetaDataPairParam Class_MetaDataParams[];
 #endif
 #if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam NewProp_idle_MetaData[];
-#endif
-		static const UECodeGen_Private::FObjectPropertyParams NewProp_idle;
-#if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_charMove_MetaData[];
 #endif
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_charMove;
@@ -232,19 +284,11 @@ void EmptyLinkFunctionForGeneratedCodeTrash() {}
 	};
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ATrash_Statics::Class_MetaDataParams[] = {
-		{ "Comment", "/**\n * \n */" },
 		{ "HideCategories", "Navigation" },
 		{ "IncludePath", "Trash.h" },
 		{ "ModuleRelativePath", "Trash.h" },
 	};
 #endif
-#if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ATrash_Statics::NewProp_idle_MetaData[] = {
-		{ "Category", "Trash" },
-		{ "ModuleRelativePath", "Trash.h" },
-	};
-#endif
-	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ATrash_Statics::NewProp_idle = { "idle", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ATrash, idle), Z_Construct_UClass_UPaperSprite_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ATrash_Statics::NewProp_idle_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ATrash_Statics::NewProp_idle_MetaData)) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ATrash_Statics::NewProp_charMove_MetaData[] = {
 		{ "Category", "Trash" },
@@ -262,7 +306,6 @@ void EmptyLinkFunctionForGeneratedCodeTrash() {}
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ATrash_Statics::NewProp_hitbox = { "hitbox", nullptr, (EPropertyFlags)0x00200800000a001d, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ATrash, hitbox), Z_Construct_UClass_UBoxComponent_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ATrash_Statics::NewProp_hitbox_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ATrash_Statics::NewProp_hitbox_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_ATrash_Statics::PropPointers[] = {
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ATrash_Statics::NewProp_idle,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ATrash_Statics::NewProp_charMove,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ATrash_Statics::NewProp_hitbox,
 	};
@@ -299,13 +342,17 @@ void EmptyLinkFunctionForGeneratedCodeTrash() {}
 	DEFINE_VTABLE_PTR_HELPER_CTOR(ATrash);
 	struct Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_Statics
 	{
+		static const FEnumRegisterCompiledInInfo EnumInfo[];
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
-	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_ATrash, ATrash::StaticClass, TEXT("ATrash"), &Z_Registration_Info_UClass_ATrash, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ATrash), 2390528609U) },
+	const FEnumRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_Statics::EnumInfo[] = {
+		{ trashState_StaticEnum, TEXT("trashState"), &Z_Registration_Info_UEnum_trashState, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1992520081U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_1177505883(TEXT("/Script/Superzeroes"),
+	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_Statics::ClassInfo[] = {
+		{ Z_Construct_UClass_ATrash, ATrash::StaticClass, TEXT("ATrash"), &Z_Registration_Info_UClass_ATrash, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ATrash), 1315623853U) },
+	};
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_422957863(TEXT("/Script/Superzeroes"),
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_Statics::ClassInfo),
 		nullptr, 0,
-		nullptr, 0);
+		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Trash_h_Statics::EnumInfo));
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

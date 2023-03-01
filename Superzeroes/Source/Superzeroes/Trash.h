@@ -9,6 +9,12 @@
 /**
  * 
  */
+UENUM(BlueprintType)
+enum class trashState : uint8
+ {
+	 Idle,
+	 Hurt
+ };
 UCLASS()
 class SUPERZEROES_API ATrash : public APaperCharacter
 {
@@ -20,8 +26,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperSprite* idle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UCharacterMovementComponent* charMove;

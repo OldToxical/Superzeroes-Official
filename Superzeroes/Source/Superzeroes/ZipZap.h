@@ -18,7 +18,8 @@ enum class State2 : uint8
 	Running,
 	Jumping,
 	Attacking,
-	Combo_Projectile
+	Combo_Projectile,
+	Hurt
 };
 class ABoomBoom;
 
@@ -51,6 +52,8 @@ public:
 		class UPaperFlipbook* initiateBoomBoomSavageComboAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* projectileFly;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* hurt;
 
 	UFUNCTION(BlueprintCallable)
 		void UpdateAnimation();
@@ -140,4 +143,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
+
+
+	float healTimer;
 };

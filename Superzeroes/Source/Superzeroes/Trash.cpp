@@ -3,6 +3,7 @@
 
 #include "Trash.h"
 #include "Components/BoxComponent.h"
+#include "PaperFlipbookComponent.h"
 #include "BoomBoom.h"
 #include "ZipZap.h"
 #include "Kismet/GameplayStatics.h"
@@ -12,8 +13,7 @@ ATrash::ATrash()
 	PrimaryActorTick.bCanEverTick = true;
 	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
 	hitbox->SetRelativeScale3D(FVector(0.75, 0.75, 0.75));
-	hitbox->SetupAttachment(RootComponent);
-
+	hitbox->SetupAttachment(RootComponent); 
 }
 
 ATrash::~ATrash()
@@ -24,7 +24,6 @@ ATrash::~ATrash()
 void ATrash::BeginPlay()
 {
 	Super::BeginPlay();
-
 	charMove = GetCharacterMovement();
 	hitbox->OnComponentBeginOverlap.AddDynamic(this, &ATrash::overlapBegin);
 	hitbox->OnComponentEndOverlap.AddDynamic(this, &ATrash::overlapEnd);

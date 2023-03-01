@@ -65,7 +65,9 @@
             "m:\\superzeroes-official\\superzeroes\\source\\superzeroes\\toxic.h",
             "c:\\program files\\epic games\\ue_5.0\\engine\\plugins\\2d\\paper2d\\source\\paper2d\\classes\\paperspriteactor.h",
             "c:\\program files\\epic games\\ue_5.0\\engine\\plugins\\2d\\paper2d\\intermediate\\build\\win64\\unrealeditor\\inc\\paper2d\\paperspriteactor.generated.h",
-            "m:\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\toxic.generated.h"
+            "m:\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\toxic.generated.h",
+            "m:\\superzeroes-official\\superzeroes\\source\\superzeroes\\trash.h",
+            "m:\\superzeroes-official\\superzeroes\\intermediate\\build\\win64\\unrealeditor\\inc\\superzeroes\\trash.generated.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []

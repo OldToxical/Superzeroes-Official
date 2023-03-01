@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Toxic.h"
+#include "Trash.h"
 
 // Sets default values
 AZipZap::AZipZap()
@@ -50,7 +51,7 @@ void AZipZap::BeginPlay()
 	flipbook->SetFlipbook(idle);
 	rotation = FRotator::ZeroRotator;
 	charMove = GetCharacterMovement();
-
+	healTimer = 0.0f;
 	collision->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
 	collision->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
 
@@ -77,7 +78,19 @@ void AZipZap::Tick(float DeltaTime)
 
 	if (toxicDamage == true)
 	{
-		setHealth(health - 0.3f); //this damages Zip Zap far more than Boom Boom
+		setHealth(health - 0.1f); //this damages Zip Zap far more than Boom Boom
+	}
+	if (characterState == State2::Idle)
+	{
+		healTimer += DeltaTime;
+		if (healTimer >= 10.f)
+		{
+			setHealth(health + 0.5f);
+		}
+	}
+	else
+	{
+		healTimer = 0.0f;
 	}
 }
 
@@ -278,6 +291,10 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		if (otherActor->IsA(AToxic::StaticClass()))
 		{
 			toxicDamage = true;
+		}
+		if (otherActor->IsA(ATrash::StaticClass()))
+		{
+			setHealth(health - 10.f);
 		}
 	}
 }

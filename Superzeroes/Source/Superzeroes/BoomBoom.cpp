@@ -8,6 +8,7 @@
 #include "PaperFlipbookComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Toxic.h"
+#include "Trash.h"
 
 // Sets default values
 ABoomBoom::ABoomBoom()
@@ -64,14 +65,14 @@ ABoomBoom::~ABoomBoom()
 // Called when the game starts or when spawned
 void ABoomBoom::BeginPlay()
 {
-	Super::BeginPlay();
+	Super::BeginPlay(); toxicDamage = false;
 	SetupPlayerInputComponent(Super::InputComponent);
 	collision->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
 	collision->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
 	flipbook->SetFlipbook(idle);
 	rotation = FRotator::ZeroRotator;
 	charMove = GetCharacterMovement();
-
+	healTimer = 0.0f;
 	if (zipZap != NULL)
 	{
 		MoveIgnoreActorAdd(zipZap->GetOwner());
@@ -86,10 +87,23 @@ void ABoomBoom::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateState();
-	UpdateAnimation();
+	UpdateAnimation(); 
 	if (toxicDamage == true)
 	{
-		setHealth(health - 0.1f); //this damages Boom Boom, but not as much as Zip Zap
+		setHealth(health - 0.03f); //this damages Boom Boom, but not as much as Zip Zap
+	}
+
+	if (characterState == State::Idle)
+	{
+		healTimer += DeltaTime;
+		if (healTimer >= 10.f)
+		{
+			setHealth(health + 0.5f);
+		}
+	}
+	else
+	{
+		healTimer = 0.0f;
 	}
 }
 
@@ -377,6 +391,12 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		if (otherActor->IsA(AToxic::StaticClass()))
 		{
 			toxicDamage = true;
+		}
+		if (otherActor->IsA(ATrash::StaticClass()))
+		{
+			setHealth(health - 5.f);
+			flipbook->SetLooping(false);
+			flipbook->SetFlipbook(hurt);
 		}
 	}
 }

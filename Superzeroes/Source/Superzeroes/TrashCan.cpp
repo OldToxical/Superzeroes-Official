@@ -29,7 +29,7 @@ void ATrashCan::Tick(float DeltaTime)
 	timeBetweenShoots += DeltaTime;
 	if (timeBetweenShoots >= ShootTime)
 	{
-		FVector location (GetActorLocation().X, GetActorLocation().Y + 44.0f, GetActorLocation().Z + 50.0f);
+		FVector location (GetActorLocation().X, GetActorLocation().Y + 52.0f, GetActorLocation().Z + 50.0f);
 		if (Trash_BP)
 		{
 			GetWorld()->SpawnActor<ATrash>(Trash_BP,location,GetActorRotation());
