@@ -1,4 +1,4 @@
-M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes\ZipZap.gen.cpp
+E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes\ZipZap.gen.cpp
 /I .
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\Engine
 /I Runtime
@@ -255,8 +255,8 @@ M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Su
 /I ..\Plugins\2D\Paper2D\Source
 /I ..\Plugins\2D\Paper2D\Source\Paper2D\Classes
 /I ..\Plugins\2D\Paper2D\Source\Paper2D\Public
-/I M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes
-/I M:\Superzeroes-Official\Superzeroes\Source
+/I E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Superzeroes
+/I E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Source
 /I ..\Plugins\FX\Niagara\Intermediate\Build\Win64\UnrealEditor\Inc\Niagara
 /I ..\Plugins\FX\Niagara\Source
 /I ..\Plugins\FX\Niagara\Source\Niagara\Classes
@@ -283,18 +283,18 @@ M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Inc\Su
 /I ThirdParty\PhysX3\PhysX_3.4\Include\common
 /I ThirdParty\PhysX3\PhysX_3.4\Include\extensions
 /I ThirdParty\PhysX3\PhysX_3.4\Include\geometry
-/I "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.29.30133\INCLUDE"
+/I "D:\Visual Studio\VC\Tools\MSVC\14.33.31629\INCLUDE"
 /I "C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"
 /I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt"
 /I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared"
 /I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um"
 /I "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt"
-/FI"M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
-/FI"M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Definitions.Superzeroes.h"
-/Yu"M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
-/Fp"M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.pch"
-/Fo"M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\ZipZap.gen.cpp.obj"
-/sourceDependencies M:\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\ZipZap.gen.cpp.json
+/FI"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
+/FI"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\Definitions.Superzeroes.h"
+/Yu"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h"
+/Fp"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\SuperzeroesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.pch"
+/Fo"E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\ZipZap.gen.cpp.obj"
+/sourceDependencies E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\ZipZap.gen.cpp.json
 /Zc:inline
 /nologo
 /Oi

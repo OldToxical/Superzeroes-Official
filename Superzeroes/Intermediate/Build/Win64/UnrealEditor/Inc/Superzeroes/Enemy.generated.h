@@ -16,16 +16,12 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #define FID_Superzeroes_Source_Superzeroes_Enemy_h_19_SPARSE_DATA
 #define FID_Superzeroes_Source_Superzeroes_Enemy_h_19_RPC_WRAPPERS \
  \
-	DECLARE_FUNCTION(execmoveRight); \
-	DECLARE_FUNCTION(execmoveLeft); \
 	DECLARE_FUNCTION(execUpdateRotation); \
 	DECLARE_FUNCTION(execUpdateAnimation);
 
 
 #define FID_Superzeroes_Source_Superzeroes_Enemy_h_19_RPC_WRAPPERS_NO_PURE_DECLS \
  \
-	DECLARE_FUNCTION(execmoveRight); \
-	DECLARE_FUNCTION(execmoveLeft); \
 	DECLARE_FUNCTION(execUpdateRotation); \
 	DECLARE_FUNCTION(execUpdateAnimation);
 

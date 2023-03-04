@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Toxic.h"
 #include "Trash.h"
+#include "Enemy.h"
 
 // Sets default values
 AZipZap::AZipZap()
@@ -34,14 +35,22 @@ AZipZap::AZipZap()
 		flipbook->SetCollisionProfileName(CollisionProfileName);
 		flipbook->SetGenerateOverlapEvents(false);
 	}
+
 	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
 	hitbox->SetRelativeScale3D(FVector(0.25, 0.25, 0.25));
 	hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
 	hitbox->SetupAttachment(RootComponent);
 
-
 	collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
 	collision->SetupAttachment(RootComponent);
+}
+
+void AZipZap::setHealth(float newHealth)
+{
+	health = newHealth;
+	characterState = State2::Hurt; 
+	flipbook->SetFlipbook(hurt); 
+	flipbook->SetLooping(false);
 }
 
 // Called when the game starts or when spawned
@@ -99,7 +108,7 @@ void AZipZap::UpdateAnimation()
 	// If character is moving, change to running animation
 	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping)
+		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping && characterState != State2::Hurt)
 		{
 			characterState = State2::Running;
 			flipbook->SetFlipbook(run);
@@ -107,7 +116,7 @@ void AZipZap::UpdateAnimation()
 	}
 	else // Otherwise, change to idle animation
 	{
-		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping)
+		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping && characterState != State2::Hurt)
 		{
 			characterState = State2::Idle;
 			flipbook->SetFlipbook(idle);
@@ -212,6 +221,7 @@ void AZipZap::Attack()
 		characterState = State2::Attacking;
 		flipbook->SetLooping(false);
 		flipbook->SetFlipbook(simpleAttack);
+		ProcessHit(12.f);
 	}
 }
 
@@ -260,7 +270,7 @@ void AZipZap::UpdateState()
 
 void AZipZap::ExecuteJump()
 {
-	if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling())
+	if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling() && characterState != State2::Hurt)
 	{
 		jumpPreludeTimer = 0.27f;
 		characterState = State2::Jumping;
@@ -295,6 +305,30 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		if (otherActor->IsA(ATrash::StaticClass()))
 		{
 			setHealth(health - 10.f);
+		}
+		if (otherActor->IsA(AEnemy::StaticClass()))
+		{
+			if (characterState == State2::Combo_Projectile)
+			{
+				AEnemy* Enemy = (AEnemy*)otherActor;
+
+				if (Enemy == NULL)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null enemy"));
+					return;
+				}
+
+				if (isElectrified)
+				{
+					Enemy->TakeEnemyDamage(90.f);
+				}
+				else
+				{
+					Enemy->TakeEnemyDamage(60.f);
+				}
+
+				Enemy->LaunchCharacter(FVector(charMove->Velocity.X / 3.f, charMove->Velocity.Y, charMove->Velocity.Z), false, false);
+			}
 		}
 	}
 }
@@ -339,4 +373,42 @@ bool AZipZap::IsFacingBoomBoom()
 	}
 
 	return false;
+}
+
+void AZipZap::ProcessHit(float damage_)
+{
+	FHitResult OutHit;
+	TArray<AActor*> actorsToIgnore;
+	// For later: add other enemies and trash instances to the above-defined array
+	FVector startPoint = GetActorLocation();
+	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z + 5.f);
+
+	if (rotation.Yaw > 0.f) // Looking left
+	{
+		endPoint.X -= 30.f;
+	}
+	else // Looking right
+	{
+		endPoint.X += 30.f;
+	}
+
+	bool hit = UKismetSystemLibrary::LineTraceSingle(this, startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::Persistent, OutHit, true);
+	if (hit)
+	{
+		FRotator rot = OutHit.GetActor()->GetActorRotation();
+		AActor* HitActor = OutHit.GetActor();
+
+		if (HitActor->ActorHasTag("Enemy"))
+		{
+			AEnemy* Enemy = (AEnemy*)HitActor;
+
+			if (Enemy == NULL)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null enemy"));
+				return;
+			}
+
+			Enemy->TakeEnemyDamage(damage_);
+		}
+	}
 }

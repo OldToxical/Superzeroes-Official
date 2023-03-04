@@ -4,9 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "Enemy.h"
+#include "BoomBoom.h"
+#include "ZipZap.h"
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Frog_Test.generated.h"
 
-enum State 
+#define Q_LearningRate 0.9
+#define Q_DiscountFactor 0.55
+#define Q_EstimatedOptimalFutureValue 20
+#define MinimumDistanceToGetIntoCombat 100
+#define ShootingAnimationLength 0.6
+
+class ABoomBoom;
+class AZipZap;
+
+enum State3
 {
 	Idle,
 	Jumping,
@@ -18,6 +32,7 @@ enum State
 
 enum Action
 {
+	GoIdle,
 	Jump,
 	WalkLeft,
 	WalkRight,
@@ -34,6 +49,7 @@ private:
 	AFrog_Test();
 
 	virtual void AI() override;
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 	// AI Functions
@@ -41,10 +57,71 @@ private:
 	void ChooseAction();
 	void CalculateReward();
 	void UpdateQ(float reward);
+	void ExecuteAction();
+	void UpdateState();
 
-	State currentState;
+	// Regular Functions
+	void WalkLeft();
+	void WalkRight();
+	void Attack();
+	void RunAway();
+	bool shouldShoot();
+
+	float chooseActionTimeoutTimer;
+	float stateUpdateTimer;
+	float speed;
+	float newX;
+	State3 currentState;
 	Action currentAction;
-	TArray<TArray<float, TFixedAllocator<5>>, TFixedAllocator<5>> AI_Q;
+	class UBoxComponent* hitbox;
+	class UBoxComponent* collision;
+	TArray<TArray<float, TFixedAllocator<6>>, TFixedAllocator<6>> AI_Q;
 
-	//std::array<std::array<float, ACTION_NUM>, STATE_NUM> Q = { {0} };
+	UPROPERTY(EditAnywhere)
+	    bool inCombat;
+
+	// Animations
+	UPROPERTY(EditAnywhere)
+	    UPaperFlipbook* idle;
+
+	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* walk;
+
+	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* attack;
+
+	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* jumpAnim;
+
+	// Particles
+	UPROPERTY(EditAnywhere)
+		UNiagaraSystem* bulletProjectileBeamParticleSystem;
+
+protected:
+	UFUNCTION(BlueprintCallable)
+		void ProcessBulletCollision(FVector hitPos);
+
+	UFUNCTION(BlueprintCallable)
+	    void EndAttack();
+
+	UPROPERTY(BlueprintReadWrite)
+	    ABoomBoom* boomBoom;
+
+	UPROPERTY(BlueprintReadWrite)
+	    AZipZap* zipZap;
+
+	UPROPERTY(VisibleAnywhere)
+		AActor* playerToAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UNiagaraComponent* bulletProjectileMeshParticleComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UNiagaraComponent* bulletBeamParticleComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UNiagaraComponent* muzzleFlashLeftParticleComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UNiagaraComponent* muzzleFlashRightParticleComponent;
 };

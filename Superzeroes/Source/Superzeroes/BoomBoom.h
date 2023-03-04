@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
+#include "PaperFlipbook.h"
+#include "PaperFlipbookComponent.h"
 #include "ZipZap.h"
 #include "Particles/ParticleSystemComponent.h"
-//#include "NiagaraFunctionLibrary.h"
-//#include "NiagaraComponent.h"
 #include "BoomBoom.generated.h"
 
 #define SavageComboExecutionTime 10
 #define StrongAttackMinimumInputTime 0.5
 #define SimpleAttackSequenceTimeout 0.6
 #define SimpleAttackAnimationLength 0.27
-#define MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack 42
+#define MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack 60
 #define AcutalPunchDelay 0.2
 
 UENUM()
@@ -52,23 +52,21 @@ public:
 
 	// Animations
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* idle;
+		UPaperFlipbook* idle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* run;
+		UPaperFlipbook* run;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* jumping;
+		UPaperFlipbook* jumping;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* simpleAttack;
+		UPaperFlipbook* simpleAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* simpleAttackSequence;
+		UPaperFlipbook* simpleAttackSequence;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* strongAttack;
+		UPaperFlipbook* strongAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* strongAttackCharge;
+		UPaperFlipbook* strongAttackCharge;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* savageComboAttack;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* hurt;
+		UPaperFlipbook* savageComboAttack;
 
 	// Functions
 	UFUNCTION(BlueprintCallable)
@@ -91,18 +89,19 @@ public:
 		void InitiateZipZapComboAttack_Projectile();
 	UFUNCTION(BlueprintCallable)
 		bool IsFacingZipZap();
-	
 	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
 			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
 	UFUNCTION(BlueprintCallable)
 		void overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
 			UPrimitiveComponent* otherComp, int32 otherBodyIndex);
+	UFUNCTION(BlueprintCallable)
+		void ProcessHit(float damage_);
 
 	UFUNCTION(BlueprintCallable)
 		float getHealth() { return health; };
 	UFUNCTION(BlueprintCallable)
-		void setHealth(float newHealth) { health = newHealth; };
+		void setHealth(float newHealth);
 
 protected:
 	// Called when the game starts or when spawned

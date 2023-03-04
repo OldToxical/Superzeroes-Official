@@ -6,12 +6,26 @@
 AEnemy::AEnemy()
 {
 	characterMovementComponent = NULL;
-	flipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
-	idle = NULL;
 	flipbookComponent = NULL;
+	healthPoints = 100.f;
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+}
+
+void AEnemy::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	//UpdateActorState();
+	//UpdateRotation();
+}
+
+void AEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+
+	characterMovementComponent = GetCharacterMovement();
 
 	if (flipbookComponent)
 	{
@@ -23,21 +37,6 @@ AEnemy::AEnemy()
 		flipbookComponent->SetCollisionProfileName(CollisionProfileName);
 		flipbookComponent->SetGenerateOverlapEvents(false);
 	}
-}
-
-void AEnemy::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	flipbookComponent->SetFlipbook(idle);
-	funny = true;
-	UpdateRotation();
-}
-
-void AEnemy::BeginPlay()
-{
-	Super::BeginPlay();
-
-	characterMovementComponent = GetCharacterMovement();
 }
 
 void AEnemy::AI()
@@ -61,17 +60,7 @@ void AEnemy::UpdateRotation()
 		{
 			rotation.Yaw = 180.f;
 		}
+
 		GetCapsuleComponent()->SetRelativeRotation(rotation);
 	}
 }
-
-void AEnemy::moveLeft(float scaleVal)
-{
-	AddMovementInput(FVector(-1.0f, 0.0f, 0.0f), scaleVal, false);
-}
-
-void AEnemy::moveRight(float scaleVal)
-{
-	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
-}
-

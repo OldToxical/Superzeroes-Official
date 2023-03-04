@@ -25,6 +25,7 @@ class ABoomBoom;
 	DECLARE_FUNCTION(execgetHealth); \
 	DECLARE_FUNCTION(execoverlapEnd); \
 	DECLARE_FUNCTION(execoverlapBegin); \
+	DECLARE_FUNCTION(execProcessHit); \
 	DECLARE_FUNCTION(execSetupPlayerInput); \
 	DECLARE_FUNCTION(execSetBoomBoomReference); \
 	DECLARE_FUNCTION(execIsFacingBoomBoom); \
@@ -47,6 +48,7 @@ class ABoomBoom;
 	DECLARE_FUNCTION(execgetHealth); \
 	DECLARE_FUNCTION(execoverlapEnd); \
 	DECLARE_FUNCTION(execoverlapBegin); \
+	DECLARE_FUNCTION(execProcessHit); \
 	DECLARE_FUNCTION(execSetupPlayerInput); \
 	DECLARE_FUNCTION(execSetBoomBoomReference); \
 	DECLARE_FUNCTION(execIsFacingBoomBoom); \

@@ -29,25 +29,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbookComponent* flipbookComponent;
 
-	UPROPERTY()
-		bool funny;
-
-	// Animation states
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* idle;
-
 	UFUNCTION(BlueprintCallable)
 		void UpdateAnimation();
 
 	UFUNCTION(BlueprintCallable)
 		void UpdateRotation();
 
-	UFUNCTION(BlueprintCallable)
-		void moveLeft(float scaleVal);
-
-	UFUNCTION(BlueprintCallable)
-		void moveRight(float scaleVal);
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FRotator rotation;
+
+	UPROPERTY(VisibleAnywhere)
+		float healthPoints;
+
+	UPROPERTY(VisibleAnywhere)
+		float damage;
+
+public:
+	void TakeEnemyDamage(float damage_) { healthPoints -= damage_; }
 };

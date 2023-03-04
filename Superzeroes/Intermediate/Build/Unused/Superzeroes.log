@@ -1,33 +1,5 @@
 ﻿  Using bundled DotNet SDK
   Log file: C:\Users\Zlatko.Radev\AppData\Local\UnrealBuildTool\Log.txt
   Using 'git status' to determine working set for adaptive non-unity build (E:\Epic\UNreal\Projects\Superzeroes-Official).
-  Creating makefile for SuperzeroesEditor (no existing makefile)
-  Building SuperzeroesEditor...
-  Using Visual Studio 2022 14.33.31629 toolchain (D:\Visual Studio\VC\Tools\MSVC\14.33.31629) and Windows 10.0.19041.0 SDK (C:\Program Files (x86)\Windows Kits\10).
-  Determining max actions to execute in parallel (8 physical cores, 16 logical cores)
-    Executing up to 8 processes, one per physical core
-    Requested 1.5 GB free memory per action, 6.47 GB available: limiting max parallel actions to 4
-  Building 19 actions with 4 processes...
-  [1/19] Resource Default.rc2
-  [2/19] Compile SharedPCH.Engine.ShadowErrors.cpp
-  [3/19] Compile ZipZap.gen.cpp
-  [4/19] Compile Frog_Test.gen.cpp
-  [5/19] Compile Frog_Test.cpp
-  [6/19] Compile BoomBoom.cpp
-  [7/19] Compile SuperzeroesGameModeBase.gen.cpp
-  [8/19] Compile MainCamera.cpp
-  [9/19] Compile MainCamera.gen.cpp
-  [10/19] Compile BoomBoom.gen.cpp
-  [11/19] Compile Superzeroes.cpp
-  [12/19] Compile Enemy.gen.cpp
-  [13/19] Compile Enemy.cpp
-  [14/19] Compile Superzeroes.init.gen.cpp
-  [15/19] Compile SuperzeroesGameModeBase.cpp
-  [16/19] Compile ZipZap.cpp
-  [17/19] Link UnrealEditor-Superzeroes.lib
-     Creating library E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\UnrealEditor-Superzeroes.lib and object E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\UnrealEditor-Superzeroes.exp
-  [18/19] Link UnrealEditor-Superzeroes.dll
-     Creating library E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\UnrealEditor-Superzeroes.suppressed.lib and object E:\Epic\UNreal\Projects\Superzeroes-Official\Superzeroes\Intermediate\Build\Win64\UnrealEditor\Development\Superzeroes\UnrealEditor-Superzeroes.suppressed.exp
-  [19/19] WriteMetadata SuperzeroesEditor.target
-  Total time in Parallel executor: 49.76 seconds
-  Total execution time: 52.69 seconds
+  Target is up to date
+  Total execution time: 0.43 seconds

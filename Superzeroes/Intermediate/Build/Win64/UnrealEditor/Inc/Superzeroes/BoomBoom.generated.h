@@ -21,6 +21,7 @@ struct FHitResult;
  \
 	DECLARE_FUNCTION(execsetHealth); \
 	DECLARE_FUNCTION(execgetHealth); \
+	DECLARE_FUNCTION(execProcessHit); \
 	DECLARE_FUNCTION(execoverlapEnd); \
 	DECLARE_FUNCTION(execoverlapBegin); \
 	DECLARE_FUNCTION(execIsFacingZipZap); \
@@ -39,6 +40,7 @@ struct FHitResult;
  \
 	DECLARE_FUNCTION(execsetHealth); \
 	DECLARE_FUNCTION(execgetHealth); \
+	DECLARE_FUNCTION(execProcessHit); \
 	DECLARE_FUNCTION(execoverlapEnd); \
 	DECLARE_FUNCTION(execoverlapBegin); \
 	DECLARE_FUNCTION(execIsFacingZipZap); \

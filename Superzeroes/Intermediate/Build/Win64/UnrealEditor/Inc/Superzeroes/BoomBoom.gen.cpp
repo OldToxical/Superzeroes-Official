@@ -100,6 +100,14 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 		*(float*)Z_Param__Result=P_THIS->getHealth();
 		P_NATIVE_END;
 	}
+	DEFINE_FUNCTION(ABoomBoom::execProcessHit)
+	{
+		P_GET_PROPERTY(FFloatProperty,Z_Param_damage_);
+		P_FINISH;
+		P_NATIVE_BEGIN;
+		P_THIS->ProcessHit(Z_Param_damage_);
+		P_NATIVE_END;
+	}
 	DEFINE_FUNCTION(ABoomBoom::execoverlapEnd)
 	{
 		P_GET_OBJECT(UPrimitiveComponent,Z_Param_overlappedComp);
@@ -211,6 +219,7 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 			{ "move", &ABoomBoom::execmove },
 			{ "overlapBegin", &ABoomBoom::execoverlapBegin },
 			{ "overlapEnd", &ABoomBoom::execoverlapEnd },
+			{ "ProcessHit", &ABoomBoom::execProcessHit },
 			{ "setHealth", &ABoomBoom::execsetHealth },
 			{ "UpdateAnimation", &ABoomBoom::execUpdateAnimation },
 			{ "UpdateComboAttack_Savage", &ABoomBoom::execUpdateComboAttack_Savage },
@@ -590,6 +599,38 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 		}
 		return ReturnFunction;
 	}
+	struct Z_Construct_UFunction_ABoomBoom_ProcessHit_Statics
+	{
+		struct BoomBoom_eventProcessHit_Parms
+		{
+			float damage_;
+		};
+		static const UECodeGen_Private::FFloatPropertyParams NewProp_damage_;
+		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
+#endif
+		static const UECodeGen_Private::FFunctionParams FuncParams;
+	};
+	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_ABoomBoom_ProcessHit_Statics::NewProp_damage_ = { "damage_", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(BoomBoom_eventProcessHit_Parms, damage_), METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_ABoomBoom_ProcessHit_Statics::PropPointers[] = {
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_ABoomBoom_ProcessHit_Statics::NewProp_damage_,
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_ABoomBoom_ProcessHit_Statics::Function_MetaDataParams[] = {
+		{ "ModuleRelativePath", "BoomBoom.h" },
+	};
+#endif
+	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_ABoomBoom_ProcessHit_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_ABoomBoom, nullptr, "ProcessHit", nullptr, nullptr, sizeof(Z_Construct_UFunction_ABoomBoom_ProcessHit_Statics::BoomBoom_eventProcessHit_Parms), Z_Construct_UFunction_ABoomBoom_ProcessHit_Statics::PropPointers, UE_ARRAY_COUNT(Z_Construct_UFunction_ABoomBoom_ProcessHit_Statics::PropPointers), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_ABoomBoom_ProcessHit_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_ABoomBoom_ProcessHit_Statics::Function_MetaDataParams)) };
+	UFunction* Z_Construct_UFunction_ABoomBoom_ProcessHit()
+	{
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_ABoomBoom_ProcessHit_Statics::FuncParams);
+		}
+		return ReturnFunction;
+	}
 	struct Z_Construct_UFunction_ABoomBoom_setHealth_Statics
 	{
 		struct BoomBoom_eventsetHealth_Parms
@@ -743,10 +784,6 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 #endif
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_savageComboAttack;
 #if WITH_METADATA
-		static const UECodeGen_Private::FMetaDataPairParam NewProp_hurt_MetaData[];
-#endif
-		static const UECodeGen_Private::FObjectPropertyParams NewProp_hurt;
-#if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_rotation_MetaData[];
 #endif
 		static const UECodeGen_Private::FStructPropertyParams NewProp_rotation;
@@ -829,6 +866,7 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 		{ &Z_Construct_UFunction_ABoomBoom_move, "move" }, // 1235895177
 		{ &Z_Construct_UFunction_ABoomBoom_overlapBegin, "overlapBegin" }, // 3619944243
 		{ &Z_Construct_UFunction_ABoomBoom_overlapEnd, "overlapEnd" }, // 2412567781
+		{ &Z_Construct_UFunction_ABoomBoom_ProcessHit, "ProcessHit" }, // 818099764
 		{ &Z_Construct_UFunction_ABoomBoom_setHealth, "setHealth" }, // 3592423896
 		{ &Z_Construct_UFunction_ABoomBoom_UpdateAnimation, "UpdateAnimation" }, // 2598635088
 		{ &Z_Construct_UFunction_ABoomBoom_UpdateComboAttack_Savage, "UpdateComboAttack_Savage" }, // 4245808976
@@ -917,13 +955,6 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ABoomBoom_Statics::NewProp_savageComboAttack = { "savageComboAttack", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ABoomBoom, savageComboAttack), Z_Construct_UClass_UPaperFlipbook_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ABoomBoom_Statics::NewProp_savageComboAttack_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ABoomBoom_Statics::NewProp_savageComboAttack_MetaData)) };
-#if WITH_METADATA
-	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ABoomBoom_Statics::NewProp_hurt_MetaData[] = {
-		{ "Category", "BoomBoom" },
-		{ "ModuleRelativePath", "BoomBoom.h" },
-	};
-#endif
-	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ABoomBoom_Statics::NewProp_hurt = { "hurt", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ABoomBoom, hurt), Z_Construct_UClass_UPaperFlipbook_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ABoomBoom_Statics::NewProp_hurt_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ABoomBoom_Statics::NewProp_hurt_MetaData)) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ABoomBoom_Statics::NewProp_rotation_MetaData[] = {
 		{ "Category", "BoomBoom" },
@@ -1081,7 +1112,6 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_strongAttack,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_strongAttackCharge,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_savageComboAttack,
-		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_hurt,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_rotation,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_characterState_Underlying,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ABoomBoom_Statics::NewProp_characterState,
@@ -1139,9 +1169,9 @@ void EmptyLinkFunctionForGeneratedCodeBoomBoom() {}
 		{ State_StaticEnum, TEXT("State"), &Z_Registration_Info_UEnum_State, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1315724817U) },
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_ABoomBoom, ABoomBoom::StaticClass, TEXT("ABoomBoom"), &Z_Registration_Info_UClass_ABoomBoom, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ABoomBoom), 3178263648U) },
+		{ Z_Construct_UClass_ABoomBoom, ABoomBoom::StaticClass, TEXT("ABoomBoom"), &Z_Registration_Info_UClass_ABoomBoom, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ABoomBoom), 2807372055U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_1165007853(TEXT("/Script/Superzeroes"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_2571953122(TEXT("/Script/Superzeroes"),
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_Statics::ClassInfo),
 		nullptr, 0,
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_BoomBoom_h_Statics::EnumInfo));

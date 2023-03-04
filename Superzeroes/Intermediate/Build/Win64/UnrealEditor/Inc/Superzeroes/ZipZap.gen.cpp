@@ -132,6 +132,14 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		P_THIS->overlapBegin(Z_Param_overlappedComp,Z_Param_otherActor,Z_Param_otherComp,Z_Param_otherBodyIndex,Z_Param_bFromSweep,Z_Param_Out_result);
 		P_NATIVE_END;
 	}
+	DEFINE_FUNCTION(AZipZap::execProcessHit)
+	{
+		P_GET_PROPERTY(FFloatProperty,Z_Param_damage_);
+		P_FINISH;
+		P_NATIVE_BEGIN;
+		P_THIS->ProcessHit(Z_Param_damage_);
+		P_NATIVE_END;
+	}
 	DEFINE_FUNCTION(AZipZap::execSetupPlayerInput)
 	{
 		P_GET_OBJECT(UInputComponent,Z_Param_input_);
@@ -249,6 +257,7 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 			{ "move", &AZipZap::execmove },
 			{ "overlapBegin", &AZipZap::execoverlapBegin },
 			{ "overlapEnd", &AZipZap::execoverlapEnd },
+			{ "ProcessHit", &AZipZap::execProcessHit },
 			{ "SetBoomBoomReference", &AZipZap::execSetBoomBoomReference },
 			{ "setHealth", &AZipZap::execsetHealth },
 			{ "SetupPlayerInput", &AZipZap::execSetupPlayerInput },
@@ -643,6 +652,38 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		}
 		return ReturnFunction;
 	}
+	struct Z_Construct_UFunction_AZipZap_ProcessHit_Statics
+	{
+		struct ZipZap_eventProcessHit_Parms
+		{
+			float damage_;
+		};
+		static const UECodeGen_Private::FFloatPropertyParams NewProp_damage_;
+		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
+#endif
+		static const UECodeGen_Private::FFunctionParams FuncParams;
+	};
+	const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_AZipZap_ProcessHit_Statics::NewProp_damage_ = { "damage_", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ZipZap_eventProcessHit_Parms, damage_), METADATA_PARAMS(nullptr, 0) };
+	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_AZipZap_ProcessHit_Statics::PropPointers[] = {
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_AZipZap_ProcessHit_Statics::NewProp_damage_,
+	};
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_AZipZap_ProcessHit_Statics::Function_MetaDataParams[] = {
+		{ "ModuleRelativePath", "ZipZap.h" },
+	};
+#endif
+	const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_AZipZap_ProcessHit_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_AZipZap, nullptr, "ProcessHit", nullptr, nullptr, sizeof(Z_Construct_UFunction_AZipZap_ProcessHit_Statics::ZipZap_eventProcessHit_Parms), Z_Construct_UFunction_AZipZap_ProcessHit_Statics::PropPointers, UE_ARRAY_COUNT(Z_Construct_UFunction_AZipZap_ProcessHit_Statics::PropPointers), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_AZipZap_ProcessHit_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_AZipZap_ProcessHit_Statics::Function_MetaDataParams)) };
+	UFunction* Z_Construct_UFunction_AZipZap_ProcessHit()
+	{
+		static UFunction* ReturnFunction = nullptr;
+		if (!ReturnFunction)
+		{
+			UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_AZipZap_ProcessHit_Statics::FuncParams);
+		}
+		return ReturnFunction;
+	}
 	struct Z_Construct_UFunction_AZipZap_SetBoomBoomReference_Statics
 	{
 		struct ZipZap_eventSetBoomBoomReference_Parms
@@ -886,6 +927,10 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 #endif
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_hurt;
 #if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_boomBoom_Hurt_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_boomBoom_Hurt;
+#if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_rotation_MetaData[];
 #endif
 		static const UECodeGen_Private::FStructPropertyParams NewProp_rotation;
@@ -956,6 +1001,7 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		{ &Z_Construct_UFunction_AZipZap_move, "move" }, // 1163909924
 		{ &Z_Construct_UFunction_AZipZap_overlapBegin, "overlapBegin" }, // 2623765507
 		{ &Z_Construct_UFunction_AZipZap_overlapEnd, "overlapEnd" }, // 1617716341
+		{ &Z_Construct_UFunction_AZipZap_ProcessHit, "ProcessHit" }, // 116635519
 		{ &Z_Construct_UFunction_AZipZap_SetBoomBoomReference, "SetBoomBoomReference" }, // 441722268
 		{ &Z_Construct_UFunction_AZipZap_setHealth, "setHealth" }, // 126306932
 		{ &Z_Construct_UFunction_AZipZap_SetupPlayerInput, "SetupPlayerInput" }, // 329815324
@@ -1036,6 +1082,13 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_AZipZap_Statics::NewProp_hurt = { "hurt", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(AZipZap, hurt), Z_Construct_UClass_UPaperFlipbook_NoRegister, METADATA_PARAMS(Z_Construct_UClass_AZipZap_Statics::NewProp_hurt_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_AZipZap_Statics::NewProp_hurt_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AZipZap_Statics::NewProp_boomBoom_Hurt_MetaData[] = {
+		{ "Category", "ZipZap" },
+		{ "ModuleRelativePath", "ZipZap.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_AZipZap_Statics::NewProp_boomBoom_Hurt = { "boomBoom_Hurt", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(AZipZap, boomBoom_Hurt), Z_Construct_UClass_UPaperFlipbook_NoRegister, METADATA_PARAMS(Z_Construct_UClass_AZipZap_Statics::NewProp_boomBoom_Hurt_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_AZipZap_Statics::NewProp_boomBoom_Hurt_MetaData)) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AZipZap_Statics::NewProp_rotation_MetaData[] = {
 		{ "Category", "ZipZap" },
@@ -1154,6 +1207,7 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_initiateBoomBoomSavageComboAttack,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_projectileFly,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_hurt,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_boomBoom_Hurt,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_rotation,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_characterState_Underlying,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AZipZap_Statics::NewProp_characterState,
@@ -1208,9 +1262,9 @@ void EmptyLinkFunctionForGeneratedCodeZipZap() {}
 		{ State2_StaticEnum, TEXT("State2"), &Z_Registration_Info_UEnum_State2, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 3086242876U) },
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_AZipZap, AZipZap::StaticClass, TEXT("AZipZap"), &Z_Registration_Info_UClass_AZipZap, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AZipZap), 114508358U) },
+		{ Z_Construct_UClass_AZipZap, AZipZap::StaticClass, TEXT("AZipZap"), &Z_Registration_Info_UClass_AZipZap, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AZipZap), 1722096604U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_362468271(TEXT("/Script/Superzeroes"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_4175487304(TEXT("/Script/Superzeroes"),
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::ClassInfo),
 		nullptr, 0,
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_ZipZap_h_Statics::EnumInfo));

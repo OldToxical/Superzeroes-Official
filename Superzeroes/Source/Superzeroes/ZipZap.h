@@ -6,7 +6,7 @@
 #include "PaperCharacter.h"
 #include "ZipZap.generated.h"
 
-#define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 42
+#define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 60
 
 /**
  *
@@ -54,6 +54,8 @@ public:
 		class UPaperFlipbook* projectileFly;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* hurt;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* boomBoom_Hurt;
 
 	UFUNCTION(BlueprintCallable)
 		void UpdateAnimation();
@@ -85,6 +87,7 @@ public:
 	    void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
 	UFUNCTION(BlueprintCallable)
 		void SetupPlayerInput(UInputComponent* input_);
+	UFUNCTION(BlueprintCallable)
 
 	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
@@ -97,7 +100,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		float getHealth() { return health; };
 	UFUNCTION(BlueprintCallable)
-		void setHealth(float newHealth) { health = newHealth; };
+		void setHealth(float newHealth);
 
 protected:
 	// Called when the game starts or when spawned
@@ -143,7 +146,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
-
 
 	float healTimer;
 };

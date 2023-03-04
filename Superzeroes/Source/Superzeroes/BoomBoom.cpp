@@ -4,11 +4,11 @@
 #include "BoomBoom.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
-#include "PaperFlipbook.h"
-#include "PaperFlipbookComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Toxic.h"
 #include "Trash.h"
+#include "Enemy.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABoomBoom::ABoomBoom()
@@ -62,6 +62,14 @@ ABoomBoom::~ABoomBoom()
 	Destroy();
 }
 
+void ABoomBoom::setHealth(float newHealth)
+{
+	health = newHealth;
+	characterState = State::Hurt; 
+	flipbook->SetFlipbook(zipZap->boomBoom_Hurt); 
+	flipbook->SetLooping(false);
+}
+
 // Called when the game starts or when spawned
 void ABoomBoom::BeginPlay()
 {
@@ -73,6 +81,7 @@ void ABoomBoom::BeginPlay()
 	rotation = FRotator::ZeroRotator;
 	charMove = GetCharacterMovement();
 	healTimer = 0.0f;
+
 	if (zipZap != NULL)
 	{
 		MoveIgnoreActorAdd(zipZap->GetOwner());
@@ -88,6 +97,7 @@ void ABoomBoom::Tick(float DeltaTime)
 
 	UpdateState();
 	UpdateAnimation(); 
+
 	if (toxicDamage == true)
 	{
 		setHealth(health - 0.03f); //this damages Boom Boom, but not as much as Zip Zap
@@ -180,7 +190,7 @@ void ABoomBoom::UpdateAnimation()
 	// If character is moving, change to running animation
 	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != State::Combo_Savage && characterState != State::Attacking && characterState != State::Jumping)
+		if (characterState != State::Combo_Savage && characterState != State::Attacking && characterState != State::Jumping && characterState != State::Hurt)
 		{
 			characterState = State::Running;
 			flipbook->SetFlipbook(run);
@@ -188,7 +198,7 @@ void ABoomBoom::UpdateAnimation()
 	}
 	else // Otherwise, change to idle animation
 	{
-		if (characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Jumping)
+		if (characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Jumping && characterState != State::Hurt)
 		{
 			characterState = State::Idle;
 			flipbook->SetFlipbook(idle);
@@ -220,7 +230,7 @@ void ABoomBoom::move(float scaleVal)
 
 void ABoomBoom::ExecuteJump()
 {
-	if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling())
+	if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && characterState != State::Hurt)
 	{
 		jumpPreludeTimer = 0.47f;
 		characterState = State::Jumping;
@@ -263,13 +273,14 @@ void ABoomBoom::Attack(float scaleVal)
 					isSimpleAttackSequenced = true;
 					punchPreludeTimer = AcutalPunchDelay;
 					launchZipZap = false;
+					ProcessHit(10.f);
 				}
 				else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
 				{
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(simpleAttackSequence);
 					isSimpleAttackSequenced = false;
-					// Apply damage (will be implemented at a later stage) -------------------------------------------------------------------------------- !!!
+					ProcessHit(6.f);
 				}
 
 				// Regardless whether the attack was executed for the first time or second, 
@@ -280,10 +291,11 @@ void ABoomBoom::Attack(float scaleVal)
 				// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
 				flipbook->SetLooping(false);
 				flipbook->SetFlipbook(strongAttack);
+				ProcessHit(20.f);
 			}
 			else if (simpleAttack_sequenceTimeoutTimer <= 0.f && characterState == State::Attacking)
 			{
-				//EndAttack();
+				//EndAttack(); <----- for later to be fixed
 			}
 
 			// Reset the timer, doesn't matter if the button was released or wasn't pressed at all during this iteration, it's currently not pressed.
@@ -396,7 +408,22 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		{
 			setHealth(health - 5.f);
 			flipbook->SetLooping(false);
-			flipbook->SetFlipbook(hurt);
+			flipbook->SetFlipbook(zipZap->boomBoom_Hurt);
+		}
+		if (otherActor->IsA(AEnemy::StaticClass()))
+		{
+			if (characterState == State::Combo_Savage)
+			{
+				AEnemy* Enemy = (AEnemy*)otherActor;
+
+				if (Enemy == NULL)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null enemy"));
+					return;
+				}
+
+				Enemy->TakeEnemyDamage(100.f);
+			}
 		}
 	}
 }
@@ -409,6 +436,44 @@ void ABoomBoom::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		if (otherActor->IsA(AToxic::StaticClass()))
 		{
 			toxicDamage = false;
+		}
+	}
+}
+
+void ABoomBoom::ProcessHit(float damage_)
+{
+	FHitResult OutHit;
+	TArray<AActor*> actorsToIgnore;
+	// For later: add other enemies and trash instances to the above-defined array
+	FVector startPoint = GetActorLocation();
+	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z - 20.f);
+
+	if (rotation.Yaw > 0.f) // Looking left
+	{
+		endPoint.X -= 50.f;
+	}
+	else // Looking right
+	{
+		endPoint.X += 50.f;
+	}
+
+	bool hit = UKismetSystemLibrary::LineTraceSingle(this, startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::Persistent, OutHit, true);
+	if (hit)
+	{
+		FRotator rot = OutHit.GetActor()->GetActorRotation();
+		AActor* HitActor = OutHit.GetActor();
+
+		if (HitActor->ActorHasTag("Enemy"))
+		{
+			AEnemy* Enemy = (AEnemy*)HitActor;
+
+			if (Enemy == NULL)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null enemy"));
+				return;
+			}
+
+			Enemy->TakeEnemyDamage(damage_);
 		}
 	}
 }
