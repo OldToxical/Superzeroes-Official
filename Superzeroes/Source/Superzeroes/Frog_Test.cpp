@@ -399,9 +399,6 @@ void AFrog_Test::EndAttack()
 void AFrog_Test::ProcessBulletCollision(FVector hitPos)
 {
 	FHitResult OutHit;
-	TArray<AActor*> actorsToIgnore;
-	// For later: add other enemies and trash instances to the above-defined array
-	actorsToIgnore.Add(this);
 	FVector endPoint = hitPos;
 
 	if (rotation.Yaw < 180.f) // Looking left
@@ -416,7 +413,11 @@ void AFrog_Test::ProcessBulletCollision(FVector hitPos)
 	bool hit = UKismetSystemLibrary::SphereTraceSingle(GetWorld(), hitPos, endPoint, 10.f, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::None, OutHit, true);
 	if (hit)
 	{
-		bulletBeamParticleComponent->DeactivateImmediate();
+		if (bulletBeamParticleComponent != NULL)
+		{
+			bulletBeamParticleComponent->DeactivateImmediate();
+		}
+	
 		FRotator rot = OutHit.GetActor()->GetActorRotation();
 		AActor* HitActor = OutHit.GetActor();
 		

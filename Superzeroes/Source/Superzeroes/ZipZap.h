@@ -22,6 +22,7 @@ enum class State2 : uint8
 	Hurt
 };
 class ABoomBoom;
+class AEnemy;
 
 UCLASS()
 class SUPERZEROES_API AZipZap : public APaperCharacter
@@ -88,6 +89,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetupPlayerInput(UInputComponent* input_);
 	UFUNCTION(BlueprintCallable)
+		void ProcessHit(float damage_);
 
 	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,

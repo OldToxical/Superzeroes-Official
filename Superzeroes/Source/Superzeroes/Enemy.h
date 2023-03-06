@@ -44,6 +44,10 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		float damage;
 
+	UPROPERTY(VisibleAnywhere)
+		TArray<AActor*> actorsToIgnore;
+
 public:
 	void TakeEnemyDamage(float damage_) { healthPoints -= damage_; }
+	void AddToGetActorsToIgnore(AActor* actor) { actorsToIgnore.Add(actor); }
 };

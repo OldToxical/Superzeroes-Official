@@ -337,9 +337,9 @@ void EmptyLinkFunctionForGeneratedCodeFrog_Test() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Frog_Test_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_AFrog_Test, AFrog_Test::StaticClass, TEXT("AFrog_Test"), &Z_Registration_Info_UClass_AFrog_Test, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AFrog_Test), 640457604U) },
+		{ Z_Construct_UClass_AFrog_Test, AFrog_Test::StaticClass, TEXT("AFrog_Test"), &Z_Registration_Info_UClass_AFrog_Test, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(AFrog_Test), 2498294743U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Frog_Test_h_965591290(TEXT("/Script/Superzeroes"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Frog_Test_h_179800977(TEXT("/Script/Superzeroes"),
 		Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Frog_Test_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Superzeroes_Source_Superzeroes_Frog_Test_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);
