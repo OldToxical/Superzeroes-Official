@@ -65,8 +65,8 @@ ABoomBoom::~ABoomBoom()
 void ABoomBoom::setHealth(float newHealth)
 {
 	health = newHealth;
-	characterState = State::Hurt; 
-	flipbook->SetFlipbook(zipZap->boomBoom_Hurt); 
+	characterState = State::Hurt;
+	flipbook->SetFlipbook(hurt);
 	flipbook->SetLooping(false);
 }
 
@@ -81,6 +81,7 @@ void ABoomBoom::BeginPlay()
 	rotation = FRotator::ZeroRotator;
 	charMove = GetCharacterMovement();
 	healTimer = 0.0f;
+	deathTimer = 0.0f;
 
 	if (zipZap != NULL)
 	{
@@ -94,26 +95,45 @@ void ABoomBoom::BeginPlay()
 void ABoomBoom::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	UpdateState();
-	UpdateAnimation(); 
-
-	if (toxicDamage == true)
+	if (characterState != State::Dead)
 	{
-		setHealth(health - 0.03f); //this damages Boom Boom, but not as much as Zip Zap
-	}
-
-	if (characterState == State::Idle)
-	{
-		healTimer += DeltaTime;
-		if (healTimer >= 10.f)
+		UpdateState();
+		UpdateAnimation();
+	
+		if (toxicDamage == true)
 		{
-			setHealth(health + 0.5f);
+			setHealth(health - 0.03f); //this damages Boom Boom, but not as much as Zip Zap
+		}
+	
+		if (characterState == State::Idle)
+		{
+			healTimer += DeltaTime;
+			if (healTimer >= 10.f)
+			{
+				setHealth(health + 0.5f);
+			}
+		}
+		else
+		{
+			healTimer = 0.0f;
+		}
+		if (health <= 0.f)
+		{
+			characterState = State::Dead;
+			flipbook->SetFlipbook(dead);
+			flipbook->SetLooping(false);
 		}
 	}
 	else
 	{
-		healTimer = 0.0f;
+		deathTimer += DeltaTime;
+		if (deathTimer >= 15.0f) {
+			health = 100.0f;
+			deathTimer = 0.0f;
+			characterState = State::Idle;
+			flipbook->SetFlipbook(idle);
+			flipbook->SetLooping(true);
+		}
 	}
 }
 
@@ -167,7 +187,7 @@ void ABoomBoom::UpdateState()
 			// Apply damage (will be implemented at a later stage)
 			punchPreludeTimer = 0.f;
 		}
-		
+
 	}
 
 	// Always decrease the jump prelude timer
@@ -209,97 +229,106 @@ void ABoomBoom::UpdateAnimation()
 void ABoomBoom::move(float scaleVal)
 {
 	// Add movement force only if the character is not in a state of attacking
-	if ((characterState != State::Combo_Savage) && (characterState != State::Attacking))
+	if (characterState != State::Dead)
 	{
-		characterSpeed = 300.f;
-		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
-	}
+		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking))
+		{
+			characterSpeed = 300.f;
+			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
+		}
 
-	// Determine the character's facing direction, regardless of the state
-	if (scaleVal > 0.f)
-	{
-		rotation.Yaw = 0.f;
-		flipbook->SetWorldRotation(rotation);
-	}
-	else if (scaleVal < 0.f)
-	{
-		rotation.Yaw = 180.0f;
-		flipbook->SetWorldRotation(rotation);
+		// Determine the character's facing direction, regardless of the state
+		if (scaleVal > 0.f)
+		{
+			rotation.Yaw = 0.f;
+			flipbook->SetWorldRotation(rotation);
+		}
+		else if (scaleVal < 0.f)
+		{
+			rotation.Yaw = 180.0f;
+			flipbook->SetWorldRotation(rotation);
+		}
 	}
 }
 
 void ABoomBoom::ExecuteJump()
 {
-	if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && characterState != State::Hurt)
+	if (characterState != State::Dead)
 	{
-		jumpPreludeTimer = 0.47f;
-		characterState = State::Jumping;
-		flipbook->SetLooping(false);
-		flipbook->SetFlipbook(jumping);
+		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && characterState != State::Hurt)
+		{
+			jumpPreludeTimer = 0.47f;
+			characterState = State::Jumping;
+			flipbook->SetLooping(false);
+			flipbook->SetFlipbook(jumping);
+		}
 	}
 }
 
 void ABoomBoom::Attack(float scaleVal)
 {
-	// Allow the execution of the simple attack only if the character is not in a state of savage attack
-	if (characterState != State::Combo_Savage)
+	if (characterState != State::Dead)
 	{
-		// If the attack button is pressed (or held), keep track of how long the user is holding the button down
-		if (scaleVal > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength))
+		// Allow the execution of the simple attack only if the character is not in a state of savage attack
+		if (characterState != State::Combo_Savage)
 		{
-			// Whatever the length is, change the state to "attacking"
-			characterState = State::Attacking;
-
-			// Increase the time the button has been held down
-			attackInputTimer += GetWorld()->GetDeltaSeconds();
-
-			// If the user is holding the button for too long, change the state of the character to "charging". From this point on, a strong attack will be executed once the button is released
-			if (attackInputTimer > StrongAttackMinimumInputTime)
+			// If the attack button is pressed (or held), keep track of how long the user is holding the button down
+			if (scaleVal > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength))
 			{
-				flipbook->SetFlipbook(strongAttackCharge);
+				// Whatever the length is, change the state to "attacking"
+				characterState = State::Attacking;
+
+				// Increase the time the button has been held down
+				attackInputTimer += GetWorld()->GetDeltaSeconds();
+
+				// If the user is holding the button for too long, change the state of the character to "charging". From this point on, a strong attack will be executed once the button is released
+				if (attackInputTimer > StrongAttackMinimumInputTime)
+				{
+					flipbook->SetFlipbook(strongAttackCharge);
+				}
 			}
-		}
-		else // The button is not pressed. If the value of "attackInputTimer" is bigger than 0.f, this means the button was released during the current iteration, so let's determine what attack to execute
-		{
-			// Simple attack
-			if (attackInputTimer > 0.f && attackInputTimer < StrongAttackMinimumInputTime)
+			else // The button is not pressed. If the value of "attackInputTimer" is bigger than 0.f, this means the button was released during the current iteration, so let's determine what attack to execute
 			{
-				// First attack
-				if (simpleAttack_sequenceTimeoutTimer <= 0.f && !isSimpleAttackSequenced)
+				// Simple attack
+				if (attackInputTimer > 0.f && attackInputTimer < StrongAttackMinimumInputTime)
+				{
+					// First attack
+					if (simpleAttack_sequenceTimeoutTimer <= 0.f && !isSimpleAttackSequenced)
+					{
+						// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
+						flipbook->SetLooping(false);
+						flipbook->SetFlipbook(simpleAttack);
+						isSimpleAttackSequenced = true;
+						punchPreludeTimer = AcutalPunchDelay;
+						launchZipZap = false;
+						ProcessHit(10.f);
+					}
+					else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
+					{
+						flipbook->SetLooping(false);
+						flipbook->SetFlipbook(simpleAttackSequence);
+						isSimpleAttackSequenced = false;
+						ProcessHit(6.f);
+					}
+
+					// Regardless whether the attack was executed for the first time or second, 
+					simpleAttack_sequenceTimeoutTimer = SimpleAttackSequenceTimeout;
+				}
+				else if (attackInputTimer >= StrongAttackMinimumInputTime) // Strong attack
 				{
 					// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
 					flipbook->SetLooping(false);
-					flipbook->SetFlipbook(simpleAttack);
-					isSimpleAttackSequenced = true;
-					punchPreludeTimer = AcutalPunchDelay;
-					launchZipZap = false;
-					ProcessHit(10.f);
+					flipbook->SetFlipbook(strongAttack);
+					ProcessHit(20.f);
 				}
-				else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
+				else if (simpleAttack_sequenceTimeoutTimer <= 0.f && characterState == State::Attacking)
 				{
-					flipbook->SetLooping(false);
-					flipbook->SetFlipbook(simpleAttackSequence);
-					isSimpleAttackSequenced = false;
-					ProcessHit(6.f);
+					//EndAttack(); <----- for later to be fixed
 				}
 
-				// Regardless whether the attack was executed for the first time or second, 
-				simpleAttack_sequenceTimeoutTimer = SimpleAttackSequenceTimeout;
+				// Reset the timer, doesn't matter if the button was released or wasn't pressed at all during this iteration, it's currently not pressed.
+				attackInputTimer = 0.f;
 			}
-			else if (attackInputTimer >= StrongAttackMinimumInputTime) // Strong attack
-			{
-				// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
-				flipbook->SetLooping(false);
-				flipbook->SetFlipbook(strongAttack);
-				ProcessHit(20.f);
-			}
-			else if (simpleAttack_sequenceTimeoutTimer <= 0.f && characterState == State::Attacking)
-			{
-				//EndAttack(); <----- for later to be fixed
-			}
-
-			// Reset the timer, doesn't matter if the button was released or wasn't pressed at all during this iteration, it's currently not pressed.
-			attackInputTimer = 0.f;
 		}
 	}
 }
@@ -408,7 +437,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		{
 			setHealth(health - 5.f);
 			flipbook->SetLooping(false);
-			flipbook->SetFlipbook(zipZap->boomBoom_Hurt);
+			flipbook->SetFlipbook(hurt);
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))
 		{

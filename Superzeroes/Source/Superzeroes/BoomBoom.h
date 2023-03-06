@@ -18,14 +18,15 @@
 #define AcutalPunchDelay 0.2
 
 UENUM()
-enum class State
+enum class State : uint8
 {
 	Idle,
 	Running,
 	Jumping,
 	Attacking,
 	Combo_Savage,
-	Hurt
+	Hurt,
+	Dead
 };
 
 UCLASS()
@@ -67,6 +68,10 @@ public:
 		UPaperFlipbook* strongAttackCharge;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbook* savageComboAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* hurt;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* dead;
 
 	// Functions
 	UFUNCTION(BlueprintCallable)
@@ -149,7 +154,7 @@ protected:
 
 	// Variable to keep track whether the punch will result in launching zip zap or applying damage to an enemy
 	UPROPERTY(EditAnywhere)
-		bool launchZipZap;	
+		bool launchZipZap;
 
 	//Variable to keep track of Boom Boom's health
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -166,4 +171,5 @@ protected:
 		bool toxicDamage;
 
 	float healTimer;
+	float deathTimer;
 };

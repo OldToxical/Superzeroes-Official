@@ -48,8 +48,8 @@ AZipZap::AZipZap()
 void AZipZap::setHealth(float newHealth)
 {
 	health = newHealth;
-	characterState = State2::Hurt; 
-	flipbook->SetFlipbook(hurt); 
+	characterState = State2::Hurt;
+	flipbook->SetFlipbook(hurt);
 	flipbook->SetLooping(false);
 }
 
@@ -61,6 +61,7 @@ void AZipZap::BeginPlay()
 	rotation = FRotator::ZeroRotator;
 	charMove = GetCharacterMovement();
 	healTimer = 0.0f;
+	deathTimer = 0.0f;
 	collision->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
 	collision->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
 
@@ -75,31 +76,49 @@ void AZipZap::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UpdateAnimation();
-	UpdateState();
-
-	//Boom Boom's savage attack is triggered using a different button for zip zap's attacking
-	/*// If zip zap is attacking, check the hitbox for collision
-	if (characterState == State2::Attacking)
+	if (characterState != State2::Dead)
 	{
-		HitCheck();
-	}*/
-
-	if (toxicDamage == true)
-	{
-		setHealth(health - 0.1f); //this damages Zip Zap far more than Boom Boom
-	}
-	if (characterState == State2::Idle)
-	{
-		healTimer += DeltaTime;
-		if (healTimer >= 10.f)
+		UpdateAnimation();
+		UpdateState();
+		//Boom Boom's savage attack is triggered using a different button for zip zap's attacking
+		/*// If zip zap is attacking, check the hitbox for collision
+		if (characterState == State2::Attacking)
 		{
-			setHealth(health + 0.5f);
+			HitCheck();
+		}*/
+		if (toxicDamage == true)
+		{
+			setHealth(health - 0.1f); //this damages Zip Zap far more than Boom Boom
+		}
+		if (characterState == State2::Idle)
+		{
+			healTimer += DeltaTime;
+			if (healTimer >= 10.f)
+			{
+				setHealth(health + 0.5f);
+			}
+		}
+		else
+		{
+			healTimer = 0.0f;
+		}
+		if (health <= 0.f)
+		{
+			characterState = State2::Dead;
+			flipbook->SetFlipbook(dead);
+			flipbook->SetLooping(false);
 		}
 	}
-	else
+	if (characterState == State2::Dead)
 	{
-		healTimer = 0.0f;
+		deathTimer += DeltaTime;
+		if (deathTimer >= 15.0f) {
+			health = 100.0f;
+			deathTimer = 0.0f;
+			characterState = State2::Idle;
+			flipbook->SetFlipbook(idle);
+			flipbook->SetLooping(true);
+		}
 	}
 }
 
@@ -127,24 +146,27 @@ void AZipZap::UpdateAnimation()
 void AZipZap::move(float scaleVal)
 {
 	// Add movement force only if the character is not in a state of savage attack
-	if (characterState != State2::Combo_Projectile)
+	if (characterState != State2::Dead)
 	{
-		characterSpeed = 350.f;
-		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
+		if (characterState != State2::Combo_Projectile)
+		{
+			characterSpeed = 350.f;
+			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
 
-		// Handle rotation
-		if (scaleVal > 0.f)
-		{
-			rotation.Yaw = 0.f;
-			flipbook->SetWorldRotation(rotation);
-			hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
-		}
-		else if (scaleVal < 0.f)
-		{
-			rotation.Yaw = 180.0f;
-			flipbook->SetWorldRotation(rotation);
-			hitbox->SetRelativeLocation(FVector(-8.0, 0.0, 0.0));
-		}
+			// Handle rotation
+			if (scaleVal > 0.f)
+			{
+				rotation.Yaw = 0.f;
+				flipbook->SetWorldRotation(rotation);
+				hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
+			}
+			else if (scaleVal < 0.f)
+			{
+				rotation.Yaw = 180.0f;
+				flipbook->SetWorldRotation(rotation);
+				hitbox->SetRelativeLocation(FVector(-8.0, 0.0, 0.0));
+			}
+	}
 	}
 }
 
@@ -215,13 +237,16 @@ void AZipZap::SetupPlayerInput(UInputComponent* input_)
 void AZipZap::Attack()
 {
 	// Allow the execution of the simple attack only if the character is not in a state of savage attack
-	if (characterState != State2::Combo_Projectile)
+	if (characterState != State2::Dead)
 	{
-		// Change the state to "attacking"
-		characterState = State2::Attacking;
-		flipbook->SetLooping(false);
-		flipbook->SetFlipbook(simpleAttack);
-		ProcessHit(12.f);
+		if (characterState != State2::Combo_Projectile)
+		{
+			// Change the state to "attacking"
+			characterState = State2::Attacking;
+			flipbook->SetLooping(false);
+			flipbook->SetFlipbook(simpleAttack);
+			ProcessHit(12.f);
+		}
 	}
 }
 
@@ -270,17 +295,20 @@ void AZipZap::UpdateState()
 
 void AZipZap::ExecuteJump()
 {
-	if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling() && characterState != State2::Hurt)
+	if (characterState != State2::Dead)
 	{
-		jumpPreludeTimer = 0.27f;
-		characterState = State2::Jumping;
-		flipbook->SetLooping(false);
-		flipbook->SetFlipbook(jumping);
+		if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling() && characterState != State2::Hurt)
+		{
+			jumpPreludeTimer = 0.27f;
+			characterState = State2::Jumping;
+			flipbook->SetLooping(false);
+			flipbook->SetFlipbook(jumping);
+		}
 	}
 }
 
 /*void AZipZap::HitCheck()
-{	
+{
 	TArray<AActor*> output;
 	// To be changed when enemies are present: detect hits only with enemies and deal damage
 	GetOverlappingActors(output, ABoomBoom::StaticClass());

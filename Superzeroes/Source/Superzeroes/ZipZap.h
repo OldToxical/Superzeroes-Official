@@ -19,7 +19,8 @@ enum class State2 : uint8
 	Jumping,
 	Attacking,
 	Combo_Projectile,
-	Hurt
+	Hurt,
+	Dead
 };
 class ABoomBoom;
 class AEnemy;
@@ -56,7 +57,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* hurt;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* boomBoom_Hurt;
+		class UPaperFlipbook* dead;
 
 	UFUNCTION(BlueprintCallable)
 		void UpdateAnimation();
@@ -85,7 +86,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool IsFacingBoomBoom();
 	UFUNCTION(BlueprintCallable)
-	    void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
+		void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
 	UFUNCTION(BlueprintCallable)
 		void SetupPlayerInput(UInputComponent* input_);
 	UFUNCTION(BlueprintCallable)
@@ -150,4 +151,5 @@ protected:
 		bool toxicDamage;
 
 	float healTimer;
+	float deathTimer;
 };
