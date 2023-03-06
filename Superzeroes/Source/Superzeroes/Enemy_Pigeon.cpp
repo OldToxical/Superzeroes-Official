@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Frog_Test.h"
+#include "Enemy_Pigeon.h"
 #include "Components/BoxComponent.h"
 #include <chrono>
 #include <thread>
 
-AFrog_Test::AFrog_Test()
+AEnemy_Pigeon::AEnemy_Pigeon()
 {
 	srand(time(NULL));
 
@@ -81,28 +81,28 @@ AFrog_Test::AFrog_Test()
 	collision->SetupAttachment(RootComponent);
 }
 
-void AFrog_Test::AI()
+void AEnemy_Pigeon::AI()
 {
 	ChooseAction();
 	UpdateState();
 }
 
-void AFrog_Test::BeginPlay()
+void AEnemy_Pigeon::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void AFrog_Test::Tick(float DeltaTime)
+void AEnemy_Pigeon::Tick(float DeltaTime)
 {
 	AI();
 }
 
-void AFrog_Test::GetState()
+void AEnemy_Pigeon::GetState()
 {
 
 }
 
-void AFrog_Test::ChooseAction()
+void AEnemy_Pigeon::ChooseAction()
 {
 	if (chooseActionTimeoutTimer > 0.f)
 	{
@@ -133,13 +133,13 @@ void AFrog_Test::ChooseAction()
 	}
 }
 
-void AFrog_Test::CalculateReward()
+void AEnemy_Pigeon::CalculateReward()
 {
 	float reward = rand() % 10 + 5;
 	UpdateQ(reward);
 }
 
-void AFrog_Test::UpdateQ(float reward)
+void AEnemy_Pigeon::UpdateQ(float reward)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("State: ") + FString::SanitizeFloat(currentState));
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Action: ") + FString::SanitizeFloat(currentAction));
@@ -148,7 +148,7 @@ void AFrog_Test::UpdateQ(float reward)
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("New Q: ") + FString::SanitizeFloat(AI_Q[currentState][currentAction]));
 }
 
-void AFrog_Test::ExecuteAction()
+void AEnemy_Pigeon::ExecuteAction()
 {
 	if (currentAction == Action::GoIdle)
 	{
@@ -188,7 +188,7 @@ void AFrog_Test::ExecuteAction()
 	}
 }
 
-void AFrog_Test::UpdateState()
+void AEnemy_Pigeon::UpdateState()
 {
 	SetActorLocation(FVector(GetActorLocation().X, 22.f, GetActorLocation().Z));
 
@@ -242,7 +242,7 @@ void AFrog_Test::UpdateState()
 	}
 }
 
-void AFrog_Test::WalkLeft()
+void AEnemy_Pigeon::WalkLeft()
 {
 	if (stateUpdateTimer > 0.f)
 	{
@@ -253,7 +253,7 @@ void AFrog_Test::WalkLeft()
 	}
 }
 
-void AFrog_Test::WalkRight()
+void AEnemy_Pigeon::WalkRight()
 {
 	if (stateUpdateTimer > 0.f)
 	{
@@ -264,7 +264,7 @@ void AFrog_Test::WalkRight()
 	}
 }
 
-void AFrog_Test::Attack()
+void AEnemy_Pigeon::Attack()
 {
 	// Wait until the needed frame is executed
 	if (stateUpdateTimer > 0.f)
@@ -319,11 +319,11 @@ void AFrog_Test::Attack()
 	}
 }
 
-void AFrog_Test::RunAway()
+void AEnemy_Pigeon::RunAway()
 {
 }
 
-bool AFrog_Test::shouldShoot()
+bool AEnemy_Pigeon::shouldShoot()
 {
 	float distanceToBoomBoomX = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
 	float distanceToBoomBoomY = abs(boomBoom->GetActorLocation().Z - GetActorLocation().Z);
@@ -388,7 +388,7 @@ bool AFrog_Test::shouldShoot()
 	return false;
 }
 
-void AFrog_Test::EndAttack()
+void AEnemy_Pigeon::EndAttack()
 {
 	flipbookComponent->SetLooping(true);
 	flipbookComponent->Play();
@@ -396,7 +396,7 @@ void AFrog_Test::EndAttack()
 	//characterState = State::Idle;
 }
 
-void AFrog_Test::ProcessBulletCollision(FVector hitPos)
+void AEnemy_Pigeon::ProcessBulletCollision(FVector hitPos)
 {
 	FHitResult OutHit;
 	FVector endPoint = hitPos;

@@ -9,7 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-#include "Frog_Test.generated.h"
+#include "Enemy_Mouse.generated.h"
 
 #define Q_LearningRate 0.9
 #define Q_DiscountFactor 0.55
@@ -41,12 +41,12 @@ enum Action
 };
 
 UCLASS()
-class SUPERZEROES_API AFrog_Test : public AEnemy
+class SUPERZEROES_API AEnemy_Mouse : public AEnemy
 {
 	GENERATED_BODY()
 
 private:
-	AFrog_Test();
+	AEnemy_Mouse();
 
 	virtual void AI() override;
 	virtual void BeginPlay() override;
@@ -65,7 +65,7 @@ private:
 	void WalkRight();
 	void Attack();
 	void RunAway();
-	bool shouldShoot();
+	void GoToNearestPlayer();
 
 	float chooseActionTimeoutTimer;
 	float stateUpdateTimer;
@@ -95,12 +95,9 @@ private:
 
 	// Particles
 	UPROPERTY(EditAnywhere)
-		UNiagaraSystem* bulletProjectileBeamParticleSystem;
+		UParticleSystem* boomBoomImpact;
 
 protected:
-	UFUNCTION(BlueprintCallable)
-		void ProcessBulletCollision(FVector hitPos);
-
 	UFUNCTION(BlueprintCallable)
 	    void EndAttack();
 
@@ -112,16 +109,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		AActor* playerToAttack;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UNiagaraComponent* bulletProjectileMeshParticleComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UNiagaraComponent* bulletBeamParticleComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UNiagaraComponent* muzzleFlashLeftParticleComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UNiagaraComponent* muzzleFlashRightParticleComponent;
 };

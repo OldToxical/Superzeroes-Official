@@ -59,10 +59,10 @@
     <ClInclude Include="..\..\Source\Superzeroes\EnemySpawner.h">
       <Filter>Source\Superzeroes</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\Source\Superzeroes\Frog_Test.cpp">
+    <ClCompile Include="..\..\Source\Superzeroes\Enemy_Pigeon.cpp">
       <Filter>Source\Superzeroes</Filter>
     </ClCompile>
-    <ClInclude Include="..\..\Source\Superzeroes\Frog_Test.h">
+    <ClInclude Include="..\..\Source\Superzeroes\Enemy_Pigeon.h">
       <Filter>Source\Superzeroes</Filter>
     </ClInclude>
     <ClCompile Include="..\..\Source\Superzeroes\MainCamera.cpp">
@@ -108,6 +108,16 @@
       <Filter>Source\Superzeroes</Filter>
     </ClCompile>
     <ClInclude Include="..\..\Source\Superzeroes\ZipZap.h">
+      <Filter>Source\Superzeroes</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\Superzeroes\Enemy_Mouse.cpp">
+      <Filter>Source\Superzeroes</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\Superzeroes\Enemy_Mouse.h">
       <Filter>Source\Superzeroes</Filter>
     </ClInclude>
   </ItemGroup>
