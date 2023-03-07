@@ -8,66 +8,53 @@ AEnemy_Mouse::AEnemy_Mouse()
 {
 	srand(time(NULL));
 
-	TArray<float, TFixedAllocator<6>> actionsAfterJumping;
+	TArray<float, TFixedAllocator<4>> actionsAfterJumping;
 	actionsAfterJumping.Add(35.f); // Go Idle
 	actionsAfterJumping.Add(34.f); // Jump
 	actionsAfterJumping.Add(50.f); // Walk Left
 	actionsAfterJumping.Add(38.f); // Walk Right
-	actionsAfterJumping.Add(100.f); // Attack
-	actionsAfterJumping.Add(1.f); // Run Away
 
-	TArray<float, TFixedAllocator<6>> actionsAfterWalkingLeft;
+	TArray<float, TFixedAllocator<4>> actionsAfterWalkingLeft;
 	actionsAfterWalkingLeft.Add(35.f); // Go Idle
 	actionsAfterWalkingLeft.Add(26.f); // Jump
 	actionsAfterWalkingLeft.Add(47.f); // Walk Left
 	actionsAfterWalkingLeft.Add(84.f); // Walk Right
-	actionsAfterWalkingLeft.Add(100.f); // Attack
-	actionsAfterWalkingLeft.Add(1.f); // Run Away
 
-	TArray<float, TFixedAllocator<6>> actionsAfterWalkingRight;
+	TArray<float, TFixedAllocator<4>> actionsAfterWalkingRight;
 	actionsAfterWalkingRight.Add(35.f); // Go Idle
 	actionsAfterWalkingRight.Add(26.f); // Jump
 	actionsAfterWalkingRight.Add(85.f); // Walk Left
 	actionsAfterWalkingRight.Add(47.f); // Walk Right
-	actionsAfterWalkingRight.Add(100.f); // Attack
-	actionsAfterWalkingRight.Add(1.f); // Run Away
 
-	TArray<float, TFixedAllocator<6>> actionsAfterAttacking;
+	TArray<float, TFixedAllocator<4>> actionsAfterAttacking;
 	actionsAfterAttacking.Add(0.f); // Go Idle
 	actionsAfterAttacking.Add(0.f); // Jump
 	actionsAfterAttacking.Add(0.f); // Walk Left
 	actionsAfterAttacking.Add(0.f); // Walk Right
-	actionsAfterAttacking.Add(100.f); // Attack
-	actionsAfterAttacking.Add(1.f); // Run Away
 
-	TArray<float, TFixedAllocator<6>> actionsAfterRunningAway;
+	TArray<float, TFixedAllocator<4>> actionsAfterRunningAway;
 	actionsAfterRunningAway.Add(30.f); // Go Idle
 	actionsAfterRunningAway.Add(0.f); // Jump
 	actionsAfterRunningAway.Add(0.f); // Walk Left
 	actionsAfterRunningAway.Add(0.f); // Walk Right
-	actionsAfterRunningAway.Add(0.f); // Attack
-	actionsAfterRunningAway.Add(100.f); // Run Away
 
-	TArray<float, TFixedAllocator<6>> actionsAfterGoingIdle;
+	TArray<float, TFixedAllocator<4>> actionsAfterGoingIdle;
 	actionsAfterGoingIdle.Add(40.f); // Go Idle
 	actionsAfterGoingIdle.Add(44.f); // Jump
 	actionsAfterGoingIdle.Add(70.f); // Walk Left
 	actionsAfterGoingIdle.Add(67.f); // Walk Right
-	actionsAfterGoingIdle.Add(100.f); // Attack
-	actionsAfterGoingIdle.Add(0.f); // Run Away
 
 	AI_Q.Add(actionsAfterGoingIdle);
 	AI_Q.Add(actionsAfterJumping);
 	AI_Q.Add(actionsAfterWalkingLeft);
 	AI_Q.Add(actionsAfterWalkingRight);
-	AI_Q.Add(actionsAfterAttacking);
-	AI_Q.Add(actionsAfterRunningAway);
 
 	currentState = State3::Idle;
 	chooseActionTimeoutTimer = 2.f;
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
 	damage = 10.f;
+	attackTimeoutTimer = ShootingAnimationLength;
 	inCombat = false;
 
 	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
@@ -102,32 +89,39 @@ void AEnemy_Mouse::GetState()
 
 void AEnemy_Mouse::ChooseAction()
 {
-	if (chooseActionTimeoutTimer > 0.f)
+	if (!inCombat)
 	{
-		chooseActionTimeoutTimer -= GetWorld()->GetDeltaSeconds();
+		if (chooseActionTimeoutTimer > 0.f)
+		{
+			chooseActionTimeoutTimer -= GetWorld()->GetDeltaSeconds();
+		}
+		else
+		{
+			TArray<float, TFixedAllocator<4>> possibleActions = AI_Q[currentState];
+			float bestValue = 0.f;
+			int actionsToBeChecked = possibleActions.Num();
+
+			if (!inCombat)
+			{
+				actionsToBeChecked = 4;
+			}
+
+			for (int i = 0; i < actionsToBeChecked; i++)
+			{
+				if (bestValue < possibleActions[i])
+				{
+					bestValue = possibleActions[i];
+					currentAction = Action(i);
+				}
+			}
+
+			CalculateReward();
+			ExecuteAction();
+		}
 	}
 	else
 	{
-		TArray<float, TFixedAllocator<6>> possibleActions = AI_Q[currentState];
-		float bestValue = 0.f;
-		int actionsToBeChecked = possibleActions.Num();
-
-		if (!inCombat)
-		{
-			actionsToBeChecked = 4;
-		}
-
-		for (int i = 0; i < actionsToBeChecked; i++)
-		{
-			if (bestValue < possibleActions[i])
-			{
-				bestValue = possibleActions[i];
-				currentAction = Action(i);
-			}
-		}
-
-		CalculateReward();
-		ExecuteAction();
+		Attack();
 	}
 }
 
@@ -174,16 +168,6 @@ void AEnemy_Mouse::ExecuteAction()
 		chooseActionTimeoutTimer = (stateUpdateTimer *= 1.5f);
 		currentState = State3::WalkingRight;
 	}
-	else if (currentAction == Action::Attack)
-	{
-		currentState = State3::Attacking;
-		stateUpdateTimer = ShootingAnimationLength;
-		chooseActionTimeoutTimer = stateUpdateTimer;
-	}
-	else if (currentAction == Action::RunAway)
-	{
-		currentState = State3::RunningAway;
-	}
 }
 
 void AEnemy_Mouse::UpdateState()
@@ -212,13 +196,6 @@ void AEnemy_Mouse::UpdateState()
 			WalkRight();
 			break;
 		case State3::Attacking:
-			flipbookComponent->SetFlipbook(attack);
-			flipbookComponent->SetLooping(false);
-			Attack();
-			break;
-		case State3::RunningAway:
-			flipbookComponent->SetFlipbook(walk);
-			flipbookComponent->SetLooping(true);
 			break;
 	    default:
 			break;
@@ -227,9 +204,16 @@ void AEnemy_Mouse::UpdateState()
 	// AI Sensing
 	if (boomBoom != NULL && zipZap != NULL)
 	{
-		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombat) || (abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombat))
+		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && (!inCombat))
 		{
 			inCombat = true;
+			playerToAttack = boomBoom;
+		}
+
+		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && (!inCombat))
+		{
+			inCombat = true;
+			playerToAttack = zipZap;
 		}
 	}
 
@@ -264,21 +248,25 @@ void AEnemy_Mouse::WalkRight()
 
 void AEnemy_Mouse::Attack()
 {
-	// Wait until the needed frame is executed
-	if (stateUpdateTimer > 0.f)
+	currentState = State3::Attacking;
+	attackTimeoutTimer -= GetWorld()->GetDeltaSeconds();
+
+	if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) > MinimumDistanceToDealDamage)
 	{
-		stateUpdateTimer -= GetWorld()->GetDeltaSeconds();
-		GoToNearestPlayer();
+		flipbookComponent->SetFlipbook(walk);
+		flipbookComponent->SetLooping(true);
+		GoToPlayer();
 	}
-	else // The frame is on the screen, execute the actual attacking functionality once
+	else
 	{
-		if (playerToAttack->ActorHasTag("BoomBoom"))
+		if (attackTimeoutTimer > 0.f)
 		{
-			boomBoom->setHealth(boomBoom->getHealth() - damage);
+			flipbookComponent->SetFlipbook(attack);
+			flipbookComponent->SetLooping(false);
 		}
-		else if (playerToAttack->ActorHasTag("ZipZap"))
+		else
 		{
-			zipZap->setHealth(boomBoom->getHealth() - damage);
+			DealDamage();
 		}
 	}
 }
@@ -287,48 +275,36 @@ void AEnemy_Mouse::RunAway()
 {
 }
 
-void AEnemy_Mouse::GoToNearestPlayer()
+void AEnemy_Mouse::GoToPlayer()
 {
+	// Face the player
+	if (playerToAttack->GetActorLocation().X < GetActorLocation().X) // He's on the left
+	{
+		rotation.Yaw = 0.f;
+		flipbookComponent->SetWorldRotation(rotation);
+		AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.3f, false);
+	}
+	else // He's on the right
+	{
+		rotation.Yaw = 180.f;
+		flipbookComponent->SetWorldRotation(rotation);
+		AddMovementInput(FVector(1.f, 0.f, 0.f), 0.3f, false);
+	}
+}
+
+void AEnemy_Mouse::DealDamage()
+{
+	attackTimeoutTimer = ShootingAnimationLength;
 	float distanceToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
 	float distanceToZipZap = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
 
-	// Boom Boom is closer
-	if (distanceToBoomBoom < distanceToZipZap)
+	if (playerToAttack->ActorHasTag("BoomBoom") && distanceToBoomBoom < MinimumDistanceToDealDamage)
 	{
-		playerToAttack = boomBoom;
-
-		// Face him
-		if (boomBoom->GetActorLocation().X < GetActorLocation().X) // He's on the left
-		{
-			rotation.Yaw = 0.f;
-			flipbookComponent->SetWorldRotation(rotation);
-			AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.3f, false);
-		}
-		else // He's on the right
-		{
-			rotation.Yaw = 180.f;
-			flipbookComponent->SetWorldRotation(rotation);
-			AddMovementInput(FVector(1.f, 0.f, 0.f), 0.3f, false);
-		}
+		boomBoom->setHealth(boomBoom->getHealth() - damage);
 	}
-	else // Zip Zap is closer
+	else if (playerToAttack->ActorHasTag("ZipZap") && distanceToZipZap < MinimumDistanceToDealDamage)
 	{
-		playerToAttack = zipZap;
-
-		// Face him
-		if (zipZap->GetActorLocation().X < GetActorLocation().X) // He's on the left
-		{
-			rotation.Yaw = 0.f;
-			flipbookComponent->SetWorldRotation(rotation);
-			AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.3f, false);
-
-		}
-		else // He's on the right
-		{
-			rotation.Yaw = 180.f;
-			flipbookComponent->SetWorldRotation(rotation);
-			AddMovementInput(FVector(1.f, 0.f, 0.f), 0.3f, false);
-		}
+		zipZap->setHealth(boomBoom->getHealth() - damage);
 	}
 }
 
@@ -336,6 +312,6 @@ void AEnemy_Mouse::EndAttack()
 {
 	flipbookComponent->SetLooping(true);
 	flipbookComponent->Play();
-
-	//characterState = State::Idle;
+	flipbookComponent->SetFlipbook(idle);
+	//attackTimeoutTimer = ShootingAnimationLength;
 }

@@ -14,7 +14,9 @@
 #define Q_LearningRate 0.9
 #define Q_DiscountFactor 0.55
 #define Q_EstimatedOptimalFutureValue 20
-#define MinimumDistanceToGetIntoCombat 100
+#define MinimumDistanceToGetIntoCombatX 100
+#define MinimumDistanceToGetIntoCombatZ 50
+#define MinimumDistanceToDealDamage 40
 #define ShootingAnimationLength 0.6
 
 class ABoomBoom;
@@ -26,8 +28,7 @@ enum State3
 	Jumping,
 	WalkingLeft,
 	WalkingRight,
-	Attacking,
-	RunningAway
+	Attacking
 };
 
 enum Action
@@ -36,8 +37,6 @@ enum Action
 	Jump,
 	WalkLeft,
 	WalkRight,
-	Attack,
-	RunAway
 };
 
 UCLASS()
@@ -65,17 +64,20 @@ private:
 	void WalkRight();
 	void Attack();
 	void RunAway();
-	void GoToNearestPlayer();
+	void GoToPlayer();
+	void DealDamage();
 
 	float chooseActionTimeoutTimer;
 	float stateUpdateTimer;
+	UPROPERTY(VisibleAnywhere)
+	    float attackTimeoutTimer;
 	float speed;
 	float newX;
 	State3 currentState;
 	Action currentAction;
 	class UBoxComponent* hitbox;
 	class UBoxComponent* collision;
-	TArray<TArray<float, TFixedAllocator<6>>, TFixedAllocator<6>> AI_Q;
+	TArray<TArray<float, TFixedAllocator<4>>, TFixedAllocator<4>> AI_Q;
 
 	UPROPERTY(EditAnywhere)
 	    bool inCombat;

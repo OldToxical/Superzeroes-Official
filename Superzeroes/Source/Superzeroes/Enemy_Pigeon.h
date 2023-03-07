@@ -104,10 +104,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	    void EndAttack();
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	    ABoomBoom* boomBoom;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	    AZipZap* zipZap;
 
 	UPROPERTY(VisibleAnywhere)

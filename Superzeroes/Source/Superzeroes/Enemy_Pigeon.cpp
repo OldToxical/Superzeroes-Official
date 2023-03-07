@@ -190,7 +190,7 @@ void AEnemy_Pigeon::ExecuteAction()
 
 void AEnemy_Pigeon::UpdateState()
 {
-	SetActorLocation(FVector(GetActorLocation().X, 22.f, GetActorLocation().Z));
+	SetActorLocation(FVector(GetActorLocation().X, .5f, GetActorLocation().Z));
 
 	switch (currentState)
 	{
@@ -227,7 +227,7 @@ void AEnemy_Pigeon::UpdateState()
 	}
 
 	// AI Sensing
-	if (boomBoom != NULL && zipZap != NULL)
+	if (boomBoom != nullptr && zipZap != nullptr)
 	{
 		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombat) || (abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombat))
 		{
