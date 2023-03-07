@@ -62,8 +62,12 @@ void AZipZap::BeginPlay()
 	charMove = GetCharacterMovement();
 	healTimer = 0.0f;
 	deathTimer = 0.0f;
+
 	collision->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
 	collision->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+	collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
 	if (boomBoom != NULL)
 	{
@@ -104,6 +108,9 @@ void AZipZap::Tick(float DeltaTime)
 		}
 		if (health <= 0.f)
 		{
+			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator")); //disable collision while dead
+			collision->SetCollisionProfileName(TEXT("NoCollision"));
+			hitbox->SetCollisionProfileName(TEXT("NoCollision"));
 			characterState = State2::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
@@ -112,7 +119,11 @@ void AZipZap::Tick(float DeltaTime)
 	if (characterState == State2::Dead)
 	{
 		deathTimer += DeltaTime;
+		//when 15 seconds have passed
 		if (deathTimer >= 15.0f) {
+			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn")); //enable collision for zip zap when respawning
+			collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+			hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 			health = 100.0f;
 			deathTimer = 0.0f;
 			SetActorLocation(spawnLoc);

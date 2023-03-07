@@ -77,6 +77,9 @@ void ABoomBoom::BeginPlay()
 	SetupPlayerInputComponent(Super::InputComponent);
 	collision->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
 	collision->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+	collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+
 	flipbook->SetFlipbook(idle);
 	rotation = FRotator::ZeroRotator;
 	charMove = GetCharacterMovement();
@@ -119,6 +122,8 @@ void ABoomBoom::Tick(float DeltaTime)
 		}
 		if (health <= 0.f)
 		{
+			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator")); //disable collision when dead
+			collision->SetCollisionProfileName(TEXT("NoCollision"));
 			characterState = State::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
@@ -128,9 +133,11 @@ void ABoomBoom::Tick(float DeltaTime)
 	{
 		deathTimer += DeltaTime;
 		if (deathTimer >= 15.0f) {
+			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn")); //enable collision when alive
+			collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 			health = 100.0f;
 			deathTimer = 0.0f;
-			SetActorLocation(spawnLoc);
+			SetActorLocation(spawnLoc); //respawn at start location
 			characterState = State::Idle;
 			flipbook->SetLooping(true);
 			flipbook->Play();
