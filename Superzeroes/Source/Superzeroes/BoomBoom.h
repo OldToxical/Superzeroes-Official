@@ -172,4 +172,7 @@ protected:
 
 	float healTimer;
 	float deathTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		FVector spawnLoc;
 };

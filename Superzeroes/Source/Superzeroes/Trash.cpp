@@ -49,13 +49,19 @@ void ATrash::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 		if (otherActor->ActorHasTag(TEXT("BoomBoom")))
 		{
 			ABoomBoom* boomBoom = (ABoomBoom*)otherActor;
-			boomBoom->setHealth(boomBoom->getHealth() - 10.f);
+			if (boomBoom->getHealth() > 0.0f)
+			{
+				boomBoom->setHealth(boomBoom->getHealth() - 10.f);
+			}
 			Destroy();
 		}
 		if (otherActor->ActorHasTag(TEXT("ZipZap")))
 		{
 			AZipZap* zipZap = (AZipZap*)otherActor;
-			zipZap->setHealth(zipZap->getHealth() - 10.f);
+			if (zipZap->getHealth() > 0.0f)
+			{
+				zipZap->setHealth(zipZap->getHealth() - 10.f);
+			}
 			Destroy();
 		}
 	}

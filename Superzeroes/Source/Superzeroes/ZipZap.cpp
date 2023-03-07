@@ -115,9 +115,10 @@ void AZipZap::Tick(float DeltaTime)
 		if (deathTimer >= 15.0f) {
 			health = 100.0f;
 			deathTimer = 0.0f;
+			SetActorLocation(spawnLoc);
 			characterState = State2::Idle;
-			flipbook->SetFlipbook(idle);
 			flipbook->SetLooping(true);
+			flipbook->Play();
 		}
 	}
 }
@@ -253,9 +254,12 @@ void AZipZap::Attack()
 void AZipZap::EndAttack()
 {
 	// Once an attack animation has finished, reset the character's state to "idle" and his flipbook's looping property to true, since only the attack animations shouldn't loop
+	if(flipbook->GetFlipbook() != dead)
+	{
+	characterState = State2::Idle;
 	flipbook->SetLooping(true);
 	flipbook->Play();
-	characterState = State2::Idle;
+	}
 }
 
 void AZipZap::UpdateState()
@@ -324,7 +328,7 @@ void AZipZap::ExecuteJump()
 void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
 	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
 {
-	if (otherActor && (otherActor != this) && otherComp)
+	if (otherActor && (otherActor != this) && otherComp && flipbook->GetFlipbook() != dead)
 	{
 		if (otherActor->IsA(AToxic::StaticClass()))
 		{

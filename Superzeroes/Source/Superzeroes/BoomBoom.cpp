@@ -130,9 +130,10 @@ void ABoomBoom::Tick(float DeltaTime)
 		if (deathTimer >= 15.0f) {
 			health = 100.0f;
 			deathTimer = 0.0f;
+			SetActorLocation(spawnLoc);
 			characterState = State::Idle;
-			flipbook->SetFlipbook(idle);
 			flipbook->SetLooping(true);
+			flipbook->Play();
 		}
 	}
 }
@@ -336,15 +337,19 @@ void ABoomBoom::Attack(float scaleVal)
 void ABoomBoom::EndAttack()
 {
 	// Once an attack animation has finished, reset the character's state to "idle" and his flipbook's looping property to true, since only the attack animations shouldn't loop
-	flipbook->SetLooping(true);
-	flipbook->Play();
-
-	if (characterState == State::Jumping)
+	
+	if (flipbook->GetFlipbook() != dead)
 	{
-		smokeParticle->ActivateSystem();
-	}
+		characterState = State::Idle;
+		flipbook->SetLooping(true);
+		flipbook->Play();
 
-	characterState = State::Idle;
+		//if (characterState == State::Jumping)
+	//	{
+		//	smokeParticle->ActivateSystem();
+		//}
+
+	}
 }
 
 void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
@@ -427,7 +432,7 @@ void ABoomBoom::UpdateComboAttack_Savage()
 void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
 	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
 {
-	if (otherActor && (otherActor != this) && otherComp)
+	if (otherActor && (otherActor != this) && otherComp && flipbook->GetFlipbook() != dead)
 	{
 		if (otherActor->IsA(AToxic::StaticClass()))
 		{
@@ -436,8 +441,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		if (otherActor->IsA(ATrash::StaticClass()))
 		{
 			setHealth(health - 5.f);
-			flipbook->SetLooping(false);
-			flipbook->SetFlipbook(hurt);
+			UE_LOG(LogTemp, Warning, TEXT("ROFL"));
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))
 		{
