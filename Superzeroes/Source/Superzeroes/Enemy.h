@@ -7,6 +7,7 @@
 #include "PaperFlipbookComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "EnemySpawner.h"
 #include "Enemy.generated.h"
 
 /**
@@ -47,7 +48,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		TArray<AActor*> actorsToIgnore;
 
+	UPROPERTY(VisibleAnywhere)
+		AEnemySpawner* spawner;
+
 public:
 	void TakeEnemyDamage(float damage_) { healthPoints -= damage_; }
 	void AddToGetActorsToIgnore(AActor* actor) { actorsToIgnore.Add(actor); }
+	void SetSpawner(AEnemySpawner* spawner_) { spawner = spawner_; }
 };

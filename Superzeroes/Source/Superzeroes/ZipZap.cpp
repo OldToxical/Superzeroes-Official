@@ -257,7 +257,7 @@ void AZipZap::Attack()
 			characterState = State2::Attacking;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(simpleAttack);
-			ProcessHit(12.f);
+			ProcessHit(25.f);
 		}
 	}
 }

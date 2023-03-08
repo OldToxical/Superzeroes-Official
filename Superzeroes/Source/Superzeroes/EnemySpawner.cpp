@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "EnemySpawner.h"
+#include "Enemy.h"
 
 // Sets default values
 AEnemySpawner::AEnemySpawner()
@@ -28,7 +29,7 @@ void AEnemySpawner::Tick(float DeltaTime)
 	}
 	else
 	{
-		if (enemies.Num() < 5)
+		if (enemies.Num() < 2)
 		{
 			SpawnEnemy();
 		}
@@ -47,5 +48,6 @@ void AEnemySpawner::SpawnEnemy()
 	for (AEnemy* enemy : enemies)
 	{
 		spawn->AddToGetActorsToIgnore(enemy->GetOwner());
+		spawn->SetSpawner(this);
 	}
 }

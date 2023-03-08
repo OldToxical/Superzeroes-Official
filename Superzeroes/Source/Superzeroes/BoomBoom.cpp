@@ -32,7 +32,7 @@ ABoomBoom::ABoomBoom()
 	zipZap = NULL;
 	isSimpleAttackSequenced = false;
 	launchZipZap = false;
-	health = 100.f;
+	health = 200.f;
 
 	if (flipbook)
 	{
@@ -309,14 +309,14 @@ void ABoomBoom::Attack(float scaleVal)
 						isSimpleAttackSequenced = true;
 						punchPreludeTimer = AcutalPunchDelay;
 						launchZipZap = false;
-						ProcessHit(10.f);
+						ProcessHit(25.f);
 					}
 					else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
 					{
 						flipbook->SetLooping(false);
 						flipbook->SetFlipbook(simpleAttackSequence);
 						isSimpleAttackSequenced = false;
-						ProcessHit(6.f);
+						ProcessHit(25.f);
 					}
 
 					// Regardless whether the attack was executed for the first time or second, 
@@ -327,7 +327,7 @@ void ABoomBoom::Attack(float scaleVal)
 					// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(strongAttack);
-					ProcessHit(20.f);
+					ProcessHit(50.f);
 				}
 				else if (simpleAttack_sequenceTimeoutTimer <= 0.f && characterState == State::Attacking)
 				{
@@ -372,9 +372,10 @@ void ABoomBoom::InitiateZipZapComboAttack_Projectile()
 {
 	if (zipZap != NULL)
 	{
-		float proximityToZipZap = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
+		float proximityToZipZapX = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
+		float proximityToZipZapZ = abs(zipZap->GetActorLocation().Z - GetActorLocation().Z);
 
-		if (proximityToZipZap <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack)
+		if (proximityToZipZapX <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack && proximityToZipZapZ <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack)
 		{
 			if (IsFacingZipZap())
 			{
@@ -486,7 +487,7 @@ void ABoomBoom::ProcessHit(float damage_)
 	TArray<AActor*> actorsToIgnore;
 	// For later: add other enemies and trash instances to the above-defined array
 	FVector startPoint = GetActorLocation();
-	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z - 20.f);
+	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z - 5.f);
 
 	if (rotation.Yaw > 0.f) // Looking left
 	{

@@ -69,7 +69,8 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	chooseActionTimeoutTimer = 2.f;
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
-	damage = 10.f;
+	damage = 20.f;
+	healthPoints = 50.f;
 	inCombat = false;
 
 	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
@@ -238,6 +239,10 @@ void AEnemy_Pigeon::UpdateState()
 	// Check Health
 	if (healthPoints <= 0.f)
 	{
+		if (spawner != nullptr)
+		{
+			spawner->RemoveEnemy(this);
+		}
 		Destroy();
 	}
 }

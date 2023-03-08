@@ -13,7 +13,7 @@ void ABoxTrigger::OverlapBegin(AActor* otherActor)
 {
 	if (otherActor && (otherActor != this))
 	{
-		if (otherActor->IsA(AZipZap::StaticClass()))
+		if (otherActor->IsA(AZipZap::StaticClass()) || otherActor->IsA(ABoomBoom::StaticClass()))
 		{
 			if (colliderPlaneActor != NULL)
 			{

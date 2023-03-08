@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Enemy.h"
 #include "EnemySpawner.generated.h"
 
-#define SpawnTimeout 1;
+#define SpawnTimeout 5;
+
+class AEnemy;
 
 UCLASS()
 class SUPERZEROES_API AEnemySpawner : public AActor
@@ -29,4 +30,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		float spawnTimer;
+
+public:
+	void RemoveEnemy(AEnemy* enemy) { enemies.Remove(enemy); }
 };

@@ -53,7 +53,8 @@ AEnemy_Mouse::AEnemy_Mouse()
 	chooseActionTimeoutTimer = 2.f;
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
-	damage = 10.f;
+	damage = 30.f;
+	healthPoints = 100.f;
 	attackTimeoutTimer = ShootingAnimationLength;
 	inCombat = false;
 
@@ -220,6 +221,10 @@ void AEnemy_Mouse::UpdateState()
 	// Check Health
 	if (healthPoints <= 0.f)
 	{
+		if (spawner != nullptr)
+		{
+			spawner->RemoveEnemy(this);
+		}
 		Destroy();
 	}
 }
