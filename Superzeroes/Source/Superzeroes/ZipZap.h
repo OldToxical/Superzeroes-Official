@@ -91,6 +91,8 @@ public:
 		void SetupPlayerInput(UInputComponent* input_);
 	UFUNCTION(BlueprintCallable)
 		void ProcessHit(float damage_);
+	UFUNCTION(BlueprintCallable)
+		void SetLevelIndex(int level) { currentLevel = level; }
 
 	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
@@ -152,7 +154,8 @@ protected:
 
 	float healTimer;
 	float deathTimer;
+	int currentLevel;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		FVector spawnLoc;
+		TArray<FVector> spawnLoc;
 };

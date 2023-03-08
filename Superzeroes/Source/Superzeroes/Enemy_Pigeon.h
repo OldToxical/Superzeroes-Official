@@ -97,6 +97,10 @@ private:
 	UPROPERTY(EditAnywhere)
 		UNiagaraSystem* bulletProjectileBeamParticleSystem;
 
+	// Particles
+	UPROPERTY(EditAnywhere)
+		UParticleSystem* boomBomImpact;
+
 protected:
 	UFUNCTION(BlueprintCallable)
 		void ProcessBulletCollision(FVector hitPos);

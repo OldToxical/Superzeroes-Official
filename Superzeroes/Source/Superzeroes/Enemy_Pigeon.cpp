@@ -282,7 +282,7 @@ void AEnemy_Pigeon::Attack()
 		// If the distance between one of the characters is big enough, activate mesh particle to detect collision
 		if (shouldShoot())
 		{
-			FVector beamVelocityVector = FVector(89000.f, 0.f, 0.f); // 67k
+			FVector beamVelocityVector = FVector(120000.f, 0.f, 0.f); // 67k
 			FVector projectileMeshVelocityVector = FVector(1300.f, 0.f, 0.f);
 			UNiagaraComponent* muzzleFlashParticle = muzzleFlashRightParticleComponent;
 
@@ -315,10 +315,12 @@ void AEnemy_Pigeon::Attack()
 			if (playerToAttack->ActorHasTag("BoomBoom"))
 			{
 				boomBoom->setHealth(boomBoom->getHealth() - damage);
+				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBomImpact, boomBoom->GetActorLocation(), FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
 			}
 			else if (playerToAttack->ActorHasTag("ZipZap"))
 			{
 				zipZap->setHealth(boomBoom->getHealth() - damage);
+				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBomImpact, zipZap->GetActorLocation(), FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
 			}
 		}
 	}
@@ -431,7 +433,7 @@ void AEnemy_Pigeon::ProcessBulletCollision(FVector hitPos)
 			if (boomBoom != NULL)
 			{
 				boomBoom->setHealth(boomBoom->getHealth() - damage);
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, TEXT("boom boom hit"));
+				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBomImpact, OutHit.Location, FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
 			}
 		}
 		
@@ -440,7 +442,7 @@ void AEnemy_Pigeon::ProcessBulletCollision(FVector hitPos)
 			if (zipZap != NULL)
 			{
 				zipZap->setHealth(zipZap->getHealth() - damage);
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, TEXT("zip zap hit"));
+				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBomImpact, OutHit.Location, FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
 			}
 		}
 	}

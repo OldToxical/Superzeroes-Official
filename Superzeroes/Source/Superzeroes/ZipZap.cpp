@@ -23,6 +23,7 @@ AZipZap::AZipZap()
 	isElectrified = false;
 	health = 100.f;
 	toxicDamage = false;
+	currentLevel = 0;
 
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	if (flipbook)
@@ -43,6 +44,10 @@ AZipZap::AZipZap()
 
 	collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
 	collision->SetupAttachment(RootComponent);
+
+	spawnLoc.Add(FVector(-1750.f, .5f, -189.f));
+	spawnLoc.Add(FVector(-240.f, .5f, -189.f));
+	spawnLoc.Add(FVector(1500.f, .5f, -189.f));
 }
 
 void AZipZap::setHealth(float newHealth)
@@ -126,7 +131,7 @@ void AZipZap::Tick(float DeltaTime)
 			hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 			health = 100.0f;
 			deathTimer = 0.0f;
-			SetActorLocation(spawnLoc);
+			SetActorLocation(spawnLoc[currentLevel]);
 			characterState = State2::Idle;
 			flipbook->SetLooping(true);
 			flipbook->Play();
@@ -275,7 +280,7 @@ void AZipZap::EndAttack()
 
 void AZipZap::UpdateState()
 {
-	charMove->MaxWalkSpeed = characterSpeed;
+	//charMove->MaxWalkSpeed = characterSpeed;
 
 	if (characterState == State2::Combo_Projectile)
 	{

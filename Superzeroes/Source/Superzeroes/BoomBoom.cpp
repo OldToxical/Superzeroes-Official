@@ -33,6 +33,11 @@ ABoomBoom::ABoomBoom()
 	isSimpleAttackSequenced = false;
 	launchZipZap = false;
 	health = 200.f;
+	currentLevel = 0;
+
+	spawnLoc.Add(FVector(-1800.f, .5f, -182.f));
+	spawnLoc.Add(FVector(-300.f, .5f, -182.f));
+	spawnLoc.Add(FVector(1400.f, .5f, -182.f));
 
 	if (flipbook)
 	{
@@ -64,10 +69,13 @@ ABoomBoom::~ABoomBoom()
 
 void ABoomBoom::setHealth(float newHealth)
 {
-	health = newHealth;
-	characterState = State::Hurt;
-	flipbook->SetFlipbook(hurt);
-	flipbook->SetLooping(false);
+	if (characterState != State::Hurt)
+	{
+		health = newHealth;
+		characterState = State::Hurt;
+		flipbook->SetFlipbook(hurt);
+		flipbook->SetLooping(false);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -120,6 +128,7 @@ void ABoomBoom::Tick(float DeltaTime)
 		{
 			healTimer = 0.0f;
 		}
+
 		if (health <= 0.f)
 		{
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator")); //disable collision when dead
@@ -137,7 +146,7 @@ void ABoomBoom::Tick(float DeltaTime)
 			collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 			health = 100.0f;
 			deathTimer = 0.0f;
-			SetActorLocation(spawnLoc); //respawn at start location
+			SetActorLocation(spawnLoc[currentLevel]); //respawn at last known location
 			characterState = State::Idle;
 			flipbook->SetLooping(true);
 			flipbook->Play();
@@ -159,7 +168,7 @@ void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ABoomBoom::UpdateState()
 {
-	charMove->MaxWalkSpeed = characterSpeed;
+	//charMove->MaxWalkSpeed = characterSpeed;
 
 	// Execute the savage attack's function, if the character is in its state
 	if (characterState == State::Combo_Savage)

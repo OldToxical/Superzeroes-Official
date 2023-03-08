@@ -102,6 +102,8 @@ public:
 			UPrimitiveComponent* otherComp, int32 otherBodyIndex);
 	UFUNCTION(BlueprintCallable)
 		void ProcessHit(float damage_);
+	UFUNCTION(BlueprintCallable)
+		void SetLevelIndex(int level) { currentLevel = level; }
 
 	UFUNCTION(BlueprintCallable)
 		float getHealth() { return health; };
@@ -172,7 +174,8 @@ protected:
 
 	float healTimer;
 	float deathTimer;
+	int currentLevel;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		FVector spawnLoc;
+		TArray<FVector> spawnLoc;
 };
