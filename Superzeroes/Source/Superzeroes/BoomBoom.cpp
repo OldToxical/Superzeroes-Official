@@ -144,7 +144,7 @@ void ABoomBoom::Tick(float DeltaTime)
 		if (deathTimer >= 15.0f) {
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn")); //enable collision when alive
 			collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
-			health = 100.0f;
+			health = 200.0f;
 			deathTimer = 0.0f;
 			SetActorLocation(spawnLoc[currentLevel]); //respawn at last known location
 			characterState = State::Idle;
