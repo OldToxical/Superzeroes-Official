@@ -32,7 +32,8 @@ ABoomBoom::ABoomBoom()
 	zipZap = NULL;
 	isSimpleAttackSequenced = false;
 	launchZipZap = false;
-	health = 200.f;
+	health = 300.f;
+	//imam malka pi6ka
 	currentLevel = 0;
 
 	spawnLoc.Add(FVector(-1800.f, .5f, -182.f));
