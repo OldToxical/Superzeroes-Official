@@ -4,23 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "TestSphere.generated.h"
+#include "Components/BoxComponent.h"
+#include "BoomBoom.h"
+#include "ZipZap.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Projectile.generated.h"
 
 UCLASS()
-class SUPERZEROES_API ATestSphere : public AActor
+class SUPERZEROES_API AProjectile : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ATestSphere();
+	AProjectile();
+
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UBoxComponent* collider;
 
+	UPROPERTY(EditAnywhere)
+		float speed;
 };

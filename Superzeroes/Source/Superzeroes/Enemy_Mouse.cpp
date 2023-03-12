@@ -55,13 +55,8 @@ AEnemy_Mouse::AEnemy_Mouse()
 	speed = 0.f;
 	damage = 30.f;
 	healthPoints = 100.f;
-	attackTimeoutTimer = ShootingAnimationLength;
+	hitAvailable = true;
 	inCombat = false;
-
-	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
-	hitbox->SetRelativeScale3D(FVector(0.25, 0.25, 0.25));
-	hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
-	hitbox->SetupAttachment(RootComponent);
 
 	collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
 	collision->SetupAttachment(RootComponent);
@@ -100,14 +95,8 @@ void AEnemy_Mouse::ChooseAction()
 		{
 			TArray<float, TFixedAllocator<4>> possibleActions = AI_Q[currentState];
 			float bestValue = 0.f;
-			int actionsToBeChecked = possibleActions.Num();
 
-			if (!inCombat)
-			{
-				actionsToBeChecked = 4;
-			}
-
-			for (int i = 0; i < actionsToBeChecked; i++)
+			for (int i = 0; i < 4; i++)
 			{
 				if (bestValue < possibleActions[i])
 				{
@@ -173,7 +162,7 @@ void AEnemy_Mouse::ExecuteAction()
 
 void AEnemy_Mouse::UpdateState()
 {
-	SetActorLocation(FVector(GetActorLocation().X, 22.f, GetActorLocation().Z));
+	SetActorLocation(FVector(GetActorLocation().X, .5f, GetActorLocation().Z));
 
 	switch (currentState)
 	{
@@ -195,8 +184,6 @@ void AEnemy_Mouse::UpdateState()
 			flipbookComponent->SetFlipbook(walk);
 			flipbookComponent->SetLooping(true);
 			WalkRight();
-			break;
-		case State3::Attacking:
 			break;
 	    default:
 			break;
@@ -235,7 +222,7 @@ void AEnemy_Mouse::WalkLeft()
 	{
 		stateUpdateTimer -= GetWorld()->GetDeltaSeconds();
 		AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.3f, false);
-		rotation.Yaw = 0.f;
+		rotation.Yaw = 180.f;
 		flipbookComponent->SetWorldRotation(rotation);
 	}
 }
@@ -246,7 +233,7 @@ void AEnemy_Mouse::WalkRight()
 	{
 		stateUpdateTimer -= GetWorld()->GetDeltaSeconds();
 		AddMovementInput(FVector(1.f, 0.f, 0.f), 0.3f, false);
-		rotation.Yaw = 180.f;
+		rotation.Yaw = 0.f;
 		flipbookComponent->SetWorldRotation(rotation);
 	}
 }
@@ -254,23 +241,32 @@ void AEnemy_Mouse::WalkRight()
 void AEnemy_Mouse::Attack()
 {
 	currentState = State3::Attacking;
-	attackTimeoutTimer -= GetWorld()->GetDeltaSeconds();
 
-	if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) > MinimumDistanceToDealDamage)
+	if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) > MinimumDistanceToDealDamage && flipbookComponent->GetFlipbook() != attack)
 	{
 		flipbookComponent->SetFlipbook(walk);
 		flipbookComponent->SetLooping(true);
 		GoToPlayer();
 	}
-	else
+	else if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) < MinimumDistanceToDealDamage)
 	{
-		if (attackTimeoutTimer > 0.f)
+		flipbookComponent->SetFlipbook(attack);
+		flipbookComponent->SetLooping(false);
+
+		if (flipbookComponent->GetPlaybackPositionInFrames() == 5 && hitAvailable)
 		{
-			flipbookComponent->SetFlipbook(attack);
-			flipbookComponent->SetLooping(false);
+			hitAvailable = false;
+			DealDamage();
 		}
-		else
+
+		if (flipbookComponent->GetPlaybackPositionInFrames() == 6)
 		{
+			hitAvailable = true;
+		}
+
+		if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && hitAvailable)
+		{
+			hitAvailable = false;
 			DealDamage();
 		}
 	}
@@ -285,13 +281,13 @@ void AEnemy_Mouse::GoToPlayer()
 	// Face the player
 	if (playerToAttack->GetActorLocation().X < GetActorLocation().X) // He's on the left
 	{
-		rotation.Yaw = 0.f;
+		rotation.Yaw = 180.f;
 		flipbookComponent->SetWorldRotation(rotation);
 		AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.3f, false);
 	}
 	else // He's on the right
 	{
-		rotation.Yaw = 180.f;
+		rotation.Yaw = 0.f;
 		flipbookComponent->SetWorldRotation(rotation);
 		AddMovementInput(FVector(1.f, 0.f, 0.f), 0.3f, false);
 	}
@@ -299,7 +295,7 @@ void AEnemy_Mouse::GoToPlayer()
 
 void AEnemy_Mouse::DealDamage()
 {
-	attackTimeoutTimer = ShootingAnimationLength;
+	hitAvailable = true;
 	float distanceToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
 	float distanceToZipZap = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
 
@@ -315,8 +311,7 @@ void AEnemy_Mouse::DealDamage()
 
 void AEnemy_Mouse::EndAttack()
 {
+	flipbookComponent->SetFlipbook(idle);
 	flipbookComponent->SetLooping(true);
 	flipbookComponent->Play();
-	flipbookComponent->SetFlipbook(idle);
-	//attackTimeoutTimer = ShootingAnimationLength;
 }

@@ -16,8 +16,7 @@
 #define Q_EstimatedOptimalFutureValue 20
 #define MinimumDistanceToGetIntoCombatX 100
 #define MinimumDistanceToGetIntoCombatZ 50
-#define MinimumDistanceToDealDamage 40
-#define ShootingAnimationLength 0.6
+#define MinimumDistanceToDealDamage 50
 
 class ABoomBoom;
 class AZipZap;
@@ -69,18 +68,17 @@ private:
 
 	float chooseActionTimeoutTimer;
 	float stateUpdateTimer;
-	UPROPERTY(VisibleAnywhere)
-	    float attackTimeoutTimer;
 	float speed;
 	float newX;
 	State3 currentState;
 	Action currentAction;
-	class UBoxComponent* hitbox;
 	class UBoxComponent* collision;
 	TArray<TArray<float, TFixedAllocator<4>>, TFixedAllocator<4>> AI_Q;
 
 	UPROPERTY(EditAnywhere)
 	    bool inCombat;
+
+	bool hitAvailable;
 
 	// Animations
 	UPROPERTY(EditAnywhere)

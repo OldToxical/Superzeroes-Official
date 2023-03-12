@@ -230,9 +230,20 @@ void AEnemy_Pigeon::UpdateState()
 	// AI Sensing
 	if (boomBoom != nullptr && zipZap != nullptr)
 	{
-		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombat) || (abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombat))
+		/*if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombat) || (abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombat))
 		{
 			inCombat = true;
+		}*/
+		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && (!inCombat))
+		{
+			inCombat = true;
+			playerToAttack = boomBoom;
+		}
+
+		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && (!inCombat))
+		{
+			inCombat = true;
+			playerToAttack = zipZap;
 		}
 	}
 
@@ -275,54 +286,24 @@ void AEnemy_Pigeon::Attack()
 	if (stateUpdateTimer > 0.f)
 	{
 		stateUpdateTimer -= GetWorld()->GetDeltaSeconds();
-		shouldShoot();
+		FaceNearestPlayer();
 	}
 	else // The frame is on the screen, execute the actual attacking functionality once
 	{
-		// If the distance between one of the characters is big enough, activate mesh particle to detect collision
-		if (shouldShoot())
+		FaceNearestPlayer();
+
+		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 45.34f, GetActorLocation().Y, GetActorLocation().Z + 13.f);
+		FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
+
+		if (rotation.Yaw > 0.f) // Right
 		{
-			FVector beamVelocityVector = FVector(120000.f, 0.f, 0.f); // 67k
-			FVector projectileMeshVelocityVector = FVector(1300.f, 0.f, 0.f);
-			UNiagaraComponent* muzzleFlashParticle = muzzleFlashRightParticleComponent;
-
-			if (rotation.Yaw < 180.f) // Left
-			{
-				beamVelocityVector.X *= -1.f;
-				projectileMeshVelocityVector.X *= -1.f;
-				muzzleFlashParticle = muzzleFlashLeftParticleComponent;
-			}
-
-			muzzleFlashParticle->ActivateSystem();
-
-			bulletProjectileMeshParticleComponent->SetVectorParameter("Velocity", projectileMeshVelocityVector);
-			bulletProjectileMeshParticleComponent->ActivateSystem();
-
-			bulletBeamParticleComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), bulletProjectileBeamParticleSystem, FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 9.393f), rotation);
-			bulletBeamParticleComponent->SetVectorParameter("Velocity", beamVelocityVector);
+			muzzleFlashLocation.X += 90.68f;
 		}
-		else // If the distance between one of the characters is too little, don't activate the mesh particle, just deal damage immediately
-		{
-			UNiagaraComponent* muzzleFlashParticle = muzzleFlashRightParticleComponent;
 
-			if (rotation.Yaw < 180.f) // Left
-			{
-				muzzleFlashParticle = muzzleFlashLeftParticleComponent;
-			}
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
 
-			muzzleFlashParticle->ActivateSystem();
-
-			if (playerToAttack->ActorHasTag("BoomBoom"))
-			{
-				boomBoom->setHealth(boomBoom->getHealth() - damage);
-				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBomImpact, boomBoom->GetActorLocation(), FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
-			}
-			else if (playerToAttack->ActorHasTag("ZipZap"))
-			{
-				zipZap->setHealth(boomBoom->getHealth() - damage);
-				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBomImpact, zipZap->GetActorLocation(), FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
-			}
-		}
+		// Spawn bullet
+		ABullet* bullet = GetWorld()->SpawnActor<ABullet>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
 	}
 }
 
@@ -330,21 +311,11 @@ void AEnemy_Pigeon::RunAway()
 {
 }
 
-bool AEnemy_Pigeon::shouldShoot()
+void AEnemy_Pigeon::FaceNearestPlayer()
 {
-	float distanceToBoomBoomX = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
-	float distanceToBoomBoomY = abs(boomBoom->GetActorLocation().Z - GetActorLocation().Z);
-	float distanceToBoomBoom = sqrt(pow(distanceToBoomBoomX, 2) + pow(distanceToBoomBoomY, 2));
-
-	float distanceToZipZapX = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
-	float distanceToZipZapY = abs(zipZap->GetActorLocation().Z - GetActorLocation().Z);
-	float distanceToZipZap = sqrt(pow(distanceToZipZapX, 2) + pow(distanceToZipZapY, 2));
-
 	// Boom Boom is closer
-	if (distanceToBoomBoom < distanceToZipZap)
+	if (playerToAttack->ActorHasTag("BoomBoom"))
 	{
-		playerToAttack = boomBoom;
-
 		// Face him
 		if (boomBoom->GetActorLocation().X < GetActorLocation().X) // He's on the left
 		{
@@ -357,19 +328,9 @@ bool AEnemy_Pigeon::shouldShoot()
 			rotation.Yaw = 180.f;
 			flipbookComponent->SetWorldRotation(rotation);
 		}
-
-		// Check if he is close enough to activate particle for collision detection
-		if (distanceToBoomBoom > 55.f)
-		{
-			return true;
-		}
-
-		return false;
 	}
 	else // Zip Zap is closer
 	{
-		playerToAttack = zipZap;
-
 		// Face him
 		if (zipZap->GetActorLocation().X < GetActorLocation().X) // He's on the left
 		{
@@ -382,17 +343,7 @@ bool AEnemy_Pigeon::shouldShoot()
 			rotation.Yaw = 180.f;
 			flipbookComponent->SetWorldRotation(rotation);
 		}
-
-		// Check if he is close enough to activate particle for collision detection
-		if (distanceToZipZap > 55.f)
-		{
-			return true;
-		}
-
-		return false;
 	}
-
-	return false;
 }
 
 void AEnemy_Pigeon::EndAttack()
@@ -420,11 +371,6 @@ void AEnemy_Pigeon::ProcessBulletCollision(FVector hitPos)
 	bool hit = UKismetSystemLibrary::SphereTraceSingle(GetWorld(), hitPos, endPoint, 10.f, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::None, OutHit, true);
 	if (hit)
 	{
-		if (bulletBeamParticleComponent != NULL)
-		{
-			bulletBeamParticleComponent->DeactivateImmediate();
-		}
-	
 		FRotator rot = OutHit.GetActor()->GetActorRotation();
 		AActor* HitActor = OutHit.GetActor();
 		
@@ -433,7 +379,6 @@ void AEnemy_Pigeon::ProcessBulletCollision(FVector hitPos)
 			if (boomBoom != NULL)
 			{
 				boomBoom->setHealth(boomBoom->getHealth() - damage);
-				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBomImpact, OutHit.Location, FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
 			}
 		}
 		
@@ -442,7 +387,6 @@ void AEnemy_Pigeon::ProcessBulletCollision(FVector hitPos)
 			if (zipZap != NULL)
 			{
 				zipZap->setHealth(zipZap->getHealth() - damage);
-				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBomImpact, OutHit.Location, FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
 			}
 		}
 	}

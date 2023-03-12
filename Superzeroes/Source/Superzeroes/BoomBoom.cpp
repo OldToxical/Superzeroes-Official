@@ -69,7 +69,7 @@ ABoomBoom::~ABoomBoom()
 
 void ABoomBoom::setHealth(float newHealth)
 {
-	if (characterState != State::Hurt)
+	if (characterState != State::Hurt && characterState != State::Attacking)
 	{
 		health = newHealth;
 		characterState = State::Hurt;

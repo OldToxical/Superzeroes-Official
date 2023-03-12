@@ -1,18 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-#include "BoxTrigger.h"
+#include "BoxTriggerBoomBoom.h"
+#include "BoomBoom.h"
 #include "ZipZap.h"
 #include "Engine/EngineTypes.h"
 
-ABoxTrigger::ABoxTrigger()
+ABoxTriggerBoomBoom::ABoxTriggerBoomBoom()
 {
 	colliderPlaneActor = NULL;
 }
 
-void ABoxTrigger::OverlapBegin(AActor* otherActor)
+void ABoxTriggerBoomBoom::OverlapBegin(AActor* otherActor)
 {
 	if (otherActor && (otherActor != this))
 	{
-		if (otherActor->IsA(AZipZap::StaticClass()))
+		if (otherActor->IsA(ABoomBoom::StaticClass()))
 		{
 			if (colliderPlaneActor != NULL)
 			{
@@ -22,7 +23,7 @@ void ABoxTrigger::OverlapBegin(AActor* otherActor)
 	}
 }
 
-void ABoxTrigger::OverlapEnd()
+void ABoxTriggerBoomBoom::OverlapEnd()
 {
 	if (colliderPlaneActor != NULL)
 	{
