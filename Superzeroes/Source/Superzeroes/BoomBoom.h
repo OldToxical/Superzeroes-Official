@@ -159,15 +159,15 @@ protected:
 		bool launchZipZap;
 
 	//Variable to keep track of Boom Boom's health
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float health;
 
 	// Particles' variables
 	UPROPERTY(BlueprintReadWrite)
 		UParticleSystemComponent* smokeParticle;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class UBoxComponent* collision;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		//class UBoxComponent* collision;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;

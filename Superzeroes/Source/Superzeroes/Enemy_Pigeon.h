@@ -7,6 +7,7 @@
 #include "BoomBoom.h"
 #include "ZipZap.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Enemy_Pigeon.generated.h"
@@ -14,11 +15,13 @@
 #define Q_LearningRate 0.9
 #define Q_DiscountFactor 0.55
 #define Q_EstimatedOptimalFutureValue 20
-#define MinimumDistanceToGetIntoCombat 100
+#define MinimumDistanceToGetIntoCombatX 100
+#define MinimumDistanceToGetIntoCombatZ 50
 #define ShootingAnimationLength 0.6
 
 class ABoomBoom;
 class AZipZap;
+class AProjectile;
 
 enum State3
 {
@@ -65,7 +68,7 @@ private:
 	void WalkRight();
 	void Attack();
 	void RunAway();
-	bool shouldShoot();
+	void FaceNearestPlayer();
 
 	float chooseActionTimeoutTimer;
 	float stateUpdateTimer;
@@ -95,11 +98,7 @@ private:
 
 	// Particles
 	UPROPERTY(EditAnywhere)
-		UNiagaraSystem* bulletProjectileBeamParticleSystem;
-
-	// Particles
-	UPROPERTY(EditAnywhere)
-		UParticleSystem* boomBomImpact;
+		UNiagaraSystem* muzzleFlashParticle;
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -117,15 +116,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		AActor* playerToAttack;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UNiagaraComponent* bulletProjectileMeshParticleComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UNiagaraComponent* bulletBeamParticleComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UNiagaraComponent* muzzleFlashLeftParticleComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UNiagaraComponent* muzzleFlashRightParticleComponent;
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<AProjectile> bulletClass;
 };
