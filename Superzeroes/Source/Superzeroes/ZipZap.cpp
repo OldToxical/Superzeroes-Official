@@ -73,14 +73,14 @@ void AZipZap::BeginPlay()
 
 	//collision->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
 	//collision->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+	//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
 	//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	//hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
 	if (boomBoom != NULL)
 	{
-		MoveIgnoreActorAdd(boomBoom->GetOwner());
+		//MoveIgnoreActorAdd(boomBoom->GetOwner());
 	}
 }
 
@@ -125,7 +125,7 @@ void AZipZap::Tick(float DeltaTime)
 		deathTimer += DeltaTime;
 		//when 15 seconds have passed
 		if (deathTimer >= 15.0f) {
-			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn")); //enable collision for zip zap when respawning
+			//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn")); //enable collision for zip zap when respawning
 			//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 			//hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 			health = 100.0f;

@@ -85,7 +85,7 @@ void ABoomBoom::BeginPlay()
 	SetupPlayerInputComponent(Super::InputComponent);
 	//collision->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
 	//collision->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+	//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
 	//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
@@ -97,7 +97,7 @@ void ABoomBoom::BeginPlay()
 
 	if (zipZap != NULL)
 	{
-		MoveIgnoreActorAdd(zipZap->GetOwner());
+		//MoveIgnoreActorAdd(zipZap->GetOwner());
 		zipZap->SetBoomBoomReference(this);
 		zipZap->SetupPlayerInput(Super::InputComponent);
 	}
@@ -143,7 +143,7 @@ void ABoomBoom::Tick(float DeltaTime)
 	{
 		deathTimer += DeltaTime;
 		if (deathTimer >= 15.0f) {
-			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn")); //enable collision when alive
+			//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn")); //enable collision when alive
 			//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 			health = 200.0f;
 			deathTimer = 0.0f;
@@ -382,18 +382,21 @@ void ABoomBoom::InitiateZipZapComboAttack_Projectile()
 {
 	if (zipZap != NULL)
 	{
-		float proximityToZipZapX = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
-		float proximityToZipZapZ = abs(zipZap->GetActorLocation().Z - GetActorLocation().Z);
-
-		if (proximityToZipZapX <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack && proximityToZipZapZ <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack)
+		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling())
 		{
-			if (IsFacingZipZap())
+			float proximityToZipZapX = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
+			float proximityToZipZapZ = abs(zipZap->GetActorLocation().Z - GetActorLocation().Z);
+
+			if (proximityToZipZapX <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack && proximityToZipZapZ <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack)
 			{
-				punchPreludeTimer = AcutalPunchDelay;
-				launchZipZap = true;
-				flipbook->SetLooping(false);
-				flipbook->SetFlipbook(simpleAttack);
-				characterState = State::Attacking;
+				if (IsFacingZipZap())
+				{
+					punchPreludeTimer = AcutalPunchDelay;
+					launchZipZap = true;
+					flipbook->SetLooping(false);
+					flipbook->SetFlipbook(simpleAttack);
+					characterState = State::Attacking;
+				}
 			}
 		}
 	}

@@ -159,7 +159,7 @@ protected:
 		bool launchZipZap;
 
 	//Variable to keep track of Boom Boom's health
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float health;
 
 	// Particles' variables
