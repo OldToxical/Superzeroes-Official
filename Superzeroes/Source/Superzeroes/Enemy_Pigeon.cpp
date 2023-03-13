@@ -3,6 +3,7 @@
 
 #include "Enemy_Pigeon.h"
 #include "Components/BoxComponent.h"
+#include "Projectile.h"
 #include <chrono>
 #include <thread>
 
@@ -303,7 +304,7 @@ void AEnemy_Pigeon::Attack()
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
 
 		// Spawn bullet
-		ABullet* bullet = GetWorld()->SpawnActor<ABullet>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
+		AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
 	}
 }
 

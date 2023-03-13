@@ -10,7 +10,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-#include "Bullet.h"
 #include "Enemy_Pigeon.generated.h"
 
 #define Q_LearningRate 0.9
@@ -22,6 +21,7 @@
 
 class ABoomBoom;
 class AZipZap;
+class AProjectile;
 
 enum State3
 {
@@ -117,5 +117,5 @@ protected:
 		AActor* playerToAttack;
 
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<ABullet> bulletClass;
+		TSubclassOf<AProjectile> bulletClass;
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
+#include "NiagaraFunctionLibrary.h"
 #include "ZipZap.generated.h"
 
 #define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 60
@@ -24,6 +25,7 @@ enum class State2 : uint8
 };
 class ABoomBoom;
 class AEnemy;
+class AProjectile;
 
 UCLASS()
 class SUPERZEROES_API AZipZap : public APaperCharacter
@@ -79,8 +81,6 @@ public:
 		void UpdateComboAttack_Projectile();
 	UFUNCTION(BlueprintCallable)
 		void Electrify();
-	//UFUNCTION(BlueprintCallable)
-		//void HitCheck();
 	UFUNCTION(BlueprintCallable)
 		void StopProjectileAttack();
 	UFUNCTION(BlueprintCallable)
@@ -92,7 +92,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ProcessHit(float damage_);
 	UFUNCTION(BlueprintCallable)
+		void ProcessShoot(float damage_);
+	UFUNCTION(BlueprintCallable)
 		void SetLevelIndex(int level) { currentLevel = level; }
+	UFUNCTION(BlueprintCallable)
+		void Shoot();
 
 	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
@@ -139,15 +143,23 @@ protected:
 	UPROPERTY(EditAnywhere)
 		bool isElectrified;
 
+	// Variable to keep track whether zip zap is shooting or not during the current attack stage
+	UPROPERTY(EditAnywhere)
+		bool isShooting;
+
+	// Variable to keep track whether zip zap has dealt damage
+	UPROPERTY(EditAnywhere)
+		bool damageDealt;
+
 	//Variable to keep track of Zip Zap's health
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float health;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UBoxComponent* hitbox;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class UBoxComponent* collision;
+		class UBoxComponent* collision;*/
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
@@ -158,4 +170,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<FVector> spawnLoc;
+
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<AProjectile> electricChargeClass;
+
+	// Particles
+	UPROPERTY(EditAnywhere)
+		UParticleSystem* muzzleFlashParticle;
 };

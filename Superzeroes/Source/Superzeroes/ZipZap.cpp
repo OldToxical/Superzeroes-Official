@@ -12,6 +12,7 @@
 #include "Toxic.h"
 #include "Trash.h"
 #include "Enemy.h"
+#include "Projectile.h"
 
 // Sets default values
 AZipZap::AZipZap()
@@ -21,8 +22,10 @@ AZipZap::AZipZap()
 	jumpPreludeTimer = 0.f;
 	projectileAttackResetStateTimeoutTimer = 0.f;
 	isElectrified = false;
+	isShooting = false;
 	health = 100.f;
 	toxicDamage = false;
+	damageDealt = false;
 	currentLevel = 0;
 
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
@@ -37,13 +40,13 @@ AZipZap::AZipZap()
 		flipbook->SetGenerateOverlapEvents(false);
 	}
 
-	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
+	/*hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
 	hitbox->SetRelativeScale3D(FVector(0.25, 0.25, 0.25));
 	hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
 	hitbox->SetupAttachment(RootComponent);
 
 	collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
-	collision->SetupAttachment(RootComponent);
+	collision->SetupAttachment(RootComponent);*/
 
 	spawnLoc.Add(FVector(-1750.f, .5f, -189.f));
 	spawnLoc.Add(FVector(-240.f, .5f, -189.f));
@@ -68,11 +71,12 @@ void AZipZap::BeginPlay()
 	healTimer = 0.0f;
 	deathTimer = 0.0f;
 
-	collision->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
-	collision->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
+	//collision->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
+	//collision->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
-	collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
-	hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
+	//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	//hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
 	if (boomBoom != NULL)
 	{
@@ -89,12 +93,7 @@ void AZipZap::Tick(float DeltaTime)
 	{
 		UpdateAnimation();
 		UpdateState();
-		//Boom Boom's savage attack is triggered using a different button for zip zap's attacking
-		/*// If zip zap is attacking, check the hitbox for collision
-		if (characterState == State2::Attacking)
-		{
-			HitCheck();
-		}*/
+
 		if (toxicDamage == true)
 		{
 			setHealth(health - 0.5f); //this damages Zip Zap far more than Boom Boom
@@ -114,8 +113,8 @@ void AZipZap::Tick(float DeltaTime)
 		if (health <= 0.f)
 		{
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator")); //disable collision while dead
-			collision->SetCollisionProfileName(TEXT("NoCollision"));
-			hitbox->SetCollisionProfileName(TEXT("NoCollision"));
+			//collision->SetCollisionProfileName(TEXT("NoCollision"));
+			//hitbox->SetCollisionProfileName(TEXT("NoCollision"));
 			characterState = State2::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
@@ -127,8 +126,8 @@ void AZipZap::Tick(float DeltaTime)
 		//when 15 seconds have passed
 		if (deathTimer >= 15.0f) {
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn")); //enable collision for zip zap when respawning
-			collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
-			hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+			//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+			//hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 			health = 100.0f;
 			deathTimer = 0.0f;
 			SetActorLocation(spawnLoc[currentLevel]);
@@ -175,13 +174,13 @@ void AZipZap::move(float scaleVal)
 			{
 				rotation.Yaw = 0.f;
 				flipbook->SetWorldRotation(rotation);
-				hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
+				//hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
 			}
 			else if (scaleVal < 0.f)
 			{
 				rotation.Yaw = 180.0f;
 				flipbook->SetWorldRotation(rotation);
-				hitbox->SetRelativeLocation(FVector(-8.0, 0.0, 0.0));
+				//hitbox->SetRelativeLocation(FVector(-8.0, 0.0, 0.0));
 			}
 	}
 	}
@@ -249,6 +248,7 @@ void AZipZap::SetupPlayerInput(UInputComponent* input_)
 	Input->BindAction("JumpZipZap", IE_Pressed, this, &AZipZap::ExecuteJump);
 	Input->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
 	Input->BindAction("ElectrifyZipZap", IE_Pressed, this, &AZipZap::Electrify);
+	Input->BindAction("ShootZipZap", IE_Pressed, this, &AZipZap::Shoot);
 }
 
 void AZipZap::Attack()
@@ -259,10 +259,11 @@ void AZipZap::Attack()
 		if (characterState != State2::Combo_Projectile)
 		{
 			// Change the state to "attacking"
+			isShooting = false;
 			characterState = State2::Attacking;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(simpleAttack);
-			ProcessHit(25.f);
+			//ProcessHit(25.f);
 		}
 	}
 }
@@ -270,11 +271,12 @@ void AZipZap::Attack()
 void AZipZap::EndAttack()
 {
 	// Once an attack animation has finished, reset the character's state to "idle" and his flipbook's looping property to true, since only the attack animations shouldn't loop
-	if(flipbook->GetFlipbook() != dead)
+	if (flipbook->GetFlipbook() != dead)
 	{
-	characterState = State2::Idle;
-	flipbook->SetLooping(true);
-	flipbook->Play();
+		damageDealt = false;
+	    characterState = State2::Idle;
+	    flipbook->SetLooping(true);
+	    flipbook->Play();
 	}
 }
 
@@ -309,6 +311,25 @@ void AZipZap::UpdateState()
 		if (projectileAttackResetStateTimeoutTimer <= 0.f)
 		{
 			StopProjectileAttack();
+		}
+	}
+
+	if (characterState == State2::Attacking)
+	{
+		if (!isShooting)
+		{
+			if (flipbook->GetPlaybackPositionInFrames() == 3 && !damageDealt)
+			{
+				ProcessHit(25.f);
+				damageDealt = true;
+				return;
+			}
+		}
+
+		if (flipbook->GetPlaybackPositionInFrames() == 3 && !damageDealt)
+		{
+			ProcessShoot(25.f);
+			damageDealt = true;
 		}
 	}
 }
@@ -358,26 +379,23 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		{
 			if (characterState == State2::Combo_Projectile)
 			{
-				AEnemy* Enemy = (AEnemy*)otherActor;
-
-				if (Enemy == NULL)
+				if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null enemy"));
-					return;
-				}
+					if (isElectrified)
+					{
+						Enemy->TakeEnemyDamage(90.f);
+					}
+					else
+					{
+						Enemy->TakeEnemyDamage(60.f);
+					}
 
-				if (isElectrified)
-				{
-					Enemy->TakeEnemyDamage(90.f);
+					Enemy->LaunchCharacter(FVector(charMove->Velocity.X / 3.f, charMove->Velocity.Y, charMove->Velocity.Z), false, false);
 				}
-				else
-				{
-					Enemy->TakeEnemyDamage(60.f);
-				}
-
-				Enemy->LaunchCharacter(FVector(charMove->Velocity.X / 3.f, charMove->Velocity.Y, charMove->Velocity.Z), false, false);
 			}
 		}
+
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, otherActor->GetName());
 	}
 }
 
@@ -448,15 +466,34 @@ void AZipZap::ProcessHit(float damage_)
 
 		if (HitActor->ActorHasTag("Enemy"))
 		{
-			AEnemy* Enemy = (AEnemy*)HitActor;
-
-			if (Enemy == NULL)
+			if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null enemy"));
-				return;
+				Enemy->TakeEnemyDamage(damage_);
 			}
-
-			Enemy->TakeEnemyDamage(damage_);
 		}
 	}
+}
+
+void AZipZap::ProcessShoot(float damage_)
+{
+	FVector muzzleFlashLocation = FVector(GetActorLocation().X + 54.f, GetActorLocation().Y, GetActorLocation().Z - 5.f);
+
+	if (rotation.Yaw > 0.f) // Left
+	{
+		muzzleFlashLocation.X -= 108.f;
+	}
+
+	UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.2f, .2f, .2f));
+	muzzleFlash->CustomTimeDilation = 3.f;
+
+	// Spawn electric charge
+	AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
+}
+
+void AZipZap::Shoot()
+{
+	isShooting = true;
+	characterState = State2::Attacking;
+	flipbook->SetLooping(false);
+	flipbook->SetFlipbook(simpleAttack);
 }

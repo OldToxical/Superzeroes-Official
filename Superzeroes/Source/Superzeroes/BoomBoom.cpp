@@ -49,8 +49,8 @@ ABoomBoom::ABoomBoom()
 		flipbook->SetCollisionProfileName(CollisionProfileName);
 		flipbook->SetGenerateOverlapEvents(false);
 	}
-	collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
-	collision->SetupAttachment(RootComponent);
+	//collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
+	//collision->SetupAttachment(RootComponent);
 }
 
 ABoomBoom::~ABoomBoom()
@@ -83,10 +83,11 @@ void ABoomBoom::BeginPlay()
 {
 	Super::BeginPlay(); toxicDamage = false;
 	SetupPlayerInputComponent(Super::InputComponent);
-	collision->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
-	collision->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
+	//collision->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
+	//collision->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
-	collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
+	//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
 	flipbook->SetFlipbook(idle);
 	rotation = FRotator::ZeroRotator;
@@ -132,7 +133,7 @@ void ABoomBoom::Tick(float DeltaTime)
 		if (health <= 0.f)
 		{
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator")); //disable collision when dead
-			collision->SetCollisionProfileName(TEXT("NoCollision"));
+			//collision->SetCollisionProfileName(TEXT("NoCollision"));
 			characterState = State::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
@@ -143,7 +144,7 @@ void ABoomBoom::Tick(float DeltaTime)
 		deathTimer += DeltaTime;
 		if (deathTimer >= 15.0f) {
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn")); //enable collision when alive
-			collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+			//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 			health = 200.0f;
 			deathTimer = 0.0f;
 			SetActorLocation(spawnLoc[currentLevel]); //respawn at last known location
@@ -475,6 +476,8 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 				Enemy->TakeEnemyDamage(100.f);
 			}
 		}
+
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, otherActor->GetName());
 	}
 }
 

@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "BoomBoom.h"
 #include "ZipZap.h"
+#include "Enemy.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Projectile.generated.h"
 

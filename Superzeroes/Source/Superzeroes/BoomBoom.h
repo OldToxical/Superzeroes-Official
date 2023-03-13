@@ -166,8 +166,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 		UParticleSystemComponent* smokeParticle;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class UBoxComponent* collision;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		//class UBoxComponent* collision;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
