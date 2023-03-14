@@ -12,6 +12,7 @@
 #include "Toxic.h"
 #include "Trash.h"
 #include "Enemy.h"
+#include "Button_But_Awesome.h"
 #include "Projectile.h"
 
 // Sets default values
@@ -75,6 +76,7 @@ void AZipZap::BeginPlay()
 	//collision->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
 	//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
 	//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	//hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
@@ -470,6 +472,18 @@ void AZipZap::ProcessHit(float damage_)
 			{
 				Enemy->TakeEnemyDamage(damage_);
 			}
+		}
+		if (HitActor->ActorHasTag("Button"))
+		{
+			AButton_But_Awesome* button = (AButton_But_Awesome*)HitActor;
+
+			if (button == NULL)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null"));
+				return;
+			}
+			button->ButtPress();
+
 		}
 	}
 }

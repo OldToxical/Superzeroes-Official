@@ -108,7 +108,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		float getHealth() { return health; };
 	UFUNCTION(BlueprintCallable)
-		void setHealth(float newHealth);
+		void setHealth(float newHealth);// Enum instance for the character's state
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		State characterState;
 
 protected:
 	// Called when the game starts or when spawned
@@ -118,9 +120,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FRotator rotation;
 
-	// Enum instance for the character's state
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		State characterState;
+	
 
 	// Reference to Zip Zap's object
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

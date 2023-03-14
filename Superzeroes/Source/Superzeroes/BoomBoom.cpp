@@ -8,6 +8,7 @@
 #include "Toxic.h"
 #include "Trash.h"
 #include "Enemy.h"
+#include "Button_But_Awesome.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -87,6 +88,7 @@ void ABoomBoom::BeginPlay()
 	//collision->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
 	//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
 	//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
 	flipbook->SetFlipbook(idle);
@@ -479,6 +481,11 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 				Enemy->TakeEnemyDamage(100.f);
 			}
 		}
+		if (otherActor->IsA(ATrash::StaticClass()))
+		{
+			setHealth(health - 5.f);
+			UE_LOG(LogTemp, Warning, TEXT("ROFL"));
+		}
 
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, otherActor->GetName());
 	}
@@ -530,6 +537,18 @@ void ABoomBoom::ProcessHit(float damage_)
 			}
 
 			Enemy->TakeEnemyDamage(damage_);
+		}
+		if (HitActor->ActorHasTag("Button"))
+		{
+			AButton_But_Awesome* button  = (AButton_But_Awesome*)HitActor;
+
+			if (button == NULL)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null"));
+				return;
+			}
+			button->ButtPress();
+			
 		}
 	}
 }
