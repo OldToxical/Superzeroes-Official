@@ -21,6 +21,7 @@ enum class State2 : uint8
 	Attacking,
 	Combo_Projectile,
 	Hurt,
+	Siege,
 	Dead
 };
 class ABoomBoom;
@@ -70,8 +71,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ExecuteJump();
 	UFUNCTION(BlueprintCallable)
-		void Attack();
-	UFUNCTION(BlueprintCallable)
 		void EndAttack();
 	UFUNCTION(BlueprintCallable)
 		void InitiateComboAttack_Savage();
@@ -90,13 +89,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetupPlayerInput(UInputComponent* input_);
 	UFUNCTION(BlueprintCallable)
-		void ProcessHit(float damage_);
-	UFUNCTION(BlueprintCallable)
 		void ProcessShoot(float damage_);
 	UFUNCTION(BlueprintCallable)
 		void SetLevelIndex(int level) { currentLevel = level; }
 	UFUNCTION(BlueprintCallable)
 		void Shoot();
+	UFUNCTION(BlueprintCallable)
+		void SetState(State2 state_) { characterState = state_; }
 
 	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,

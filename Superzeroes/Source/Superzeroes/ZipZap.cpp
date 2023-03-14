@@ -75,6 +75,7 @@ void AZipZap::BeginPlay()
 	//collision->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
 	//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
 	//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	//hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
@@ -164,7 +165,7 @@ void AZipZap::move(float scaleVal)
 	// Add movement force only if the character is not in a state of savage attack
 	if (characterState != State2::Dead)
 	{
-		if (characterState != State2::Combo_Projectile)
+		if (characterState != State2::Combo_Projectile && characterState != State2::Siege)
 		{
 			characterSpeed = 350.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
@@ -190,15 +191,21 @@ void AZipZap::InitiateComboAttack_Savage()
 {
 	if (boomBoom != NULL)
 	{
-		float proximityToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
-
-		if (proximityToBoomBoom <= MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack)
+		if (characterState != State2::Dead)
 		{
-			if (IsFacingBoomBoom())
+			if (characterState != State2::Siege && characterState != State2::Attacking && characterState != State2::Combo_Projectile)
 			{
-				boomBoom->InitiateComboAttack_Savage(rotation.Yaw);
-				flipbook->SetLooping(false);
-				flipbook->SetFlipbook(initiateBoomBoomSavageComboAttack);
+				float proximityToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
+
+				if (proximityToBoomBoom <= MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack)
+				{
+					if (IsFacingBoomBoom())
+					{
+						boomBoom->InitiateComboAttack_Savage(rotation.Yaw);
+						flipbook->SetLooping(false);
+						flipbook->SetFlipbook(initiateBoomBoomSavageComboAttack);
+					}
+				}
 			}
 		}
 	}
@@ -244,28 +251,10 @@ void AZipZap::SetupPlayerInput(UInputComponent* input_)
 	Input = input_;
 
 	Input->BindAxis("MoveZipZap", this, &AZipZap::move);
-	Input->BindAction("AttackZipZap", IE_Pressed, this, &AZipZap::Attack);
 	Input->BindAction("JumpZipZap", IE_Pressed, this, &AZipZap::ExecuteJump);
 	Input->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
 	Input->BindAction("ElectrifyZipZap", IE_Pressed, this, &AZipZap::Electrify);
 	Input->BindAction("ShootZipZap", IE_Pressed, this, &AZipZap::Shoot);
-}
-
-void AZipZap::Attack()
-{
-	// Allow the execution of the simple attack only if the character is not in a state of savage attack
-	if (characterState != State2::Dead)
-	{
-		if (characterState != State2::Combo_Projectile)
-		{
-			// Change the state to "attacking"
-			isShooting = false;
-			characterState = State2::Attacking;
-			flipbook->SetLooping(false);
-			flipbook->SetFlipbook(simpleAttack);
-			//ProcessHit(25.f);
-		}
-	}
 }
 
 void AZipZap::EndAttack()
@@ -316,16 +305,6 @@ void AZipZap::UpdateState()
 
 	if (characterState == State2::Attacking)
 	{
-		if (!isShooting)
-		{
-			if (flipbook->GetPlaybackPositionInFrames() == 3 && !damageDealt)
-			{
-				ProcessHit(25.f);
-				damageDealt = true;
-				return;
-			}
-		}
-
 		if (flipbook->GetPlaybackPositionInFrames() == 3 && !damageDealt)
 		{
 			ProcessShoot(25.f);
@@ -338,7 +317,7 @@ void AZipZap::ExecuteJump()
 {
 	if (characterState != State2::Dead)
 	{
-		if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling() && characterState != State2::Hurt)
+		if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling() && characterState != State2::Hurt && characterState != State2::Siege)
 		{
 			jumpPreludeTimer = 0.27f;
 			characterState = State2::Jumping;
@@ -441,39 +420,6 @@ bool AZipZap::IsFacingBoomBoom()
 	return false;
 }
 
-void AZipZap::ProcessHit(float damage_)
-{
-	FHitResult OutHit;
-	TArray<AActor*> actorsToIgnore;
-	// For later: add other enemies and trash instances to the above-defined array
-	FVector startPoint = GetActorLocation();
-	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z + 5.f);
-
-	if (rotation.Yaw > 0.f) // Looking left
-	{
-		endPoint.X -= 30.f;
-	}
-	else // Looking right
-	{
-		endPoint.X += 30.f;
-	}
-
-	bool hit = UKismetSystemLibrary::LineTraceSingle(this, startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::Persistent, OutHit, true);
-	if (hit)
-	{
-		FRotator rot = OutHit.GetActor()->GetActorRotation();
-		AActor* HitActor = OutHit.GetActor();
-
-		if (HitActor->ActorHasTag("Enemy"))
-		{
-			if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
-			{
-				Enemy->TakeEnemyDamage(damage_);
-			}
-		}
-	}
-}
-
 void AZipZap::ProcessShoot(float damage_)
 {
 	FVector muzzleFlashLocation = FVector(GetActorLocation().X + 54.f, GetActorLocation().Y, GetActorLocation().Z - 5.f);
@@ -492,8 +438,14 @@ void AZipZap::ProcessShoot(float damage_)
 
 void AZipZap::Shoot()
 {
-	isShooting = true;
-	characterState = State2::Attacking;
-	flipbook->SetLooping(false);
-	flipbook->SetFlipbook(simpleAttack);
+	if (characterState != State2::Dead)
+	{
+		if (characterState != State2::Combo_Projectile && characterState != State2::Siege)
+		{
+			isShooting = true;
+			characterState = State2::Attacking;
+			flipbook->SetLooping(false);
+			flipbook->SetFlipbook(simpleAttack);
+		}
+	}
 }

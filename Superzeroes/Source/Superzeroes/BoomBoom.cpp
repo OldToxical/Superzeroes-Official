@@ -21,15 +21,16 @@ ABoomBoom::ABoomBoom()
 	simpleAttack_sequenceTimeoutTimer = 0.f;
 	jumpPreludeTimer = 0.f;
 	punchPreludeTimer = 0.f;
-	charMove = NULL;
+	charMove = nullptr;
 	characterState = State::Idle;
-	jumping = NULL;
-	run = NULL;
-	simpleAttack = NULL;
-	simpleAttackSequence = NULL;
-	strongAttack = NULL;
-	strongAttackCharge = NULL;
-	zipZap = NULL;
+	jumping = nullptr;
+	run = nullptr;
+	simpleAttack = nullptr;
+	simpleAttackSequence = nullptr;
+	strongAttack = nullptr;
+	strongAttackCharge = nullptr;
+	zipZap = nullptr;
+	siegeMode = nullptr;
 	isSimpleAttackSequenced = false;
 	launchZipZap = false;
 	health = 200.f;
@@ -69,7 +70,7 @@ ABoomBoom::~ABoomBoom()
 
 void ABoomBoom::setHealth(float newHealth)
 {
-	if (characterState != State::Hurt && characterState != State::Attacking)
+	if (characterState != State::Hurt && characterState != State::Attacking && characterState != State::Combo_Savage)
 	{
 		health = newHealth;
 		characterState = State::Hurt;
@@ -87,6 +88,7 @@ void ABoomBoom::BeginPlay()
 	//collision->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
 	//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
 	//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
 	flipbook->SetFlipbook(idle);
@@ -95,11 +97,15 @@ void ABoomBoom::BeginPlay()
 	healTimer = 0.0f;
 	deathTimer = 0.0f;
 
-	if (zipZap != NULL)
+	if (zipZap)
 	{
-		//MoveIgnoreActorAdd(zipZap->GetOwner());
 		zipZap->SetBoomBoomReference(this);
 		zipZap->SetupPlayerInput(Super::InputComponent);
+	}
+
+	if (siegeMode)
+	{
+		siegeMode->SetupPlayerInput(Super::InputComponent);
 	}
 }
 
@@ -249,7 +255,7 @@ void ABoomBoom::move(float scaleVal)
 	// Add movement force only if the character is not in a state of attacking
 	if (characterState != State::Dead)
 	{
-		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking))
+		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && (characterState != State::Siege))
 		{
 			characterSpeed = 300.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
@@ -273,7 +279,7 @@ void ABoomBoom::ExecuteJump()
 {
 	if (characterState != State::Dead)
 	{
-		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && characterState != State::Hurt)
+		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && characterState != State::Hurt && (characterState != State::Siege))
 		{
 			jumpPreludeTimer = 0.47f;
 			characterState = State::Jumping;
@@ -288,7 +294,7 @@ void ABoomBoom::Attack(float scaleVal)
 	if (characterState != State::Dead)
 	{
 		// Allow the execution of the simple attack only if the character is not in a state of savage attack
-		if (characterState != State::Combo_Savage)
+		if (characterState != State::Combo_Savage && characterState != State::Siege)
 		{
 			// If the attack button is pressed (or held), keep track of how long the user is holding the button down
 			if (scaleVal > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength))
@@ -382,7 +388,7 @@ void ABoomBoom::InitiateZipZapComboAttack_Projectile()
 {
 	if (zipZap != NULL)
 	{
-		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling())
+		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && (characterState != State::Siege))
 		{
 			float proximityToZipZapX = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
 			float proximityToZipZapZ = abs(zipZap->GetActorLocation().Z - GetActorLocation().Z);

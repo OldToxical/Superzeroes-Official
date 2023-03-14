@@ -7,6 +7,7 @@
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "ZipZap.h"
+#include "Siege.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "BoomBoom.generated.h"
 
@@ -26,6 +27,7 @@ enum class State : uint8
 	Attacking,
 	Combo_Savage,
 	Hurt,
+	Siege,
 	Dead
 };
 
@@ -104,6 +106,8 @@ public:
 		void ProcessHit(float damage_);
 	UFUNCTION(BlueprintCallable)
 		void SetLevelIndex(int level) { currentLevel = level; }
+	UFUNCTION(BlueprintCallable)
+		void SetState(State state_) { characterState = state_; }
 
 	UFUNCTION(BlueprintCallable)
 		float getHealth() { return health; };
@@ -125,6 +129,10 @@ protected:
 	// Reference to Zip Zap's object
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AZipZap* zipZap;
+
+	// Reference to Siege's object
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ASiege* siegeMode;
 
 	// Variable for the character's speed
 	UPROPERTY(EditAnywhere)
