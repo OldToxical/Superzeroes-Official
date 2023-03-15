@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Bullet.h"
+#include "BoxTrigger.h"
 
 ABullet::ABullet()
 {
@@ -64,7 +65,10 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 			}
 		}
 
-		Destroy();
+		if (!otherActor->IsA(ABoxTrigger::StaticClass()))
+		{
+			Destroy();
+		}
 	}
 }
 

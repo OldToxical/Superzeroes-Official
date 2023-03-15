@@ -52,7 +52,7 @@ protected:
 		AEnemySpawner* spawner;
 
 public:
-	void TakeEnemyDamage(float damage_) { healthPoints -= damage_; }
+	virtual void TakeEnemyDamage(float damage_);
 	void AddToGetActorsToIgnore(AActor* actor) { actorsToIgnore.Add(actor); }
 	void SetSpawner(AEnemySpawner* spawner_) { spawner = spawner_; }
 };

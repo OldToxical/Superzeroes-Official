@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "ElectricCharge.h"
+#include "BoxTrigger.h"
 
 AElectricCharge::AElectricCharge()
 {
@@ -50,7 +51,10 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 			}
 		}
 
-		Destroy();
+		if (!otherActor->IsA(ABoxTrigger::StaticClass()))
+		{
+			Destroy();
+		}
 	}
 	
 }
