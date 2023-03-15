@@ -298,14 +298,13 @@ void ABoomBoom::climb(float scaleVal)
 			if (canClimb == true )
 			{
 
+				charMove->GravityScale = 0.0f;
 				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + scaleVal));
 				if (scaleVal != 0)
 				{
-					charMove->GravityScale = 0.0f;
 					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
 					charMove->Velocity.X = 0;
 				}
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("wawadaadawas"));
 			}
 		}
 	}
@@ -529,6 +528,7 @@ void ABoomBoom::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherAct
 			canClimb = false;
 			charMove->GravityScale = 0.8f;
 			charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("shart"));
 		}
 	}
 }

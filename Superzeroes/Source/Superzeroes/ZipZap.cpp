@@ -201,12 +201,9 @@ void AZipZap::climb(float scaleVal)
 				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + scaleVal));
 				if (scaleVal != 0)
 				{
-					charMove->GravityScale = 0.0f;
 					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
 					charMove->Velocity.X = 0;
 				}
-
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("asdfsadfsadf"));
 			}
 		}
 	}
@@ -449,6 +446,7 @@ void AZipZap::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor
 		{
 			canClimb = false;
 			charMove->GravityScale = 1.0f;
+			charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
 		}
 	}
 }
