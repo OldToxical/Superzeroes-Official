@@ -10,10 +10,18 @@
 #include "Siege.generated.h"
 
 #define SiegeModeExecutionLength 10
-#define InputTime 3
+#define InputTime 1.3
 #define ShootCooldownTime 0.5
 #define MaximumXDistanceBetweenPlayersForInitiatingSiegeMode 60
 #define MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 20
+
+UENUM()
+enum class SiegeState : uint8
+{
+	Idle,
+	Walking,
+	Attacking
+};
 
 class ABoomBoom;
 class AZipZap;
@@ -23,7 +31,7 @@ UCLASS()
 class SUPERZEROES_API ASiege : public APaperCharacter
 {
 	GENERATED_BODY()
-	
+
 public:
 	ASiege();
 	~ASiege();
@@ -49,15 +57,16 @@ protected:
 	void ExecuteSiegeMode();
 	void Move(float scaleVal);
 	void Shoot();
+	void UpdateAnimation();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		SiegeState state;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UCharacterMovementComponent* charMove;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbookComponent* flipbook;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbook* intro;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbook* idle;
@@ -103,7 +112,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float executionTimer;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		float shootCooldownTimer;
 };

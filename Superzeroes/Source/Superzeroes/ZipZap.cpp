@@ -55,10 +55,17 @@ AZipZap::AZipZap()
 
 void AZipZap::setHealth(float newHealth)
 {
-	health = newHealth;
-	characterState = State2::Hurt;
-	flipbook->SetFlipbook(hurt);
-	flipbook->SetLooping(false);
+	if (characterState != State2::Siege)
+	{
+		health = newHealth;
+
+		if (characterState != State2::Hurt && characterState != State2::Attacking && characterState != State2::Combo_Projectile)
+		{
+			characterState = State2::Hurt;
+			flipbook->SetFlipbook(hurt);
+			flipbook->SetLooping(false);
+		}
+	}
 }
 
 // Called when the game starts or when spawned

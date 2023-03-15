@@ -8,6 +8,7 @@
 #include "Toxic.h"
 #include "Trash.h"
 #include "Enemy.h"
+#include "WindowTrigger.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -50,8 +51,6 @@ ABoomBoom::ABoomBoom()
 		flipbook->SetCollisionProfileName(CollisionProfileName);
 		flipbook->SetGenerateOverlapEvents(false);
 	}
-	//collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
-	//collision->SetupAttachment(RootComponent);
 }
 
 ABoomBoom::~ABoomBoom()
@@ -70,26 +69,27 @@ ABoomBoom::~ABoomBoom()
 
 void ABoomBoom::setHealth(float newHealth)
 {
-	if (characterState != State::Hurt && characterState != State::Attacking && characterState != State::Combo_Savage)
+	if (characterState != State::Siege)
 	{
 		health = newHealth;
-		characterState = State::Hurt;
-		flipbook->SetFlipbook(hurt);
-		flipbook->SetLooping(false);
+
+		if (characterState != State::Hurt && characterState != State::Attacking && characterState != State::Combo_Savage)
+		{
+			characterState = State::Hurt;
+			flipbook->SetFlipbook(hurt);
+			flipbook->SetLooping(false);
+		}
 	}
 }
 
 // Called when the game starts or when spawned
 void ABoomBoom::BeginPlay()
 {
-	Super::BeginPlay(); toxicDamage = false;
+	Super::BeginPlay(); 
+	toxicDamage = false;
 	SetupPlayerInputComponent(Super::InputComponent);
-	//collision->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
-	//collision->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
-	//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
-	//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
 	flipbook->SetFlipbook(idle);
 	rotation = FRotator::ZeroRotator;
@@ -138,8 +138,7 @@ void ABoomBoom::Tick(float DeltaTime)
 
 		if (health <= 0.f)
 		{
-			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator")); //disable collision when dead
-			//collision->SetCollisionProfileName(TEXT("NoCollision"));
+			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator"));
 			characterState = State::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
@@ -149,18 +148,16 @@ void ABoomBoom::Tick(float DeltaTime)
 	{
 		deathTimer += DeltaTime;
 		if (deathTimer >= 15.0f) {
-			//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn")); //enable collision when alive
-			//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+			GetCapsuleComponent()->SetCollisionProfileName(TEXT("MainCharacter")); // Enable collision when alive
 			health = 200.0f;
 			deathTimer = 0.0f;
-			SetActorLocation(spawnLoc[currentLevel]); //respawn at last known location
+			SetActorLocation(spawnLoc[currentLevel]); // Respawn at last known location
 			characterState = State::Idle;
 			flipbook->SetLooping(true);
 			flipbook->Play();
 		}
 	}
 }
-
 
 // Called to bind functionality to input
 void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -474,15 +471,20 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		{
 			if (characterState == State::Combo_Savage)
 			{
-				AEnemy* Enemy = (AEnemy*)otherActor;
-
-				if (Enemy == NULL)
+				if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null enemy"));
-					return;
+					Enemy->TakeEnemyDamage(100.f);
 				}
-
-				Enemy->TakeEnemyDamage(100.f);
+			}
+		}
+		if (otherActor->IsA(AWindowTrigger::StaticClass()))
+		{
+			if (characterState == State::Combo_Savage)
+			{
+				if (AWindowTrigger* window = Cast<AWindowTrigger>(otherActor))
+				{
+					window->BreakWindow();
+				}
 			}
 		}
 
@@ -506,7 +508,6 @@ void ABoomBoom::ProcessHit(float damage_)
 {
 	FHitResult OutHit;
 	TArray<AActor*> actorsToIgnore;
-	// For later: add other enemies and trash instances to the above-defined array
 	FVector startPoint = GetActorLocation();
 	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z - 5.f);
 
@@ -525,16 +526,8 @@ void ABoomBoom::ProcessHit(float damage_)
 		FRotator rot = OutHit.GetActor()->GetActorRotation();
 		AActor* HitActor = OutHit.GetActor();
 
-		if (HitActor->ActorHasTag("Enemy"))
+		if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
 		{
-			AEnemy* Enemy = (AEnemy*)HitActor;
-
-			if (Enemy == NULL)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null enemy"));
-				return;
-			}
-
 			Enemy->TakeEnemyDamage(damage_);
 		}
 	}

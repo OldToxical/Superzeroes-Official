@@ -73,14 +73,6 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	damage = 20.f;
 	healthPoints = 50.f;
 	inCombat = false;
-
-	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
-	hitbox->SetRelativeScale3D(FVector(0.25, 0.25, 0.25));
-	hitbox->SetRelativeLocation(FVector(8.0, 0.0, 0.0));
-	hitbox->SetupAttachment(RootComponent);
-
-	collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
-	collision->SetupAttachment(RootComponent);
 }
 
 void AEnemy_Pigeon::AI()
@@ -196,52 +188,69 @@ void AEnemy_Pigeon::UpdateState()
 
 	switch (currentState)
 	{
-	    case State3::Idle:
-		    flipbookComponent->SetFlipbook(idle);
+	case State3::Idle:
+		if (flipbookComponent->GetFlipbook() != hurtAnim)
+		{
+			flipbookComponent->SetFlipbook(idle);
 			flipbookComponent->SetLooping(true);
-			break;
-		case State3::Jumping:
+		}
+		break;
+
+	case State3::Jumping:
+		if (flipbookComponent->GetFlipbook() != hurtAnim)
+		{
 			flipbookComponent->SetFlipbook(jumpAnim);
 			flipbookComponent->SetLooping(false);
 			Jump();
-			break;
-		case State3::WalkingLeft:
+		}
+		break;
+
+	case State3::WalkingLeft:
+		if (flipbookComponent->GetFlipbook() != hurtAnim)
+		{
 			flipbookComponent->SetFlipbook(walk);
 			flipbookComponent->SetLooping(true);
 			WalkLeft();
-			break;
-		case State3::WalkingRight:
+		}
+		break;
+
+	case State3::WalkingRight:
+		if (flipbookComponent->GetFlipbook() != hurtAnim)
+		{
 			flipbookComponent->SetFlipbook(walk);
 			flipbookComponent->SetLooping(true);
 			WalkRight();
-			break;
-		case State3::Attacking:
-			flipbookComponent->SetFlipbook(attack);
-			flipbookComponent->SetLooping(false);
-			Attack();
-			break;
-		case State3::RunningAway:
+		}
+		break;
+
+	case State3::Attacking:
+		flipbookComponent->SetFlipbook(attack);
+		flipbookComponent->SetLooping(false);
+		Attack();
+		break;
+
+	case State3::RunningAway:
+		if (flipbookComponent->GetFlipbook() != hurtAnim)
+		{
 			flipbookComponent->SetFlipbook(walk);
 			flipbookComponent->SetLooping(true);
-			break;
-	    default:
-			break;
+		}
+		break;
+
+	default:
+		break;
 	}
 
 	// AI Sensing
 	if (boomBoom != nullptr && zipZap != nullptr)
 	{
-		/*if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombat) || (abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombat))
-		{
-			inCombat = true;
-		}*/
-		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && (!inCombat))
+		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ))
 		{
 			inCombat = true;
 			playerToAttack = boomBoom;
 		}
 
-		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && (!inCombat))
+		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ))
 		{
 			inCombat = true;
 			playerToAttack = zipZap;
@@ -301,6 +310,7 @@ void AEnemy_Pigeon::Attack()
 			muzzleFlashLocation.X += 90.68f;
 		}
 
+		// Spawn muzzle flash particle
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
 
 		// Spawn bullet
@@ -314,7 +324,6 @@ void AEnemy_Pigeon::RunAway()
 
 void AEnemy_Pigeon::FaceNearestPlayer()
 {
-	// Boom Boom is closer
 	if (playerToAttack->ActorHasTag("BoomBoom"))
 	{
 		// Face him
@@ -329,66 +338,39 @@ void AEnemy_Pigeon::FaceNearestPlayer()
 			rotation.Yaw = 180.f;
 			flipbookComponent->SetWorldRotation(rotation);
 		}
-	}
-	else // Zip Zap is closer
-	{
-		// Face him
-		if (zipZap->GetActorLocation().X < GetActorLocation().X) // He's on the left
-		{
-			rotation.Yaw = 0.f;
-			flipbookComponent->SetWorldRotation(rotation);
 
-		}
-		else // He's on the right
-		{
-			rotation.Yaw = 180.f;
-			flipbookComponent->SetWorldRotation(rotation);
-		}
+		return;
+	}
+	
+	// Zip Zap is closer, face him
+	if (zipZap->GetActorLocation().X < GetActorLocation().X) // He's on the left
+	{
+		rotation.Yaw = 0.f;
+		flipbookComponent->SetWorldRotation(rotation);
+
+	}
+	else // He's on the right
+	{
+		rotation.Yaw = 180.f;
+		flipbookComponent->SetWorldRotation(rotation);
 	}
 }
 
 void AEnemy_Pigeon::EndAttack()
 {
+	if (flipbookComponent->GetFlipbook() == hurtAnim)
+	{
+		flipbookComponent->SetFlipbook(idle);
+	}
+
 	flipbookComponent->SetLooping(true);
 	flipbookComponent->Play();
-
-	//characterState = State::Idle;
 }
 
-void AEnemy_Pigeon::ProcessBulletCollision(FVector hitPos)
+void AEnemy_Pigeon::TakeEnemyDamage(float damage_)
 {
-	FHitResult OutHit;
-	FVector endPoint = hitPos;
-
-	if (rotation.Yaw < 180.f) // Looking left
-	{
-		endPoint.X -= 40.f;
-	}
-	else // Looking right
-	{
-		endPoint.X += 40.f;
-	}
-
-	bool hit = UKismetSystemLibrary::SphereTraceSingle(GetWorld(), hitPos, endPoint, 10.f, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::None, OutHit, true);
-	if (hit)
-	{
-		FRotator rot = OutHit.GetActor()->GetActorRotation();
-		AActor* HitActor = OutHit.GetActor();
-		
-		if (HitActor->ActorHasTag("BoomBoom"))
-		{
-			if (boomBoom != NULL)
-			{
-				boomBoom->setHealth(boomBoom->getHealth() - damage);
-			}
-		}
-		
-		if (HitActor->ActorHasTag("ZipZap"))
-		{
-			if (zipZap != NULL)
-			{
-				zipZap->setHealth(zipZap->getHealth() - damage);
-			}
-		}
-	}
+	healthPoints -= damage_;
+	flipbookComponent->SetFlipbook(hurtAnim);
+	flipbookComponent->SetLooping(false);
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("udri"));
 }

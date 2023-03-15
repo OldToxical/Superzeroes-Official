@@ -10,17 +10,17 @@
 ASiege::ASiege()
 {
 	boomBoom = nullptr;
-    zipZap = nullptr;
+	zipZap = nullptr;
 	Input = nullptr;
 	charMove = nullptr;
 	electricChargeClass = nullptr;
 	rotation = FRotator::ZeroRotator;
 	executionTimer = SiegeModeExecutionLength;
-	shootCooldownTimer = 0.f;
 	boomBoomInputTimer = 0.f;
 	zipZapInputTimer = 0.f;
 	modeIsActive = false;
 	shotFired = false;
+	state = SiegeState::Idle;
 
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	if (flipbook)
@@ -29,8 +29,7 @@ ASiege::ASiege()
 		flipbook->bAffectDynamicIndirectLighting = true;
 		flipbook->PrimaryComponentTick.TickGroup = TG_PrePhysics;
 		flipbook->SetupAttachment(GetCapsuleComponent());
-		static FName CollisionProfileName(TEXT("CharacterMesh"));
-		flipbook->SetCollisionProfileName(CollisionProfileName);
+		flipbook->SetCollisionProfileName(TEXT("NoCollision"));
 		flipbook->SetGenerateOverlapEvents(false);
 	}
 }
@@ -46,8 +45,9 @@ void ASiege::BeginPlay()
 	rotation = FRotator::ZeroRotator;
 	charMove = GetCharacterMovement();
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ASiege::overlapBegin);
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
 	SetActorHiddenInGame(true);
-	flipbook->SetFlipbook(intro);
+	flipbook->SetFlipbook(idle);
 	flipbook->SetLooping(false);
 	flipbook->Stop();
 }
@@ -55,6 +55,8 @@ void ASiege::BeginPlay()
 void ASiege::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UpdateAnimation();
 
 	if (boomBoomInputTimer >= InputTime && zipZapInputTimer >= InputTime && !modeIsActive)
 	{
@@ -121,6 +123,7 @@ void ASiege::ExecuteSiegeMode()
 	{
 		executionTimer -= GetWorld()->GetDeltaSeconds();
 
+		GetCapsuleComponent()->SetCollisionProfileName(TEXT("MainCharacter"));
 		SetActorHiddenInGame(false);
 		boomBoom->SetActorHiddenInGame(true);
 		boomBoom->SetState(State::Siege);
@@ -153,6 +156,7 @@ void ASiege::ExecuteSiegeMode()
 		return;
 	}
 
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
 	SetActorHiddenInGame(true);
 	boomBoom->SetActorHiddenInGame(false);
 	boomBoom->SetState(State::Idle);
@@ -168,21 +172,30 @@ void ASiege::Move(float scaleVal)
 	{
 		if (scaleVal > 0.f) // Right
 		{
-			flipbook->SetFlipbook(walk);
+			if (state != SiegeState::Attacking)
+			{
+				state = SiegeState::Walking;
+			}
+
 			AddMovementInput(FVector(1.f, 0.f, 0.f), 0.4f, false);
 			rotation.Yaw = 0.f;
 		}
 		else if (scaleVal < 0.f) // Left
 		{
-			flipbook->SetFlipbook(walk);
+			if (state != SiegeState::Attacking)
+			{
+				state = SiegeState::Walking;
+			}
+
 			AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.4f, false);
 			rotation.Yaw = 180.f;
 		}
 		else
 		{
-			if (flipbook->GetFlipbook() != attack)
+			if (state != SiegeState::Attacking)
 			{
 				flipbook->SetFlipbook(idle);
+				state = SiegeState::Idle;
 			}
 		}
 
@@ -192,24 +205,39 @@ void ASiege::Move(float scaleVal)
 
 void ASiege::Shoot()
 {
-	if (flipbook->GetFlipbook() != attack)
+	if (state != SiegeState::Attacking)
 	{
-		flipbook->SetFlipbook(attack);
-		flipbook->SetLooping(false);
+		state = SiegeState::Attacking;
 		shotFired = true;
+	}
+}
+
+void ASiege::UpdateAnimation()
+{
+	switch (state)
+	{
+	    case SiegeState::Idle:
+			flipbook->SetFlipbook(idle);
+			flipbook->SetLooping(true);
+		break;
+		    case SiegeState::Walking:
+			flipbook->SetFlipbook(walk);
+			flipbook->SetLooping(true);
+		break;
+		    case SiegeState::Attacking:
+			flipbook->SetFlipbook(attack);
+			flipbook->SetLooping(false);
+		break;
+		    default:
+		break;
 	}
 }
 
 void ASiege::EndAttackAnimation()
 {
-	if (flipbook->GetFlipbook() == intro)
-	{
-		flipbook->SetFlipbook(idle);
-	}
-
+	state = SiegeState::Idle;
 	flipbook->SetLooping(true);
 	flipbook->Play();
-	shootCooldownTimer = ShootCooldownTime;
 }
 
 void ASiege::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
