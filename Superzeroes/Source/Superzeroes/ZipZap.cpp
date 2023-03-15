@@ -13,6 +13,7 @@
 #include "Trash.h"
 #include "Enemy.h"
 #include "Button_But_Awesome.h"
+#include "LAdder.h"
 #include "Projectile.h"
 
 // Sets default values
@@ -28,6 +29,7 @@ AZipZap::AZipZap()
 	toxicDamage = false;
 	damageDealt = false;
 	currentLevel = 0;
+	canClimb = false;
 
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	if (flipbook)
@@ -187,6 +189,28 @@ void AZipZap::move(float scaleVal)
 	}
 	}
 }
+void AZipZap::climb(float scaleVal)
+{
+	if (characterState != State2::Dead)
+	{
+		if (characterState != State2::Attacking && characterState != State2::Hurt)
+		{
+			if (canClimb == true)
+			{
+				charMove->GravityScale = 0.0f;
+				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + scaleVal));
+				if (scaleVal != 0)
+				{
+					charMove->GravityScale = 0.0f;
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
+					charMove->Velocity.X = 0;
+				}
+
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("asdfsadfsadf"));
+			}
+		}
+	}
+}
 
 void AZipZap::InitiateComboAttack_Savage()
 {
@@ -246,6 +270,7 @@ void AZipZap::SetupPlayerInput(UInputComponent* input_)
 	Input = input_;
 
 	Input->BindAxis("MoveZipZap", this, &AZipZap::move);
+	Input->BindAxis("ClimbZipZap", this, &AZipZap::climb);
 	Input->BindAction("AttackZipZap", IE_Pressed, this, &AZipZap::Attack);
 	Input->BindAction("JumpZipZap", IE_Pressed, this, &AZipZap::ExecuteJump);
 	Input->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
@@ -342,10 +367,16 @@ void AZipZap::ExecuteJump()
 	{
 		if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling() && characterState != State2::Hurt)
 		{
-			jumpPreludeTimer = 0.27f;
-			characterState = State2::Jumping;
-			flipbook->SetLooping(false);
-			flipbook->SetFlipbook(jumping);
+			if (canClimb == true)
+			{
+				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 10.f));
+			}
+			if (canClimb == false) {
+				jumpPreludeTimer = 0.27f;
+				characterState = State2::Jumping;
+				flipbook->SetLooping(false);
+				flipbook->SetFlipbook(jumping);
+			}
 		}
 	}
 }
@@ -396,6 +427,10 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 				}
 			}
 		}
+		if (otherActor->IsA(ALAdder::StaticClass()))
+		{
+			canClimb = true;
+		}
 
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, otherActor->GetName());
 	}
@@ -409,6 +444,11 @@ void AZipZap::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor
 		if (otherActor->IsA(AToxic::StaticClass()))
 		{
 			toxicDamage = false;
+		}
+		if (otherActor->IsA(ALAdder::StaticClass()))
+		{
+			canClimb = false;
+			charMove->GravityScale = 1.0f;
 		}
 	}
 }

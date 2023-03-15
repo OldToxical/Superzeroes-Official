@@ -85,6 +85,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ExecuteJump();
 	UFUNCTION(BlueprintCallable)
+		void climb(float scaleVal);
+	UFUNCTION(BlueprintCallable)
 		void Attack(float scaleVal);
 	UFUNCTION(BlueprintCallable)
 		void EndAttack();
@@ -175,6 +177,7 @@ protected:
 	float healTimer;
 	float deathTimer;
 	int currentLevel;
+	bool canClimb;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<FVector> spawnLoc;

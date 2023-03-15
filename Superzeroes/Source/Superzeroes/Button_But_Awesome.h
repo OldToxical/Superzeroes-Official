@@ -21,9 +21,7 @@ public:
 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* pressed;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* not_pressed;
+		class UPaperFlipbook* button;
 	UFUNCTION(BlueprintCallable)
 		void ButtPress();
 

@@ -13,7 +13,7 @@ AButton_But_Awesome::AButton_But_Awesome()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
-	hitbox->SetRelativeScale3D(FVector(0.155, 0.5, 0.5));
+	hitbox->SetRelativeScale3D(FVector(15.3125, 7.625, 15.3125));
 	hitbox->SetRelativeLocation(FVector(11.101960, 0, 0));
 	hitbox->SetupAttachment(RootComponent);
 	buttonNumber = 0; //CHANGE THIS IN BLUEPRINT!!! One button is connected to one ladder, and this number tells the button which ladder to connect to.
@@ -28,7 +28,9 @@ AButton_But_Awesome::~AButton_But_Awesome()
 void AButton_But_Awesome::BeginPlay()
 {
 	Super::BeginPlay(); 
-	GetRenderComponent()->SetFlipbook(not_pressed);
+	GetRenderComponent()->SetFlipbook(button);
+	GetRenderComponent()->SetLooping(false);
+	GetRenderComponent()->Stop();
 }
 
 void AButton_But_Awesome::Tick(float DeltaTime)
@@ -40,7 +42,7 @@ void AButton_But_Awesome::Tick(float DeltaTime)
 
 void AButton_But_Awesome::ButtPress()
 {
-	GetRenderComponent()->SetFlipbook(pressed);
+	GetRenderComponent()->Play();
 	TArray<AActor*> ladders;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALAdder::StaticClass(), ladders);
 	

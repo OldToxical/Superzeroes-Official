@@ -9,8 +9,8 @@ ALAdder::ALAdder()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
-	hitbox->SetRelativeLocation(FVector(6.516138,0.000000, 2.279989));
-	hitbox->SetRelativeScale3D(FVector(0.420833,1.000000,1.900000));
+	hitbox->SetRelativeLocation(FVector(6.516138,0.000000, 17.729661));
+	hitbox->SetRelativeScale3D(FVector(0.340833,1.000000,1.400000));
 	hitbox->SetupAttachment(RootComponent);
 	isActivated = false;
 }
@@ -26,6 +26,7 @@ void ALAdder::BeginPlay()
 	isActivated = false;
 	GetRenderComponent()->SetFlipbook(ladder);
 	GetRenderComponent()->SetLooping(false);
+	GetRenderComponent()->SetPlaybackPositionInFrames(0,false);
 	GetRenderComponent()->Stop();
 	hitbox->SetCollisionProfileName("NoCollision");
 }

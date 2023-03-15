@@ -9,6 +9,7 @@
 #include "Trash.h"
 #include "Enemy.h"
 #include "Button_But_Awesome.h"
+#include "LAdder.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -22,17 +23,18 @@ ABoomBoom::ABoomBoom()
 	simpleAttack_sequenceTimeoutTimer = 0.f;
 	jumpPreludeTimer = 0.f;
 	punchPreludeTimer = 0.f;
-	charMove = NULL;
+	charMove = nullptr;
 	characterState = State::Idle;
-	jumping = NULL;
-	run = NULL;
-	simpleAttack = NULL;
-	simpleAttackSequence = NULL;
-	strongAttack = NULL;
-	strongAttackCharge = NULL;
-	zipZap = NULL;
+	jumping = nullptr;
+	run = nullptr;
+	simpleAttack = nullptr;
+	simpleAttackSequence = nullptr;
+	strongAttack = nullptr;
+	strongAttackCharge = nullptr;
+	zipZap = nullptr;
 	isSimpleAttackSequenced = false;
 	launchZipZap = false;
+	canClimb = false;
 	health = 200.f;
 	currentLevel = 0;
 
@@ -96,8 +98,7 @@ void ABoomBoom::BeginPlay()
 	charMove = GetCharacterMovement();
 	healTimer = 0.0f;
 	deathTimer = 0.0f;
-
-	if (zipZap != NULL)
+	if (zipZap != nullptr)
 	{
 		//MoveIgnoreActorAdd(zipZap->GetOwner());
 		zipZap->SetBoomBoomReference(this);
@@ -165,6 +166,7 @@ void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("MoveBoomBoom", this, &ABoomBoom::move);
 	PlayerInputComponent->BindAxis("AttackBoomBoom", this, &ABoomBoom::Attack);
+	PlayerInputComponent->BindAxis("ClimbBoomBoom", this, &ABoomBoom::climb);
 	PlayerInputComponent->BindAction("JumpBoomBoom", IE_Pressed, this, &ABoomBoom::ExecuteJump);
 	PlayerInputComponent->BindAction("InitiateComboAttack_Projectile", IE_Pressed, this, &ABoomBoom::InitiateZipZapComboAttack_Projectile);
 }
@@ -277,10 +279,34 @@ void ABoomBoom::ExecuteJump()
 	{
 		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && characterState != State::Hurt)
 		{
-			jumpPreludeTimer = 0.47f;
-			characterState = State::Jumping;
-			flipbook->SetLooping(false);
-			flipbook->SetFlipbook(jumping);
+			{
+				jumpPreludeTimer = 0.47f;
+				characterState = State::Jumping;
+				flipbook->SetLooping(false);
+				flipbook->SetFlipbook(jumping);
+			}
+		}
+	}
+}
+
+void ABoomBoom::climb(float scaleVal)
+{
+	if (characterState != State::Dead)
+	{
+		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && characterState != State::Hurt)
+		{
+			if (canClimb == true )
+			{
+
+				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + scaleVal));
+				if (scaleVal != 0)
+				{
+					charMove->GravityScale = 0.0f;
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
+					charMove->Velocity.X = 0;
+				}
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("wawadaadawas"));
+			}
 		}
 	}
 }
@@ -464,7 +490,6 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		if (otherActor->IsA(ATrash::StaticClass()))
 		{
 			setHealth(health - 5.f);
-			UE_LOG(LogTemp, Warning, TEXT("ROFL"));
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))
 		{
@@ -481,10 +506,9 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 				Enemy->TakeEnemyDamage(100.f);
 			}
 		}
-		if (otherActor->IsA(ATrash::StaticClass()))
+		if (otherActor->IsA(ALAdder::StaticClass()))
 		{
-			setHealth(health - 5.f);
-			UE_LOG(LogTemp, Warning, TEXT("ROFL"));
+			canClimb = true;
 		}
 
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, otherActor->GetName());
@@ -499,6 +523,12 @@ void ABoomBoom::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		if (otherActor->IsA(AToxic::StaticClass()))
 		{
 			toxicDamage = false;
+		}
+		if (otherActor->IsA(ALAdder::StaticClass()))
+		{
+			canClimb = false;
+			charMove->GravityScale = 0.8f;
+			charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
 		}
 	}
 }
