@@ -71,6 +71,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ExecuteJump();
 	UFUNCTION(BlueprintCallable)
+
+
+		void Attack();
+	UFUNCTION(BlueprintCallable)
+		void climb(float scaleVal);
+	UFUNCTION(BlueprintCallable)
+
 		void EndAttack();
 	UFUNCTION(BlueprintCallable)
 		void InitiateComboAttack_Savage();
@@ -166,6 +173,7 @@ protected:
 	float healTimer;
 	float deathTimer;
 	int currentLevel;
+	bool canClimb;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<FVector> spawnLoc;

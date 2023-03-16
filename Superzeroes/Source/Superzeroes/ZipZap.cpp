@@ -12,6 +12,8 @@
 #include "Toxic.h"
 #include "Trash.h"
 #include "Enemy.h"
+#include "Button_But_Awesome.h"
+#include "LAdder.h"
 #include "Projectile.h"
 
 // Sets default values
@@ -27,6 +29,7 @@ AZipZap::AZipZap()
 	toxicDamage = false;
 	damageDealt = false;
 	currentLevel = 0;
+	canClimb = false;
 
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	if (flipbook)
@@ -190,7 +193,26 @@ void AZipZap::move(float scaleVal)
 				flipbook->SetWorldRotation(rotation);
 				//hitbox->SetRelativeLocation(FVector(-8.0, 0.0, 0.0));
 			}
+	
 	}
+}
+void AZipZap::climb(float scaleVal)
+{
+	if (characterState != State2::Dead)
+	{
+		if (characterState != State2::Attacking && characterState != State2::Hurt)
+		{
+			if (canClimb == true)
+			{
+				charMove->GravityScale = 0.0f;
+				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + scaleVal));
+				if (scaleVal != 0)
+				{
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
+					charMove->Velocity.X = 0;
+				}
+			}
+		}
 	}
 }
 
@@ -258,6 +280,11 @@ void AZipZap::SetupPlayerInput(UInputComponent* input_)
 	Input = input_;
 
 	Input->BindAxis("MoveZipZap", this, &AZipZap::move);
+
+
+	Input->BindAxis("ClimbZipZap", this, &AZipZap::climb);
+	Input->BindAction("AttackZipZap", IE_Pressed, this, &AZipZap::Attack);
+
 	Input->BindAction("JumpZipZap", IE_Pressed, this, &AZipZap::ExecuteJump);
 	Input->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
 	Input->BindAction("ElectrifyZipZap", IE_Pressed, this, &AZipZap::Electrify);
@@ -326,10 +353,16 @@ void AZipZap::ExecuteJump()
 	{
 		if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling() && characterState != State2::Hurt && characterState != State2::Siege)
 		{
-			jumpPreludeTimer = 0.27f;
-			characterState = State2::Jumping;
-			flipbook->SetLooping(false);
-			flipbook->SetFlipbook(jumping);
+			if (canClimb == true)
+			{
+				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 10.f));
+			}
+			if (canClimb == false) {
+				jumpPreludeTimer = 0.27f;
+				characterState = State2::Jumping;
+				flipbook->SetLooping(false);
+				flipbook->SetFlipbook(jumping);
+			}
 		}
 	}
 }
@@ -380,6 +413,10 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 				}
 			}
 		}
+		if (otherActor->IsA(ALAdder::StaticClass()))
+		{
+			canClimb = true;
+		}
 
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, otherActor->GetName());
 	}
@@ -393,6 +430,12 @@ void AZipZap::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor
 		if (otherActor->IsA(AToxic::StaticClass()))
 		{
 			toxicDamage = false;
+		}
+		if (otherActor->IsA(ALAdder::StaticClass()))
+		{
+			canClimb = false;
+			charMove->GravityScale = 1.0f;
+			charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
 		}
 	}
 }
@@ -426,6 +469,53 @@ bool AZipZap::IsFacingBoomBoom()
 
 	return false;
 }
+
+
+void AZipZap::ProcessHit(float damage_)
+{
+	FHitResult OutHit;
+	TArray<AActor*> actorsToIgnore;
+	// For later: add other enemies and trash instances to the above-defined array
+	FVector startPoint = GetActorLocation();
+	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z + 5.f);
+
+	if (rotation.Yaw > 0.f) // Looking left
+	{
+		endPoint.X -= 30.f;
+	}
+	else // Looking right
+	{
+		endPoint.X += 30.f;
+	}
+
+	bool hit = UKismetSystemLibrary::LineTraceSingle(this, startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::Persistent, OutHit, true);
+	if (hit)
+	{
+		FRotator rot = OutHit.GetActor()->GetActorRotation();
+		AActor* HitActor = OutHit.GetActor();
+
+		if (HitActor->ActorHasTag("Enemy"))
+		{
+			if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
+			{
+				Enemy->TakeEnemyDamage(damage_);
+			}
+		}
+		if (HitActor->ActorHasTag("Button"))
+		{
+			AButton_But_Awesome* button = (AButton_But_Awesome*)HitActor;
+
+			if (button == NULL)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null"));
+				return;
+			}
+			button->ButtPress();
+
+		}
+	}
+}
+
 
 void AZipZap::ProcessShoot(float damage_)
 {
