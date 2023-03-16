@@ -26,18 +26,6 @@ AEnemy_Mouse::AEnemy_Mouse()
 	actionsAfterWalkingRight.Add(85.f); // Walk Left
 	actionsAfterWalkingRight.Add(47.f); // Walk Right
 
-	TArray<float, TFixedAllocator<4>> actionsAfterAttacking;
-	actionsAfterAttacking.Add(0.f); // Go Idle
-	actionsAfterAttacking.Add(0.f); // Jump
-	actionsAfterAttacking.Add(0.f); // Walk Left
-	actionsAfterAttacking.Add(0.f); // Walk Right
-
-	TArray<float, TFixedAllocator<4>> actionsAfterRunningAway;
-	actionsAfterRunningAway.Add(30.f); // Go Idle
-	actionsAfterRunningAway.Add(0.f); // Jump
-	actionsAfterRunningAway.Add(0.f); // Walk Left
-	actionsAfterRunningAway.Add(0.f); // Walk Right
-
 	TArray<float, TFixedAllocator<4>> actionsAfterGoingIdle;
 	actionsAfterGoingIdle.Add(40.f); // Go Idle
 	actionsAfterGoingIdle.Add(44.f); // Jump
@@ -57,9 +45,6 @@ AEnemy_Mouse::AEnemy_Mouse()
 	healthPoints = 100.f;
 	hitAvailable = true;
 	inCombat = false;
-
-	collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
-	collision->SetupAttachment(RootComponent);
 }
 
 void AEnemy_Mouse::AI()
@@ -76,6 +61,13 @@ void AEnemy_Mouse::BeginPlay()
 void AEnemy_Mouse::Tick(float DeltaTime)
 {
 	AI();
+}
+
+void AEnemy_Mouse::TakeEnemyDamage(float damage_)
+{
+	healthPoints -= damage_;
+	flipbookComponent->SetFlipbook(hurtAnim);
+	flipbookComponent->SetLooping(false);
 }
 
 void AEnemy_Mouse::GetState()
@@ -167,22 +159,34 @@ void AEnemy_Mouse::UpdateState()
 	switch (currentState)
 	{
 	    case State3::Idle:
-		    flipbookComponent->SetFlipbook(idle);
-			flipbookComponent->SetLooping(true);
+			if (flipbookComponent->GetFlipbook() != hurtAnim)
+			{
+				flipbookComponent->SetFlipbook(idle);
+				flipbookComponent->SetLooping(true);
+			}
 			break;
 		case State3::Jumping:
-			flipbookComponent->SetFlipbook(jumpAnim);
-			flipbookComponent->SetLooping(false);
+			if (flipbookComponent->GetFlipbook() != hurtAnim)
+			{
+				flipbookComponent->SetFlipbook(jumpAnim);
+				flipbookComponent->SetLooping(false);
+			}
 			Jump();
 			break;
 		case State3::WalkingLeft:
-			flipbookComponent->SetFlipbook(walk);
-			flipbookComponent->SetLooping(true);
+			if (flipbookComponent->GetFlipbook() != hurtAnim)
+			{
+				flipbookComponent->SetFlipbook(walk);
+				flipbookComponent->SetLooping(true);
+			}
 			WalkLeft();
 			break;
 		case State3::WalkingRight:
-			flipbookComponent->SetFlipbook(walk);
-			flipbookComponent->SetLooping(true);
+			if (flipbookComponent->GetFlipbook() != hurtAnim)
+			{
+				flipbookComponent->SetFlipbook(walk);
+				flipbookComponent->SetLooping(true);
+			}
 			WalkRight();
 			break;
 	    default:
@@ -192,13 +196,13 @@ void AEnemy_Mouse::UpdateState()
 	// AI Sensing
 	if (boomBoom != NULL && zipZap != NULL)
 	{
-		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && (!inCombat))
+		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ))
 		{
 			inCombat = true;
 			playerToAttack = boomBoom;
 		}
 
-		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && (!inCombat))
+		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ))
 		{
 			inCombat = true;
 			playerToAttack = zipZap;
@@ -244,8 +248,11 @@ void AEnemy_Mouse::Attack()
 
 	if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) > MinimumDistanceToDealDamage && flipbookComponent->GetFlipbook() != attack)
 	{
-		flipbookComponent->SetFlipbook(walk);
-		flipbookComponent->SetLooping(true);
+		if (flipbookComponent->GetFlipbook() != hurtAnim)
+		{
+			flipbookComponent->SetFlipbook(walk);
+			flipbookComponent->SetLooping(true);
+		}
 		GoToPlayer();
 	}
 	else if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) < MinimumDistanceToDealDamage)
@@ -295,7 +302,6 @@ void AEnemy_Mouse::GoToPlayer()
 
 void AEnemy_Mouse::DealDamage()
 {
-	hitAvailable = true;
 	float distanceToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
 	float distanceToZipZap = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
 
@@ -305,12 +311,13 @@ void AEnemy_Mouse::DealDamage()
 	}
 	else if (playerToAttack->ActorHasTag("ZipZap") && distanceToZipZap < MinimumDistanceToDealDamage)
 	{
-		zipZap->setHealth(boomBoom->getHealth() - damage);
+		zipZap->setHealth(zipZap->getHealth() - damage);
 	}
 }
 
 void AEnemy_Mouse::EndAttack()
 {
+	hitAvailable = true;
 	flipbookComponent->SetFlipbook(idle);
 	flipbookComponent->SetLooping(true);
 	flipbookComponent->Play();

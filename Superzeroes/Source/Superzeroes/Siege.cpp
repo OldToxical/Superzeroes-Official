@@ -135,9 +135,8 @@ void ASiege::ExecuteSiegeMode()
 
 		if (flipbook->GetPlaybackPositionInFrames() == 4 && shotFired)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("atakuva"));
 			FVector muzzleFlashLocation = FVector(GetActorLocation().X + 54.f, GetActorLocation().Y, GetActorLocation().Z - 5.f);
-			FVector beamVelocity = FVector(50000.f, 0.f, 0.f);
+			FVector beamVelocity = FVector(30000.f, 0.f, 0.f);
 
 			if (rotation.Yaw > 0.f) // Left
 			{

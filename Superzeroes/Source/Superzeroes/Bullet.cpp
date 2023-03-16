@@ -4,7 +4,7 @@
 
 ABullet::ABullet()
 {
-	damage = 10.f;
+	damage = 0.f;
 	startPos = FVector(0.f, 0.f, 0.f);
 }
 
@@ -23,7 +23,7 @@ void ABullet::CalculateDamage()
 	FVector collidingPoint = GetActorLocation();
 	FVector distanceTravelled = FVector(abs(startPos.X - collidingPoint.X), abs(startPos.Y - collidingPoint.Y), abs(startPos.Z - collidingPoint.Z));
 	float distance = sqrt(pow(distanceTravelled.X, 2) + pow(distanceTravelled.Z, 2));
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::SanitizeFloat(distance));
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::SanitizeFloat(damage));
 
 	if (distance <= 50.f)
 	{

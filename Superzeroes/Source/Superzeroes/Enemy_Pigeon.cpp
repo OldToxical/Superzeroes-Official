@@ -372,5 +372,4 @@ void AEnemy_Pigeon::TakeEnemyDamage(float damage_)
 	healthPoints -= damage_;
 	flipbookComponent->SetFlipbook(hurtAnim);
 	flipbookComponent->SetLooping(false);
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("udri"));
 }

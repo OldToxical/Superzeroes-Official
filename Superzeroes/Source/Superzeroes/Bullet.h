@@ -33,6 +33,5 @@ private:
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* zipZapImpact;
 
-	float damage;
 	FVector startPos;
 };
