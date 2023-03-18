@@ -193,6 +193,7 @@ void AZipZap::move(float scaleVal)
 				flipbook->SetWorldRotation(rotation);
 				//hitbox->SetRelativeLocation(FVector(-8.0, 0.0, 0.0));
 			}
+		}
 	
 	}
 }
@@ -469,53 +470,6 @@ bool AZipZap::IsFacingBoomBoom()
 
 	return false;
 }
-
-
-void AZipZap::ProcessHit(float damage_)
-{
-	FHitResult OutHit;
-	TArray<AActor*> actorsToIgnore;
-	// For later: add other enemies and trash instances to the above-defined array
-	FVector startPoint = GetActorLocation();
-	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z + 5.f);
-
-	if (rotation.Yaw > 0.f) // Looking left
-	{
-		endPoint.X -= 30.f;
-	}
-	else // Looking right
-	{
-		endPoint.X += 30.f;
-	}
-
-	bool hit = UKismetSystemLibrary::LineTraceSingle(this, startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::Persistent, OutHit, true);
-	if (hit)
-	{
-		FRotator rot = OutHit.GetActor()->GetActorRotation();
-		AActor* HitActor = OutHit.GetActor();
-
-		if (HitActor->ActorHasTag("Enemy"))
-		{
-			if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
-			{
-				Enemy->TakeEnemyDamage(damage_);
-			}
-		}
-		if (HitActor->ActorHasTag("Button"))
-		{
-			AButton_But_Awesome* button = (AButton_But_Awesome*)HitActor;
-
-			if (button == NULL)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null"));
-				return;
-			}
-			button->ButtPress();
-
-		}
-	}
-}
-
 
 void AZipZap::ProcessShoot(float damage_)
 {

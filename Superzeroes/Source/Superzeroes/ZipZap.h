@@ -71,8 +71,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ExecuteJump();
 	UFUNCTION(BlueprintCallable)
-
-
 		void Attack();
 	UFUNCTION(BlueprintCallable)
 		void climb(float scaleVal);
