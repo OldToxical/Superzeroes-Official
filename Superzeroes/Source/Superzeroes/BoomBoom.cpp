@@ -9,6 +9,8 @@
 #include "Trash.h"
 #include "Enemy.h"
 #include "WindowTrigger.h"
+#include "Button_But_Awesome.h"
+#include "LAdder.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -33,6 +35,7 @@ ABoomBoom::ABoomBoom()
 	zipZap = nullptr;
 	siegeMode = nullptr;
 	isSimpleAttackSequenced = false;
+	canClimb = false;
 	launchZipZap = false;
 	inputAvailable = true;
 	health = 200.f;
@@ -178,6 +181,7 @@ void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("MoveBoomBoom", this, &ABoomBoom::move);
 	PlayerInputComponent->BindAxis("AttackBoomBoom", this, &ABoomBoom::Attack);
+	PlayerInputComponent->BindAxis("ClimbBoomBoom", this, &ABoomBoom::climb);
 	PlayerInputComponent->BindAction("JumpBoomBoom", IE_Pressed, this, &ABoomBoom::ExecuteJump);
 	PlayerInputComponent->BindAction("InitiateComboAttack_Projectile", IE_Pressed, this, &ABoomBoom::InitiateZipZapComboAttack_Projectile);
 }
@@ -294,6 +298,26 @@ void ABoomBoom::ExecuteJump()
 			characterState = State::Jumping;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(jumping);
+		}
+	}
+}
+
+void ABoomBoom::climb(float scaleVal)
+{
+	if (characterState != State::Dead)
+	{
+		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && characterState != State::Hurt && inputAvailable)
+		{
+			if (canClimb == true)
+			{
+				charMove->GravityScale = 0.0f;
+				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + scaleVal));
+				if (scaleVal != 0)
+				{
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
+					charMove->Velocity.X = 0;
+				}
+			}
 		}
 	}
 }
@@ -493,7 +517,10 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 				}
 			}
 		}
-
+		if (otherActor->IsA(ALAdder::StaticClass()))
+		{
+			canClimb = true;
+		}
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, otherActor->GetName());
 	}
 }
@@ -506,6 +533,14 @@ void ABoomBoom::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		if (otherActor->IsA(AToxic::StaticClass()))
 		{
 			toxicDamage = false;
+		}
+
+		if (otherActor->IsA(ALAdder::StaticClass()))
+		{
+			canClimb = false;
+			charMove->GravityScale = 0.8f;
+			charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("shart"));
 		}
 	}
 }
@@ -535,6 +570,19 @@ void ABoomBoom::ProcessHit(float damage_)
 		if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
 		{
 			Enemy->TakeEnemyDamage(damage_);
+		}
+
+		if (HitActor->ActorHasTag("Button"))
+		{
+			AButton_But_Awesome* button = (AButton_But_Awesome*)HitActor;
+
+			if (button == NULL)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null"));
+				return;
+			}
+			button->ButtPress();
+
 		}
 	}
 }

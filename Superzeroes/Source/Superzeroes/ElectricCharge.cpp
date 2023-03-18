@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "ElectricCharge.h"
+#include "Button_But_Awesome.h"
 #include "BoxTrigger.h"
 
 AElectricCharge::AElectricCharge()
@@ -28,6 +29,19 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 			{
 				Enemy->TakeEnemyDamage(damage);
 			}
+		}
+
+		if (otherActor->ActorHasTag("Button"))
+		{
+			AButton_But_Awesome* button = (AButton_But_Awesome*)otherActor;
+
+			if (button == NULL)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null"));
+				return;
+			}
+			button->ButtPress();
+
 		}
 
 		if (!otherActor->IsA(ABoxTrigger::StaticClass()) && !otherActor->IsA(ABoomBoom::StaticClass()) && !otherActor->IsA(AZipZap::StaticClass()))

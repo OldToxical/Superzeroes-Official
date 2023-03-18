@@ -12,8 +12,8 @@
 #define SiegeModeExecutionLength 10
 #define InputTime 1.3
 #define ShootCooldownTime 0.5
-#define MaximumXDistanceBetweenPlayersForInitiatingSiegeMode 60
-#define MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 20
+#define MaximumXDistanceBetweenPlayersForInitiatingSiegeMode 120
+#define MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 30
 
 UENUM()
 enum class SiegeState : uint8

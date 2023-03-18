@@ -50,7 +50,7 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 				CalculateDamage();
 				boomBoom->setHealth(boomBoom->getHealth() - damage);
 				FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
-				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
+				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
 			}
 		}
 
@@ -61,7 +61,7 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 				CalculateDamage();
 				zipZap->setHealth(zipZap->getHealth() - damage);
 				FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
-				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
+				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
 			}
 		}
 

@@ -15,7 +15,7 @@
 #define StrongAttackMinimumInputTime 0.5
 #define SimpleAttackSequenceTimeout 0.6
 #define SimpleAttackAnimationLength 0.27
-#define MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack 60
+#define MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack 120
 #define AcutalPunchDelay 0.2
 
 UENUM()
@@ -83,6 +83,8 @@ public:
 		void move(float scaleVal);
 	UFUNCTION(BlueprintCallable)
 		void ExecuteJump();
+	UFUNCTION(BlueprintCallable)
+		void climb(float scaleVal);
 	UFUNCTION(BlueprintCallable)
 		void Attack(float scaleVal);
 	UFUNCTION(BlueprintCallable)
@@ -192,6 +194,7 @@ protected:
 	float healTimer;
 	float deathTimer;
 	int currentLevel;
+	bool canClimb;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<FVector> spawnLoc;

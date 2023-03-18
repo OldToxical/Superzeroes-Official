@@ -7,7 +7,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "ZipZap.generated.h"
 
-#define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 60
+#define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 120
 
 UENUM(BlueprintType)
 enum class State2 : uint8
@@ -67,8 +67,6 @@ public:
 		void move(float scaleVal);
 	UFUNCTION(BlueprintCallable)
 		void ExecuteJump();
-	UFUNCTION(BlueprintCallable)
-		void Attack();
 	UFUNCTION(BlueprintCallable)
 		void climb(float scaleVal);
 	UFUNCTION(BlueprintCallable)

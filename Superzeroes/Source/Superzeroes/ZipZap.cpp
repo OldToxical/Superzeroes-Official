@@ -12,6 +12,7 @@
 #include "Toxic.h"
 #include "Trash.h"
 #include "Enemy.h"
+#include "LAdder.h"
 #include "Projectile.h"
 
 // Sets default values
@@ -28,6 +29,7 @@ AZipZap::AZipZap()
 	damageDealt = false;
 	savageInitiated = false;
 	inputAvailable = true;
+	canClimb = false;
 
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	if (flipbook)
@@ -246,6 +248,7 @@ void AZipZap::SetupPlayerInput(UInputComponent* input_)
 	Input = input_;
 
 	Input->BindAxis("MoveZipZap", this, &AZipZap::move);
+	Input->BindAxis("ClimbZipZap", this, &AZipZap::climb);
 	Input->BindAction("JumpZipZap", IE_Pressed, this, &AZipZap::ExecuteJump);
 	Input->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
 	Input->BindAction("ElectrifyZipZap", IE_Pressed, this, &AZipZap::Electrify);
@@ -294,10 +297,36 @@ void AZipZap::ExecuteJump()
 	{
 		if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling() && characterState != State2::Hurt && characterState != State2::Siege && inputAvailable)
 		{
+			if (canClimb)
+			{
+				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 10.f));
+				return;
+			}
+
 			Jump();
 			characterState = State2::Jumping;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(jumping);
+		}
+	}
+}
+
+void AZipZap::climb(float scaleVal)
+{
+	if (characterState != State2::Dead)
+	{
+		if (characterState != State2::Attacking && characterState != State2::Hurt)
+		{
+			if (canClimb == true)
+			{
+				charMove->GravityScale = 0.0f;
+				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + scaleVal));
+				if (scaleVal != 0)
+				{
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
+					charMove->Velocity.X = 0;
+				}
+			}
 		}
 	}
 }
@@ -323,7 +352,7 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 				{
 					if (isElectrified)
 					{
-						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));
+						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(2.f, 2.f, 2.f));
 						impact->CustomTimeDilation = 3.f;
 						Enemy->TakeEnemyDamage(90.f);
 					}
@@ -335,6 +364,10 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 					Enemy->LaunchCharacter(FVector(charMove->Velocity.X / 3.f, charMove->Velocity.Y, charMove->Velocity.Z), false, false);
 				}
 			}
+		}
+		if (otherActor->IsA(ALAdder::StaticClass()))
+		{
+			canClimb = true;
 		}
 
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, otherActor->GetName());
@@ -349,6 +382,13 @@ void AZipZap::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor
 		if (otherActor->IsA(AToxic::StaticClass()))
 		{
 			toxicDamage = false;
+		}
+
+		if (otherActor->IsA(ALAdder::StaticClass()))
+		{
+			canClimb = false;
+			charMove->GravityScale = 1.0f;
+			charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
 		}
 	}
 }
@@ -378,11 +418,11 @@ bool AZipZap::IsFacingBoomBoom()
 
 void AZipZap::ProcessShoot(float damage_)
 {
-	FVector muzzleFlashLocation = FVector(GetActorLocation().X + 54.f, GetActorLocation().Y, GetActorLocation().Z - 5.f);
+	FVector muzzleFlashLocation = FVector(GetActorLocation().X + 138.f, GetActorLocation().Y, GetActorLocation().Z - 22.f);
 
 	if (rotation.Yaw > 0.f) // Left
 	{
-		muzzleFlashLocation.X -= 108.f;
+		muzzleFlashLocation.X -= 276.f;
 	}
 
 	UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.2f, .2f, .2f));
