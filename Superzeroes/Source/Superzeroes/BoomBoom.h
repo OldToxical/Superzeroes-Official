@@ -41,9 +41,6 @@ public:
 	ABoomBoom();
 	~ABoomBoom();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -108,15 +105,26 @@ public:
 		void SetLevelIndex(int level) { currentLevel = level; }
 	UFUNCTION(BlueprintCallable)
 		void SetState(State state_) { characterState = state_; }
+	UFUNCTION(BlueprintCallable)
+		void SetInputAvailability(bool isAvailable) { inputAvailable = isAvailable; }
 
+	// Setters and getters
 	UFUNCTION(BlueprintCallable)
 		float getHealth() { return health; };
 	UFUNCTION(BlueprintCallable)
 		void setHealth(float newHealth);
+	UFUNCTION(BlueprintCallable)
+	    State GetState() { return characterState; }
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called when landed
+	virtual void Landed(const FHitResult& Hit) override;
 
 	// Rotator variable for the flipbook's rotation
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -166,6 +174,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 		bool launchZipZap;
 
+	// Variable to keep track whether the input is available, depending on whether siege mode is being activated at the moment
+	UPROPERTY(EditAnywhere)
+		bool inputAvailable;
+
 	//Variable to keep track of Boom Boom's health
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float health;
@@ -173,9 +185,6 @@ protected:
 	// Particles' variables
 	UPROPERTY(BlueprintReadWrite)
 		UParticleSystemComponent* smokeParticle;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		//class UBoxComponent* collision;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;

@@ -60,6 +60,7 @@ void ASiege::Tick(float DeltaTime)
 
 	if (boomBoomInputTimer >= InputTime && zipZapInputTimer >= InputTime && !modeIsActive)
 	{
+		SetActorRotation(boomBoom->GetActorRotation());
 		modeIsActive = true;
 		flipbook->Play();
 	}
@@ -90,14 +91,16 @@ void ASiege::HandleBoomBoomInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && boomBoom->GetState() == State::Idle)
 		{
 			boomBoomInputTimer += GetWorld()->GetDeltaSeconds();
+			boomBoom->SetInputAvailability(false);
 			return;
 		}
 	}
 
 	boomBoomInputTimer = 0.f;
+	boomBoom->SetInputAvailability(true);
 }
 
 void ASiege::HandleZipZapInput(float scaleVal)
@@ -107,14 +110,16 @@ void ASiege::HandleZipZapInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && zipZap->GetState() == State2::Idle)
 		{
 			zipZapInputTimer += GetWorld()->GetDeltaSeconds();
+			zipZap->SetInputAvailability(false);
 			return;
 		}
 	}
 
 	zipZapInputTimer = 0.f;
+	zipZap->SetInputAvailability(true);
 }
 
 void ASiege::ExecuteSiegeMode()
@@ -241,6 +246,13 @@ void ASiege::EndAttackAnimation()
 
 void ASiege::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
 {
+	if (otherActor != this)
+	{
+		if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
+		{
+			Enemy->TakeEnemyDamage(100.f);
+		}
+	}
 }
 
 void ASiege::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex)
