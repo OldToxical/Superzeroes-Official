@@ -15,7 +15,7 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	actionsAfterJumping.Add(35.f); // Go Idle
 	actionsAfterJumping.Add(34.f); // Jump
 	actionsAfterJumping.Add(50.f); // Walk Left
-	actionsAfterJumping.Add(38.f); // Walk Right
+	actionsAfterJumping.Add(50.f); // Walk Right
 	actionsAfterJumping.Add(65.f); // Attack
 	actionsAfterJumping.Add(1.f); // Run Away
 
@@ -155,46 +155,54 @@ void AEnemy_Pigeon::CalculateReward()
 				// Check if it's going boom boom (not good)
 				if (boomBoom->GetActorLocation().X < GetActorLocation().X)
 				{
+					reward -= (rand() % 8 + 3) * difficulty;
+
 					if (distanceToBoomBoom <= 150.f)
 					{
-						// Worse
+						// Very bad
+						reward -= (rand() % 10 + 6) * difficulty;
 					}
 					else
 					{
-						// Better, there is still enough distance
+						// Still bad, but there is still enough distance
+						reward += (rand() % 7 + 2);
 					}
 				}
 				else // It's not going to boom boom, that's good
 				{
-
+					reward += (rand() % 8 + 3);
 				}
 			    // Check if it's going zip zap (better to go to him, cuz he's weaker)
 				if (zipZap->GetActorLocation().X < GetActorLocation().X)
 				{
 					if (distanceToBoomBoom <= 150.f)
 					{
-						// Not good
+						// Boom Boom is around, so it's not that good
+						reward -= (rand() % 4 + 1);
 					}
 					else
 					{
-						// Better, there is still enough distance
+						// Boom Boom is not around, perfect
+						reward += (rand() % 6 + 2);
 					}
 				}
 				else // It's going away from zip zap, that's not good
 				{
 					if (distanceToBoomBoom <= 150.f)
 					{
-						// Very bad, going away from zip zap and going to boom boom
+						// Worse, it's going to Boom Boom
+						reward -= (rand() % 6 + 2) * difficulty;
 					}
 					else
 					{
-						// Better, there is still enough distance
+						// It still goes to Boom Boom, but there is enough distance
+						reward -= (rand() % 3 + 0);
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
 				if (boomBoom->GetState() == State::Attacking)
 				{
-					
+					reward -= (rand() % 6 + 1) * difficulty;
 				}
 			}
 			else if (currentAction == Action::WalkRight) // It changes direction
@@ -202,53 +210,61 @@ void AEnemy_Pigeon::CalculateReward()
 				// Check if he's going away from the direction of boom boom (good)
 				if (boomBoom->GetActorLocation().X < GetActorLocation().X)
 				{
-				
+					reward += (rand() % 8 + 4);
 				}
-				else // It's not going away from boom boom, not good, let's see how close it is
+				else // It's not going away from boom boom, not good, let's see how close he is
 				{
+					reward -= (rand() % 8 + 3) * difficulty;
+
 					if (distanceToBoomBoom <= 150.f)
 					{
-						// Very bad
+						// Too close, that's very bad
+						reward -= (rand() % 10 + 6) * difficulty;
 					}
 					else
 					{
-						// Better, there is still enough distance
+						// Not too close, not too bad
+						reward += (rand() % 2 + 0);
 					}
 				}
 				// Check if he's going away from the direction of zip zap (worse, because he has ranged attack)
 				if (zipZap->GetActorLocation().X < GetActorLocation().X)
 				{
-					
+					reward -= (rand() % 7 + 4) * difficulty;
 				}
 				else // It's going to zip zap, that's good, but let's see if boom boom is around
 				{
 					if (distanceToBoomBoom <= 150.f)
 					{
-						// Not good
+						// He is around, that's not very good
+						reward += (rand() % 6 + 1);
 					}
 					else
 					{
-						// Very good, there is still enough distance
+						// He is not around, perfect
+						reward += (rand() % 12 + 7);
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
 				if (boomBoom->GetState() == State::Attacking)
 				{
-					
+					reward -= (rand() % 6 + 1) * difficulty;
 				}
 			}
 			else if (currentAction == Action::Jump) // It jumps
 			{
 				// That's good, agility is good
+				reward += (rand() % 5 + 2);
+
 				// Check if zip zap shoots, it would be great to avoid his projectiles
 				if (zipZap->GetState() == State2::Attacking)
 				{
-
+					reward += (rand() % 4 + 1);
 				}
 				// Check if there are any combo attacks active, if there are - that's reaaaally good
 				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
 				{
-
+					reward += (rand() % 5 + 2);
 				}
 			}
 			else if (currentAction == Action::GoIdle)
@@ -257,7 +273,7 @@ void AEnemy_Pigeon::CalculateReward()
 				float distanceToZipZap = (zipZap->GetActorLocation() - GetActorLocation()).Size();
 				if (distanceToBoomBoom >= 300.f && distanceToZipZap >= 300.f)
 				{
-
+					reward += (rand() % 6 + 0);
 				}
 			}
 			else if (currentAction == Action::Attack)
@@ -265,17 +281,17 @@ void AEnemy_Pigeon::CalculateReward()
 				// That's good if it has health
 				if (healthPoints >= 25.f)
 				{
-
+					reward += (rand() % 5 + 0);
 				}
 				// Better if the characters attack
 				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
 				{
-					
+					reward += (rand() % 4 + 0);
 				}
 				// Even Better if the characters have combo attack active
 				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
 				{
-
+					reward += (rand() % 7 + 3);
 				}
 			}
 		}
@@ -286,29 +302,35 @@ void AEnemy_Pigeon::CalculateReward()
 				// Check if he's going boom boom (not good)
 			    if (boomBoom->GetActorLocation().X > GetActorLocation().X)
 				{
+					reward -= (rand() % 8 + 3) * difficulty;
+
 					if (distanceToBoomBoom <= 150.f)
 					{
-						// Worse, very bad
+						// Very bad
+						reward -= (rand() % 10 + 6) * difficulty;
 					}
 					else
 					{
 						// Better, there is still enough distance
+						reward += (rand() % 7 + 2);
 					}
 				}
 				else // It's not going to boom boom, that's good
 				{
-
+					reward += (rand() % 8 + 3);
 				}
-				// Check if he's going zip zap, that's good, but let's see if boom boom is around
+				// Check if he's going to zip zap, that's good, but let's see if boom boom is around
 				if (zipZap->GetActorLocation().X > GetActorLocation().X)
 				{
 					if (distanceToBoomBoom <= 150.f)
 					{
-						// Not good
+						// Not so good, he's too close
+						reward -= (rand() % 4 + 1);
 					}
 					else
 					{
 						// Very good, he's not around, zip zap is alone
+						reward += (rand() % 6 + 2);
 					}
 				}
 				else // It goes away from zip zap, that's not good
@@ -316,16 +338,18 @@ void AEnemy_Pigeon::CalculateReward()
 					if (distanceToBoomBoom <= 150.f)
 					{
 						// Very bad, going away from zip zap and going to boom boom
+						reward -= (rand() % 6 + 2) * difficulty;
 					}
 					else
 					{
 						// Better, there is still enough distance
+						reward -= (rand() % 3 + 0);
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
 				if (boomBoom->GetState() == State::Attacking)
 				{
-
+					reward -= (rand() % 6 + 1) * difficulty;
 				}
 			}
 			else if (currentAction == Action::WalkLeft) // It changes direction
@@ -333,17 +357,21 @@ void AEnemy_Pigeon::CalculateReward()
 				// Check if he's going away from boom boom (good)
 				if (boomBoom->GetActorLocation().X > GetActorLocation().X)
 				{
-
+					reward += (rand() % 8 + 3);
 				}
 				else // It's not going away from boom boom, that's bad
 				{
+					reward -= (rand() % 8 + 3) * difficulty;
+
 					if (distanceToBoomBoom <= 150.f)
 					{
 						// Very bad, it's near boom boom and going even nearer
+						reward -= (rand() % 10 + 6) * difficulty;
 					}
 					else
 					{
 						// Better, there is still enough distance
+						reward += (rand() % 2 + 0);
 					}
 				}
 				// Check if he's going away from zip zap (bad, because he has ranged attack), let's see if boom boom is around
