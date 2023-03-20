@@ -25,6 +25,8 @@ public:
 		class UPaperFlipbook* ladder_static;
 	UFUNCTION(BlueprintCallable)
 		void Activation();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ladderNumber;
 protected:
 	virtual void BeginPlay() override;
 
