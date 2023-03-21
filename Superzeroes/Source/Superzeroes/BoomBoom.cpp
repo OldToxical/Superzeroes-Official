@@ -528,7 +528,6 @@ void ABoomBoom::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherAct
 			canClimb = false;
 			charMove->GravityScale = 0.8f;
 			charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("shart"));
 		}
 	}
 }

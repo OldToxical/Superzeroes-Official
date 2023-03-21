@@ -15,6 +15,7 @@
 #include "Button_But_Awesome.h"
 #include "LAdder.h"
 #include "Projectile.h"
+#include "ComicFX.h"
 
 // Sets default values
 AZipZap::AZipZap()
@@ -287,6 +288,12 @@ void AZipZap::Attack()
 			characterState = State2::Attacking;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(simpleAttack);
+			FVector location = GetActorLocation();
+			location.Z += 30.f;
+			location.Y -= 0.1f;
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap,location, GetActorRotation());
+			cfx->spriteChanger(0);
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("shart"));
 			//ProcessHit(25.f);
 		}
 	}
