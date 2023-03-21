@@ -11,6 +11,7 @@
 #include "Button_But_Awesome.h"
 #include "LAdder.h"
 #include "Kismet/GameplayStatics.h"
+#include "ComicFX.h"
 
 // Sets default values
 ABoomBoom::ABoomBoom()
@@ -346,6 +347,7 @@ void ABoomBoom::Attack(float scaleVal)
 						isSimpleAttackSequenced = true;
 						punchPreludeTimer = AcutalPunchDelay;
 						launchZipZap = false;
+
 						ProcessHit(25.f);
 					}
 					else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
@@ -564,7 +566,8 @@ void ABoomBoom::ProcessHit(float damage_)
 				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null enemy"));
 				return;
 			}
-
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, endPoint, GetActorRotation());
+			cfx->spriteChanger(3);
 			Enemy->TakeEnemyDamage(damage_);
 		}
 		if (HitActor->ActorHasTag("Button"))

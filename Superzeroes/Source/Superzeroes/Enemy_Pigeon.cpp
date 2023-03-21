@@ -6,6 +6,7 @@
 #include "Projectile.h"
 #include <chrono>
 #include <thread>
+#include "ComicFX.h"
 
 AEnemy_Pigeon::AEnemy_Pigeon()
 {
@@ -255,6 +256,12 @@ void AEnemy_Pigeon::UpdateState()
 		{
 			spawner->RemoveEnemy(this);
 		}
+
+		FVector location = GetActorLocation();
+		location.Z += 30.f;
+		location.Y -= 0.1f;
+		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+		cfx->spriteChanger(2);
 		Destroy();
 	}
 }
@@ -301,7 +308,7 @@ void AEnemy_Pigeon::Attack()
 			muzzleFlashLocation.X += 90.68f;
 		}
 
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
+		//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
 
 		// Spawn bullet
 		AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);

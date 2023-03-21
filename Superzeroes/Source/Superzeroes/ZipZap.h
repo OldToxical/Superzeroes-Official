@@ -184,7 +184,7 @@ protected:
 		TSubclassOf<AProjectile> electricChargeClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
-		TSubclassOf<class AComicFX> zap;
+		TSubclassOf<class AComicFX> comicFX;
 
 	// Particles
 	UPROPERTY(EditAnywhere)

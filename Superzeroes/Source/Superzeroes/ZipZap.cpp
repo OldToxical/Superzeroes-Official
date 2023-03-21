@@ -288,11 +288,6 @@ void AZipZap::Attack()
 			characterState = State2::Attacking;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(simpleAttack);
-			FVector location = GetActorLocation();
-			location.Z += 30.f;
-			location.Y -= 0.1f;
-			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap,location, GetActorRotation());
-			cfx->spriteChanger(0);
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("shart"));
 			//ProcessHit(25.f);
 		}
@@ -515,6 +510,13 @@ void AZipZap::ProcessHit(float damage_)
 		{
 			if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
 			{
+				if (Enemy == NULL)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null"));
+					return;
+				}
+				AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, endPoint, GetActorRotation());
+				cfx->spriteChanger(0);
 				Enemy->TakeEnemyDamage(damage_);
 			}
 		}

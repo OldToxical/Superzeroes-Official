@@ -126,7 +126,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FRotator rotation;
 
-	
+
 
 	// Reference to Zip Zap's object
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -189,4 +189,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<FVector> spawnLoc;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		TSubclassOf<class AComicFX> comicFX;
 };

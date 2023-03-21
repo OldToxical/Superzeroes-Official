@@ -9,8 +9,8 @@ ALAdder::ALAdder()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
-	hitbox->SetRelativeLocation(FVector(6.516138,0.000000, 17.729661));
-	hitbox->SetRelativeScale3D(FVector(0.340833,1.000000,1.300000));
+	hitbox->SetRelativeLocation(FVector(6.516138,0.000000, 140.994971));
+	hitbox->SetRelativeScale3D(FVector(0.840833,1.000000, 11.8));
 	hitbox->SetupAttachment(RootComponent);
 	isActivated = false; 
 	ladderNumber = 0; //CHANGE THIS IN BLUEPRINT!!! One button is connected to one ladder, and this number tells the button which ladder to connect to.
