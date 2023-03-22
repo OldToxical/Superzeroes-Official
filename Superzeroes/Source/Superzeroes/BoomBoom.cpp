@@ -490,6 +490,11 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		}
 		if (otherActor->IsA(ATrash::StaticClass()))
 		{
+			FVector loc = GetActorLocation();
+			loc.Y -= 0.1;
+			loc.Z += 30;
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, loc, GetActorRotation());
+			cfx->spriteChanger(4);
 			setHealth(health - 5.f);
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))

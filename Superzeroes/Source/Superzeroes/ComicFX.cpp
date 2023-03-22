@@ -39,6 +39,8 @@ void AComicFX::spriteChanger(int i)
 	case 1: GetRenderComponent()->SetSprite(squeak); break;
 	case 2: GetRenderComponent()->SetSprite(squawk); break;
 	case 3: GetRenderComponent()->SetSprite(bang); break;
+	case 4: GetRenderComponent()->SetSprite(oof); break;
+	case 5: GetRenderComponent()->SetSprite(bam); break;
 	default:GetRenderComponent()->SetSprite(zap); break;
 	}
 }

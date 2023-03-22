@@ -394,6 +394,11 @@ void AEnemy_Pigeon::ProcessBulletCollision(FVector hitPos)
 		{
 			if (zipZap != NULL)
 			{
+				FVector location = zipZap->GetActorLocation();
+				location.Z += 30.f;
+				location.Y -= 0.1f;
+				AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+				cfx->spriteChanger(1);
 				zipZap->setHealth(zipZap->getHealth() - damage);
 			}
 		}

@@ -288,7 +288,6 @@ void AZipZap::Attack()
 			characterState = State2::Attacking;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(simpleAttack);
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("shart"));
 			//ProcessHit(25.f);
 		}
 	}
@@ -405,6 +404,11 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		}
 		if (otherActor->IsA(ATrash::StaticClass()))
 		{
+			FVector loc = GetActorLocation();
+			loc.Y -= 0.1;
+			loc.Z += 30;
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, loc, GetActorRotation());
+			cfx->spriteChanger(5);
 			setHealth(health - 10.f);
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))

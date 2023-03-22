@@ -31,6 +31,10 @@ public:
 		class UPaperSprite* squawk;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperSprite* bang; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperSprite* oof;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperSprite* bam; 
 
 protected:
 		// Called when the game starts or when spawned
