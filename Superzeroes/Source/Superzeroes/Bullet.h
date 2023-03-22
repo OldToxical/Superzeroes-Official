@@ -35,4 +35,8 @@ private:
 
 	float damage;
 	FVector startPos;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		TSubclassOf<class AComicFX> comicFX;
 };

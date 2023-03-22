@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "BoxTriggerBoomBoom.h"
 #include "BoomBoom.h"
-#include "ZipZap.h"
+#include "Siege.h"
 #include "Engine/EngineTypes.h"
 
 ABoxTriggerBoomBoom::ABoxTriggerBoomBoom()
@@ -13,7 +13,7 @@ void ABoxTriggerBoomBoom::OverlapBegin(AActor* otherActor)
 {
 	if (otherActor && (otherActor != this))
 	{
-		if (otherActor->IsA(ABoomBoom::StaticClass()))
+		if (otherActor->IsA(ABoomBoom::StaticClass()) || otherActor->IsA(ASiege::StaticClass()))
 		{
 			if (colliderPlaneActor != NULL)
 			{
@@ -23,10 +23,16 @@ void ABoxTriggerBoomBoom::OverlapBegin(AActor* otherActor)
 	}
 }
 
-void ABoxTriggerBoomBoom::OverlapEnd()
+void ABoxTriggerBoomBoom::OverlapEnd(AActor* otherActor)
 {
-	if (colliderPlaneActor != NULL)
+	if (otherActor && (otherActor != this))
 	{
-		colliderPlaneActor->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		if (otherActor->IsA(ABoomBoom::StaticClass()) || otherActor->IsA(ASiege::StaticClass()))
+		{
+			if (colliderPlaneActor != NULL)
+			{
+				colliderPlaneActor->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			}
+		}
 	}
 }

@@ -27,7 +27,8 @@ enum State3
 	Jumping,
 	WalkingLeft,
 	WalkingRight,
-	Attacking
+	Attacking,
+	Dead
 };
 
 enum Action
@@ -91,6 +92,9 @@ private:
 		UPaperFlipbook* attack;
 
 	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* dead;
+
+	UPROPERTY(EditAnywhere)
 		UPaperFlipbook* jumpAnim;
 
 	// Particles
@@ -101,6 +105,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	    void EndAttack();
 
+	// Called when landed
+	virtual void Landed(const FHitResult& Hit) override;
+
 	UPROPERTY(BlueprintReadWrite)
 	    ABoomBoom* boomBoom;
 
@@ -109,4 +116,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		AActor* playerToAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		TSubclassOf<class AComicFX> comicFX;
 };

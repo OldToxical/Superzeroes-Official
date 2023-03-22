@@ -14,6 +14,7 @@
 #include "Enemy.h"
 #include "Button_But_Awesome.h"
 #include "LAdder.h"
+#include "ComicFX.h"
 #include "Projectile.h"
 
 // Sets default values
@@ -393,6 +394,11 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		}
 		if (otherActor->IsA(ATrash::StaticClass()))
 		{
+			FVector loc = GetActorLocation();
+			loc.Y -= 0.1;
+			loc.Z += 30;
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap, loc, GetActorRotation());
+			cfx->spriteChanger(5);
 			setHealth(health - 10.f);
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))
@@ -485,6 +491,14 @@ void AZipZap::ProcessShoot(float damage_)
 
 	// Spawn electric charge
 	AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
+
+	// Spawn Comic VFX
+	FVector location = GetActorLocation();
+	location.Z += 30.f;
+	location.Y -= 0.1f;
+	AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap, location, GetActorRotation());
+	cfx->spriteChanger(0);
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("shart"));
 }
 
 void AZipZap::Shoot()

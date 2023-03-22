@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "ElectricCharge.h"
 #include "BoxTrigger.h"
+#include "ComicFX.h"
 
 AElectricCharge::AElectricCharge()
 {
@@ -47,7 +48,13 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 		{
 			if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 			{
+<<<<<<< Updated upstream
 				Enemy->TakeEnemyDamage(20.f);
+=======
+				Enemy->TakeEnemyDamage(damage);
+				AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, Enemy->GetActorLocation(), GetActorRotation());
+				cfx->spriteChanger(0);
+>>>>>>> Stashed changes
 			}
 		}
 

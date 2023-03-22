@@ -46,7 +46,13 @@ void AButton_But_Awesome::ButtPress()
 	TArray<AActor*> ladders;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALAdder::StaticClass(), ladders);
 	
-	ALAdder* oneLadder = (ALAdder*)ladders[buttonNumber];
-	oneLadder->Activation();
+	for (int i = 0; i < ladders.Num(); i++)
+	{
+		ALAdder* oneLadder = (ALAdder*)ladders[i];
+		if (oneLadder->ladderNumber == buttonNumber)
+		{
+			oneLadder->Activation();
+		}
+	}
 
 }

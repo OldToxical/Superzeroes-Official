@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Enemy_Mouse.h"
 #include "Components/BoxComponent.h"
+#include "ComicFX.h"
 #include <chrono>
 #include <thread>
 
@@ -85,7 +86,7 @@ void AEnemy_Mouse::GetState()
 
 void AEnemy_Mouse::ChooseAction()
 {
-	if (!inCombat)
+	if (!inCombat && currentState != Dead)
 	{
 		if (chooseActionTimeoutTimer > 0.f)
 		{
@@ -109,7 +110,7 @@ void AEnemy_Mouse::ChooseAction()
 			ExecuteAction();
 		}
 	}
-	else
+	else if (inCombat && currentState != Dead)
 	{
 		Attack();
 	}
@@ -185,12 +186,16 @@ void AEnemy_Mouse::UpdateState()
 			flipbookComponent->SetLooping(true);
 			WalkRight();
 			break;
+		case State3::Dead:
+			flipbookComponent->SetFlipbook(dead);
+			flipbookComponent->SetLooping(false);
+			break;
 	    default:
 			break;
 	}
 
 	// AI Sensing
-	if (boomBoom != NULL && zipZap != NULL)
+	if (boomBoom != NULL && zipZap != NULL && currentState != State3::Dead)
 	{
 		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && (!inCombat))
 		{
@@ -212,7 +217,13 @@ void AEnemy_Mouse::UpdateState()
 		{
 			spawner->RemoveEnemy(this);
 		}
-		Destroy();
+
+		FVector location = GetActorLocation();
+		location.Z += 30.f;
+		location.Y -= 0.1f;
+		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+		cfx->spriteChanger(2);
+		currentState = State3::Dead;
 	}
 }
 
@@ -311,7 +322,34 @@ void AEnemy_Mouse::DealDamage()
 
 void AEnemy_Mouse::EndAttack()
 {
+<<<<<<< Updated upstream
 	flipbookComponent->SetFlipbook(idle);
+=======
+	hitAvailable = true;
+
+	if (flipbookComponent->GetFlipbook() == hurtAnim)
+	{
+		flipbookComponent->SetFlipbook(idle);
+	}
+
+	if (currentState != State3::Jumping && currentState != State3::Dead)
+	{
+		flipbookComponent->SetLooping(true);
+		flipbookComponent->Play();
+	}
+
+	if (currentState == State3::Dead)
+	{
+		Destroy();
+	}
+}
+
+void AEnemy_Mouse::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	currentState = State3::Idle;
+>>>>>>> Stashed changes
 	flipbookComponent->SetLooping(true);
 	flipbookComponent->Play();
 }

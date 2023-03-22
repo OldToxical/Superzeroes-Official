@@ -4,6 +4,11 @@
 #include "Enemy_Pigeon.h"
 #include "Components/BoxComponent.h"
 #include "Projectile.h"
+<<<<<<< Updated upstream
+=======
+#include "Math/Vector.h"
+#include "ComicFX.h"
+>>>>>>> Stashed changes
 #include <chrono>
 #include <thread>
 
@@ -15,7 +20,7 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	actionsAfterJumping.Add(35.f); // Go Idle
 	actionsAfterJumping.Add(34.f); // Jump
 	actionsAfterJumping.Add(50.f); // Walk Left
-	actionsAfterJumping.Add(38.f); // Walk Right
+	actionsAfterJumping.Add(50.f); // Walk Right
 	actionsAfterJumping.Add(65.f); // Attack
 	actionsAfterJumping.Add(1.f); // Run Away
 
@@ -98,38 +103,736 @@ void AEnemy_Pigeon::GetState()
 
 void AEnemy_Pigeon::ChooseAction()
 {
-	if (chooseActionTimeoutTimer > 0.f)
+	if (currentState != Dead)
 	{
-		chooseActionTimeoutTimer -= GetWorld()->GetDeltaSeconds();
-	}
-	else
-	{
-		TArray<float, TFixedAllocator<6>> possibleActions = AI_Q[currentState];
-		float bestValue = 0.f;
-		int actionsToBeChecked = possibleActions.Num();
-
-		if (!inCombat)
+		if (chooseActionTimeoutTimer > 0.f)
 		{
-			actionsToBeChecked = 4;
+			chooseActionTimeoutTimer -= GetWorld()->GetDeltaSeconds();
 		}
-
-		for (int i = 0; i < actionsToBeChecked; i++)
+		else
 		{
-			if (bestValue < possibleActions[i])
+			TArray<float, TFixedAllocator<6>> possibleActions = AI_Q[currentState];
+			float bestValue = 0.f;
+			int actionsToBeChecked = possibleActions.Num();
+
+			if (!inCombat)
 			{
-				bestValue = possibleActions[i];
-				currentAction = Action(i);
+				actionsToBeChecked = 4;
 			}
-		}
 
-		CalculateReward();
-		ExecuteAction();
+			for (int i = 0; i < actionsToBeChecked; i++)
+			{
+				if (bestValue < possibleActions[i])
+				{
+					bestValue = possibleActions[i];
+					currentAction = Action(i);
+				}
+			}
+
+			CalculateReward();
+			ExecuteAction();
+		}
 	}
 }
 
 void AEnemy_Pigeon::CalculateReward()
 {
 	float reward = rand() % 10 + 5;
+<<<<<<< Updated upstream
+=======
+	//float reward = 0.f;
+
+	/*if (!inCombat)
+	{
+		reward = rand() % 10 + 5;
+	}
+	else // It's in combat, let's see what it did
+	{
+		// If siege mode is active - whatever it does, it won't escape and won't survive
+		if (boomBoom->GetState() == State::Siege)
+		{
+			UpdateQ(reward);
+			return;
+		}
+
+		float distanceToBoomBoom = (boomBoom->GetActorLocation() - GetActorLocation()).Size();
+
+		// We need to see if he made the right decision depending on the state it's in
+		if (currentState == State3::WalkingLeft) // It was walking left so far
+		{
+			if (currentAction == Action::WalkLeft) // It keeps walking left
+			{
+				// Check if it's going boom boom (not good)
+				if (boomBoom->GetActorLocation().X < GetActorLocation().X)
+				{
+					reward -= (rand() % 8 + 3) * difficulty;
+
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Very bad
+						reward -= (rand() % 10 + 6) * difficulty;
+					}
+					else
+					{
+						// Still bad, but there is still enough distance
+						reward += (rand() % 7 + 2);
+					}
+				}
+				else // It's not going to boom boom, that's good
+				{
+					reward += (rand() % 8 + 3);
+				}
+			    // Check if it's going zip zap (better to go to him, cuz he's weaker)
+				if (zipZap->GetActorLocation().X < GetActorLocation().X)
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Boom Boom is around, so it's not that good
+						reward -= (rand() % 4 + 1);
+					}
+					else
+					{
+						// Boom Boom is not around, perfect
+						reward += (rand() % 6 + 2);
+					}
+				}
+				else // It's going away from zip zap, that's not good
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Worse, it's going to Boom Boom
+						reward -= (rand() % 6 + 2) * difficulty;
+					}
+					else
+					{
+						// It still goes to Boom Boom, but there is enough distance
+						reward -= (rand() % 3 + 0);
+					}
+				}
+				// Check if boom boom is attacking, it must be away from him
+				if (boomBoom->GetState() == State::Attacking)
+				{
+					reward -= (rand() % 6 + 1) * difficulty;
+				}
+			}
+			else if (currentAction == Action::WalkRight) // It changes direction
+			{
+				// Check if he's going away from the direction of boom boom (good)
+				if (boomBoom->GetActorLocation().X < GetActorLocation().X)
+				{
+					reward += (rand() % 8 + 4);
+				}
+				else // It's not going away from boom boom, not good, let's see how close he is
+				{
+					reward -= (rand() % 8 + 3) * difficulty;
+
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Too close, that's very bad
+						reward -= (rand() % 10 + 6) * difficulty;
+					}
+					else
+					{
+						// Not too close, not too bad
+						reward += (rand() % 2 + 0);
+					}
+				}
+				// Check if he's going away from the direction of zip zap (worse, because he has ranged attack)
+				if (zipZap->GetActorLocation().X < GetActorLocation().X)
+				{
+					reward -= (rand() % 7 + 4) * difficulty;
+				}
+				else // It's going to zip zap, that's good, but let's see if boom boom is around
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// He is around, that's not very good
+						reward += (rand() % 6 + 1);
+					}
+					else
+					{
+						// He is not around, perfect
+						reward += (rand() % 12 + 7);
+					}
+				}
+				// Check if boom boom is attacking, it must be away from him
+				if (boomBoom->GetState() == State::Attacking)
+				{
+					reward -= (rand() % 6 + 1) * difficulty;
+				}
+			}
+			else if (currentAction == Action::Jump) // It jumps
+			{
+				// That's good, agility is good
+				reward += (rand() % 5 + 2);
+
+				// Check if zip zap shoots, it would be great to avoid his projectiles
+				if (zipZap->GetState() == State2::Attacking)
+				{
+					reward += (rand() % 4 + 1);
+				}
+				// Check if there are any combo attacks active, if there are - that's reaaaally good
+				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				{
+					reward += (rand() % 5 + 2);
+				}
+			}
+			else if (currentAction == Action::GoIdle)
+			{
+				// That's good (not too much) if both the characters are away (it looks like it's wondering where they are)
+				float distanceToZipZap = (zipZap->GetActorLocation() - GetActorLocation()).Size();
+				if (distanceToBoomBoom >= 300.f && distanceToZipZap >= 300.f)
+				{
+					reward += (rand() % 6 + 0);
+				}
+			}
+			else if (currentAction == Action::Attack)
+			{
+				// That's good if it has health
+				if (healthPoints >= 25.f)
+				{
+					reward += (rand() % 5 + 0);
+				}
+				// Better if the characters attack
+				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
+				{
+					reward += (rand() % 4 + 0);
+				}
+				// Even Better if the characters have combo attack active
+				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				{
+					reward += (rand() % 7 + 3);
+				}
+			}
+		}
+		else if (currentState == State3::WalkingRight) // It was walking right so far
+		{
+			if (currentAction == Action::WalkRight) // It keeps walking right
+			{
+				// Check if he's going boom boom (not good)
+			    if (boomBoom->GetActorLocation().X > GetActorLocation().X)
+				{
+					reward -= (rand() % 8 + 3) * difficulty;
+
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Very bad
+						reward -= (rand() % 10 + 6) * difficulty;
+					}
+					else
+					{
+						// Better, there is still enough distance
+						reward += (rand() % 7 + 2);
+					}
+				}
+				else // It's not going to boom boom, that's good
+				{
+					reward += (rand() % 8 + 3);
+				}
+				// Check if he's going to zip zap, that's good, but let's see if boom boom is around
+				if (zipZap->GetActorLocation().X > GetActorLocation().X)
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Not so good, he's too close
+						reward -= (rand() % 4 + 1);
+					}
+					else
+					{
+						// Very good, he's not around, zip zap is alone
+						reward += (rand() % 6 + 2);
+					}
+				}
+				else // It goes away from zip zap, that's not good
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Very bad, going away from zip zap and going to boom boom
+						reward -= (rand() % 6 + 2) * difficulty;
+					}
+					else
+					{
+						// Better, there is still enough distance
+						reward -= (rand() % 3 + 0);
+					}
+				}
+				// Check if boom boom is attacking, it must be away from him
+				if (boomBoom->GetState() == State::Attacking)
+				{
+					reward -= (rand() % 6 + 1) * difficulty;
+				}
+			}
+			else if (currentAction == Action::WalkLeft) // It changes direction
+			{
+				// Check if he's going away from boom boom (good)
+				if (boomBoom->GetActorLocation().X > GetActorLocation().X)
+				{
+					reward += (rand() % 8 + 3);
+				}
+				else // It's not going away from boom boom, that's bad
+				{
+					reward -= (rand() % 8 + 3) * difficulty;
+
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Very bad, it's near boom boom and going even nearer
+						reward -= (rand() % 10 + 6) * difficulty;
+					}
+					else
+					{
+						// Better, there is still enough distance
+						reward += (rand() % 2 + 0);
+					}
+				}
+				// Check if he's going away from zip zap (bad, because he has ranged attack), let's see if boom boom is around
+				if (zipZap->GetActorLocation().X > GetActorLocation().X)
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Very bad, going away from zip zap and going to boom boom
+					}
+					else
+					{
+						// Better, there is still enough distance
+					}
+				}
+				else // It's going to zip zap, that's good, but let's see if boom boom is around
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Bad
+					}
+					else
+					{
+						// Good, boom boom isn't around
+					}
+				}
+				// Check if boom boom is attacking, it must be away from him
+				if (boomBoom->GetState() == State::Attacking)
+				{
+
+				}
+			}
+			else if (currentAction == Action::Jump) // It jumps
+			{
+				// That's good, agility is good
+				// Check if zip zap shoots, it would be great to avoid
+			    // Check if there are any combo attacks active, if there are - that's reaaaally good
+			}
+			else if (currentAction == Action::GoIdle)
+			{
+				// That's good (not too much) if both the characters are away (it looks like it's wondering where they are)
+				float distanceToZipZap = (zipZap->GetActorLocation() - GetActorLocation()).Size();
+				if (distanceToBoomBoom >= 300.f && distanceToZipZap >= 300.f)
+				{
+	
+				}
+			}
+			else if (currentAction == Action::Attack)
+			{
+				// That's good if it has health
+				if (healthPoints >= 25.f)
+				{
+
+				}
+				// Better if the characters attack
+				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
+				{
+
+				}
+				// Even Better if the characters have combo attack active
+				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				{
+
+				}
+			}
+		}
+		else if (currentState == State3::Jumping) // It was jumping so far
+		{
+		    if (currentAction == Action::WalkRight) // It keeps walking right
+		    {
+			    // Check if he's going boom boom (not good)
+			    if (boomBoom->GetActorLocation().X > GetActorLocation().X)
+			    {
+				    if (distanceToBoomBoom <= 150.f)
+				    {
+					    // Worse, very bad
+				    }
+				    else
+				    {
+					    // Better, there is still enough distance
+				    }
+			    }
+			    else // It's not going to boom boom, that's good
+			    {
+
+			    }
+			    // Check if he's going zip zap, that's good, but let's see if boom boom is around
+			    if (zipZap->GetActorLocation().X > GetActorLocation().X)
+			    {
+				    if (distanceToBoomBoom <= 150.f)
+				    {
+					    // Not good
+				    }
+				    else
+				    {
+					    // Very good, he's not around, zip zap is alone
+				    }
+			    }
+			    else // It goes away from zip zap, that's not good
+			    {
+				    if (distanceToBoomBoom <= 150.f)
+				    {
+					    // Very bad, going away from zip zap and going to boom boom
+				    }
+				    else
+				    {
+					    // Better, there is still enough distance
+				    }
+			    }
+			    // Check if boom boom is attacking, it must be away from him
+			    if (boomBoom->GetState() == State::Attacking)
+			    {
+
+			    }
+		    }
+		    else if (currentAction == Action::WalkLeft) // It changes direction
+		    {
+			    // Check if he's going away from boom boom (good)
+			    if (boomBoom->GetActorLocation().X > GetActorLocation().X)
+			    {
+
+			    }
+			    else // It's not going away from boom boom, that's bad
+			    {
+				    if (distanceToBoomBoom <= 150.f)
+				    {
+					    // Very bad, it's near boom boom and going even nearer
+				    }
+				    else
+				    {
+					    // Better, there is still enough distance
+				    }
+			    }
+			    // Check if he's going away from zip zap (bad, because he has ranged attack), let's see if boom boom is around
+			    if (zipZap->GetActorLocation().X > GetActorLocation().X)
+			    {
+				    if (distanceToBoomBoom <= 150.f)
+				    {
+					    // Very bad, going away from zip zap and going to boom boom
+				    }
+				    else
+				    {
+				    	// Better, there is still enough distance
+				    }
+			    }
+			    else // It's going to zip zap, that's good, but let's see if boom boom is around
+			    {
+				    if (distanceToBoomBoom <= 150.f)
+				    {
+					    // Bad
+				    }
+				    else
+					{
+						// Very good, boom boom isn't around
+					}
+				}
+				// Check if boom boom is attacking, it must be away from him
+				if (boomBoom->GetState() == State::Attacking)
+				{
+
+				}
+			}
+			else if (currentAction == Action::Jump) // It keeps jumping
+			{
+				// Two jumps after one another is not so good
+			}
+			else if (currentAction == Action::GoIdle)
+			{
+				// That's not the best thing to do after landing, especially if a combo attack is active
+				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				{
+
+				}
+			}
+			else if (currentAction == Action::Attack)
+			{
+				// That's good if it has health
+				if (healthPoints >= 25.f)
+				{
+
+				}
+				// Better if the characters attack
+				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
+				{
+
+				}
+				// Even Better if the characters have combo attack active
+				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				{
+
+				}
+			}
+		}
+		else if (currentState == State3::Idle) // It was idle so far
+		{
+			if (currentAction == Action::WalkLeft) // It decides to walk left
+			{
+				// Check if he's going away from boom boom (good)
+				if (boomBoom->GetActorLocation().X > GetActorLocation().X)
+				{
+
+				}
+				else // It's not going away from boom boom, that's bad
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Very bad, it's near boom boom and going even nearer
+					}
+					else
+					{
+						// Better, there is still enough distance
+					}
+				}
+				// Check if he's going away from zip zap (bad, because he has ranged attack), let's see if boom boom is around
+				if (zipZap->GetActorLocation().X > GetActorLocation().X)
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Very bad, going away from zip zap and going to boom boom
+					}
+					else
+					{
+						// Better, there is still enough distance
+					}
+				}
+				else // It's going to zip zap, that's good, but let's see if boom boom is around
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Bad
+					}
+					else
+					{
+						// Good, boom boom isn't around
+					}
+				}
+				// Check if boom boom is attacking, it must be away from him
+				if (boomBoom->GetState() == State::Attacking)
+				{
+
+				}
+			}
+			else if (currentAction == Action::WalkRight) // It It decides to walk right
+			{
+				// Check if he's going boom boom (not good)
+				if (boomBoom->GetActorLocation().X > GetActorLocation().X)
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Worse, very bad
+					}
+					else
+					{
+						// Better, there is still enough distance
+					}
+				}
+				else // It's not going to boom boom, that's good
+				{
+
+				}
+				// Check if he's going zip zap, that's good, but let's see if boom boom is around
+				if (zipZap->GetActorLocation().X > GetActorLocation().X)
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Not good
+					}
+					else
+					{
+						// Very good, he's not around, zip zap is alone
+					}
+				}
+				else // It goes away from zip zap, that's not good
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Very bad, going away from zip zap and going to boom boom
+					}
+					else
+					{
+						// Better, there is still enough distance
+					}
+				}
+				// Check if boom boom is attacking, it must be away from him
+				if (boomBoom->GetState() == State::Attacking)
+				{
+
+				}
+			}
+			else if (currentAction == Action::Jump) // It decides to jump
+			{
+				// Jumping on one place is not good
+			}
+			else if (currentAction == Action::GoIdle)
+			{
+				// That's not the best thing to do after having been idle so far, especially if a combo attack is active
+				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				{
+
+				}
+			}
+			else if (currentAction == Action::Attack)
+			{
+				// That's good if it has health
+				if (healthPoints >= 25.f)
+				{
+
+				}
+				// Better if the characters attack
+				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
+				{
+
+				}
+				// Even Better if the characters have combo attack active
+				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				{
+
+				}
+			}
+		}
+		else if (currentState == State3::Attacking) // It was attacking so far
+		{
+			if (currentAction == Action::WalkLeft) // It decides to walk left
+			{
+				// Check if he's going away from boom boom (good)
+				if (boomBoom->GetActorLocation().X > GetActorLocation().X)
+				{
+
+				}
+				else // It's not going away from boom boom, that's bad
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Very bad, it's near boom boom and going even nearer
+					}
+					else
+					{
+						// Better, there is still enough distance
+					}
+				}
+				// Check if he's going away from zip zap (bad, because he has ranged attack), let's see if boom boom is around
+				if (zipZap->GetActorLocation().X > GetActorLocation().X)
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Very bad, going away from zip zap and going to boom boom
+					}
+					else
+					{
+						// Better, there is still enough distance
+					}
+				}
+			else // It's going to zip zap, that's good, but let's see if boom boom is around
+			{
+				if (distanceToBoomBoom <= 150.f)
+				{
+					// Bad
+				}
+				else
+				{
+					// Good, boom boom isn't around
+				}
+			}
+			// Check if boom boom is attacking, it must be away from him
+			if (boomBoom->GetState() == State::Attacking)
+			{
+
+			}
+		}
+			else if (currentAction == Action::WalkRight) // It It decides to walk right
+			{
+				// Check if he's going boom boom (not good)
+				if (boomBoom->GetActorLocation().X > GetActorLocation().X)
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Worse, very bad
+					}
+					else
+					{
+						// Better, there is still enough distance
+					}
+				}
+				else // It's not going to boom boom, that's good
+				{
+
+				}
+				// Check if he's going zip zap, that's good, but let's see if boom boom is around
+				if (zipZap->GetActorLocation().X > GetActorLocation().X)
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Not good
+					}
+					else
+					{
+						// Very good, he's not around, zip zap is alone
+					}
+				}
+				else // It goes away from zip zap, that's not good
+				{
+					if (distanceToBoomBoom <= 150.f)
+					{
+						// Very bad, going away from zip zap and going to boom boom
+					}
+					else
+					{
+						// Better, there is still enough distance
+					}
+				}
+				// Check if boom boom is attacking, it must be away from him
+				if (boomBoom->GetState() == State::Attacking)
+				{
+
+				}
+			}
+		    else if (currentAction == Action::Jump) // It decides to jump
+		    {
+			    // Agility is good, especially if a combo attack is active
+				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				{
+
+				}
+		    }
+		    else if (currentAction == Action::GoIdle)
+		    {
+			    // If a combo attack is active, it's noot good, otherwise - if it's away from the characters
+				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				{
+
+				}
+
+				float distanceToZipZap = (zipZap->GetActorLocation() - GetActorLocation()).Size();
+				if (distanceToBoomBoom >= 300.f && distanceToZipZap >= 300.f)
+				{
+
+				}
+		    }
+		    else if (currentAction == Action::Attack)
+		    {
+				// It's not very good to repeat attack
+				
+				// Repeat attack only if there are combo attacks active
+				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				{
+
+				}
+		    }
+        }
+	}*/
+
+>>>>>>> Stashed changes
 	UpdateQ(reward);
 }
 
@@ -237,6 +940,10 @@ void AEnemy_Pigeon::UpdateState()
 		}
 		break;
 
+	case State3::Dead:
+		flipbookComponent->SetFlipbook(dead);
+		flipbookComponent->SetLooping(false);
+		break;
 	default:
 		break;
 	}
@@ -264,7 +971,13 @@ void AEnemy_Pigeon::UpdateState()
 		{
 			spawner->RemoveEnemy(this);
 		}
-		Destroy();
+
+		FVector location = GetActorLocation();
+		location.Z += 30.f;
+		location.Y -= 0.1f;
+		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+		cfx->spriteChanger(2);
+		currentState = State3::Dead;
 	}
 }
 
@@ -363,6 +1076,23 @@ void AEnemy_Pigeon::EndAttack()
 		flipbookComponent->SetFlipbook(idle);
 	}
 
+	if (currentState != State3::Jumping && currentState != State3::Dead)
+	{
+		flipbookComponent->SetLooping(true);
+		flipbookComponent->Play();
+	}
+
+	if (currentState == State3::Dead)
+	{
+		Destroy();
+	}
+}
+
+void AEnemy_Pigeon::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	currentState = State3::Idle;
 	flipbookComponent->SetLooping(true);
 	flipbookComponent->Play();
 }

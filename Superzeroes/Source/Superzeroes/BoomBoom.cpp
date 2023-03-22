@@ -12,6 +12,7 @@
 #include "Button_But_Awesome.h"
 #include "LAdder.h"
 #include "Kismet/GameplayStatics.h"
+#include "ComicFX.h"
 
 // Sets default values
 ABoomBoom::ABoomBoom()
@@ -171,6 +172,19 @@ void ABoomBoom::Tick(float DeltaTime)
 	}
 }
 
+<<<<<<< Updated upstream
+=======
+void ABoomBoom::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	//smokeParticle->ActivateSystem();
+	characterState = State::Idle;
+	flipbook->SetLooping(true);
+	flipbook->Play();
+}
+
+>>>>>>> Stashed changes
 // Called to bind functionality to input
 void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -185,7 +199,7 @@ void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ABoomBoom::UpdateState()
 {
-	//charMove->MaxWalkSpeed = characterSpeed;
+	charMove->MaxWalkSpeed = characterSpeed;
 
 	// Execute the savage attack's function, if the character is in its state
 	if (characterState == State::Combo_Savage)
@@ -267,7 +281,7 @@ void ABoomBoom::move(float scaleVal)
 	{
 		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && (characterState != State::Siege))
 		{
-			characterSpeed = 300.f;
+			characterSpeed = 130.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
 		}
 
@@ -413,7 +427,7 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 	// Zip Zap has tased Boom Boom and he must start running like crazy in the direction Zip Zap was facing when he tased him
 	rotation.Yaw = directionRotation;
 	flipbook->SetWorldRotation(rotation);
-	characterSpeed = 450.f;
+	characterSpeed = 350.f;
 	characterState = State::Combo_Savage;
 }
 
@@ -500,6 +514,11 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		}
 		if (otherActor->IsA(ATrash::StaticClass()))
 		{
+			FVector loc = GetActorLocation();
+			loc.Y -= 0.1;
+			loc.Z += 30;
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, loc, GetActorRotation());
+			cfx->spriteChanger(4);
 			setHealth(health - 5.f);
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))
@@ -574,6 +593,8 @@ void ABoomBoom::ProcessHit(float damage_)
 
 		if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
 		{
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, endPoint, GetActorRotation());
+			cfx->spriteChanger(3);
 			Enemy->TakeEnemyDamage(damage_);
 		}
 		if (HitActor->ActorHasTag("Button"))
@@ -582,11 +603,13 @@ void ABoomBoom::ProcessHit(float damage_)
 
 			if (button == NULL)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null"));
 				return;
 			}
 			button->ButtPress();
+<<<<<<< Updated upstream
 			
+=======
+>>>>>>> Stashed changes
 		}
 	}
 }

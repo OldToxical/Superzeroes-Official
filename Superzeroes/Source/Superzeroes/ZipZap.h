@@ -179,6 +179,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<AProjectile> electricChargeClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		TSubclassOf<class AComicFX> zap;
+
 	// Particles
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* muzzleFlashParticle;
