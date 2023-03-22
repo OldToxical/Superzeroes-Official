@@ -21,13 +21,14 @@
 class ABoomBoom;
 class AZipZap;
 
-enum State3
+enum State4
 {
 	Idle,
 	Jumping,
 	WalkingLeft,
 	WalkingRight,
-	Attacking
+	Attacking,
+	Dead
 };
 
 enum Action
@@ -35,7 +36,7 @@ enum Action
 	GoIdle,
 	Jump,
 	WalkLeft,
-	WalkRight,
+	WalkRight
 };
 
 UCLASS()
@@ -71,7 +72,7 @@ private:
 	float stateUpdateTimer;
 	float speed;
 	float newX;
-	State3 currentState;
+	State4 currentState;
 	Action currentAction;
 	TArray<TArray<float, TFixedAllocator<4>>, TFixedAllocator<4>> AI_Q;
 
@@ -91,6 +92,9 @@ private:
 		UPaperFlipbook* attack;
 
 	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* dead;
+
+	UPROPERTY(EditAnywhere)
 		UPaperFlipbook* jumpAnim;
 
 	UPROPERTY(EditAnywhere)
@@ -104,6 +108,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	    void EndAttack();
 
+	// Called when landed
+	virtual void Landed(const FHitResult& Hit) override;
+
 	UPROPERTY(BlueprintReadWrite)
 	    ABoomBoom* boomBoom;
 
@@ -112,4 +119,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		AActor* playerToAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		TSubclassOf<class AComicFX> comicFX;
 };

@@ -30,7 +30,8 @@ enum State3
 	WalkingLeft,
 	WalkingRight,
 	Attacking,
-	RunningAway
+	RunningAway,
+	Dead
 };
 
 enum Action
@@ -96,6 +97,9 @@ private:
 		UPaperFlipbook* attack;
 
 	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* dead;
+
+	UPROPERTY(EditAnywhere)
 		UPaperFlipbook* jumpAnim;
 
 	UPROPERTY(EditAnywhere)
@@ -108,6 +112,9 @@ private:
 protected:
 	UFUNCTION(BlueprintCallable)
 	    void EndAttack();
+
+	// Called when landed
+	virtual void Landed(const FHitResult& Hit) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	    ABoomBoom* boomBoom;

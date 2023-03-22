@@ -34,5 +34,8 @@ private:
 		UParticleSystem* zipZapImpact;
 
 	FVector startPos;
-	TSubclassOf<class AComicFX> comicFX;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		TSubclassOf<class AComicFX> comicFX;
 };

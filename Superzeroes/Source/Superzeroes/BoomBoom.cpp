@@ -42,9 +42,11 @@ ABoomBoom::ABoomBoom()
 	health = 200.f;
 	currentLevel = 0;
 
-	spawnLoc.Add(FVector(-1800.f, .5f, -182.f));
-	spawnLoc.Add(FVector(-300.f, .5f, -182.f));
-	spawnLoc.Add(FVector(1400.f, .5f, -182.f));
+	spawnLoc.Add(FVector(-2973.f, .5f, -80.f));
+	spawnLoc.Add(FVector(-1233.f, .5f, -80.f));
+	spawnLoc.Add(FVector(477.f, .5f, -80.f));
+	spawnLoc.Add(FVector(2550.f, .5f, -80.f));
+	spawnLoc.Add(FVector(3830.f, .5f, -80.f));
 
 	if (flipbook)
 	{
@@ -585,11 +587,9 @@ void ABoomBoom::ProcessHit(float damage_)
 
 			if (button == NULL)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null"));
 				return;
 			}
 			button->ButtPress();
-
 		}
 	}
 }

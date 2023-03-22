@@ -44,9 +44,11 @@ AZipZap::AZipZap()
 		flipbook->SetGenerateOverlapEvents(false);
 	}
 
-	spawnLoc.Add(FVector(-1750.f, .5f, -189.f));
-	spawnLoc.Add(FVector(-240.f, .5f, -189.f));
-	spawnLoc.Add(FVector(1500.f, .5f, -189.f));
+	spawnLoc.Add(FVector(-2873.f, .5f, -80.f));
+	spawnLoc.Add(FVector(-1133.f, .5f, -80.f));
+	spawnLoc.Add(FVector(577.f, .5f, -80.f));
+	spawnLoc.Add(FVector(2650.f, .5f, -80.f));
+	spawnLoc.Add(FVector(3930.f, .5f, -80.f));
 }
 
 void AZipZap::setHealth(float newHealth)
@@ -172,7 +174,7 @@ void AZipZap::move(float scaleVal)
 	{
 		if (characterState != State2::Combo_Projectile && characterState != State2::Siege && inputAvailable)
 		{
-			characterSpeed = 350.f;
+			characterSpeed = 300.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
 
 			// Handle rotation
@@ -220,19 +222,19 @@ void AZipZap::InitiateComboAttack_Projectile(float directionRotation)
 	rotation.Yaw = directionRotation;
 	flipbook->SetWorldRotation(rotation);
 	flipbook->SetFlipbook(projectileFly);
-	characterSpeed = 450.f;
+	//characterSpeed = 450.f;
 	charMove->GravityScale = 0.7f;
 	characterState = State2::Combo_Projectile;
 
 	// Calculate impulse vector
-	float X_ImpulseDirection = 500.f;
+	float X_ImpulseDirection = 1000.f;
 
 	if (rotation.Yaw > 0) // Looking left
 	{
 		X_ImpulseDirection *= -1.f;
 	}
 
-	LaunchCharacter(FVector(X_ImpulseDirection, 0.f, 300.f), false, false);
+	LaunchCharacter(FVector(X_ImpulseDirection, 0.f, 600.f), false, false);
 }
 
 void AZipZap::Electrify()
@@ -271,7 +273,7 @@ void AZipZap::EndAttack()
 
 void AZipZap::UpdateState()
 {
-	//charMove->MaxWalkSpeed = characterSpeed;
+	charMove->MaxWalkSpeed = characterSpeed;
 
 	// Execute attacking functions depending on the flipbook's frame position
 	if (characterState == State2::Attacking && flipbook->GetFlipbook() != initiateBoomBoomSavageComboAttack)
@@ -346,7 +348,7 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 			FVector loc = GetActorLocation();
 			loc.Y -= 0.1;
 			loc.Z += 30;
-			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, loc, GetActorRotation());
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap, loc, GetActorRotation());
 			cfx->spriteChanger(5);
 			setHealth(health - 10.f);
 		}

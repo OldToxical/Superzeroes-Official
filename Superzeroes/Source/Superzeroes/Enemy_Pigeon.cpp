@@ -100,40 +100,44 @@ void AEnemy_Pigeon::GetState()
 
 void AEnemy_Pigeon::ChooseAction()
 {
-	if (chooseActionTimeoutTimer > 0.f)
+	if (currentState != Dead)
 	{
-		chooseActionTimeoutTimer -= GetWorld()->GetDeltaSeconds();
-	}
-	else
-	{
-		TArray<float, TFixedAllocator<6>> possibleActions = AI_Q[currentState];
-		float bestValue = 0.f;
-		int actionsToBeChecked = possibleActions.Num();
-
-		if (!inCombat)
+		if (chooseActionTimeoutTimer > 0.f)
 		{
-			actionsToBeChecked = 4;
+			chooseActionTimeoutTimer -= GetWorld()->GetDeltaSeconds();
 		}
-
-		for (int i = 0; i < actionsToBeChecked; i++)
+		else
 		{
-			if (bestValue < possibleActions[i])
+			TArray<float, TFixedAllocator<6>> possibleActions = AI_Q[currentState];
+			float bestValue = 0.f;
+			int actionsToBeChecked = possibleActions.Num();
+
+			if (!inCombat)
 			{
-				bestValue = possibleActions[i];
-				currentAction = Action(i);
+				actionsToBeChecked = 4;
 			}
-		}
 
-		CalculateReward();
-		ExecuteAction();
+			for (int i = 0; i < actionsToBeChecked; i++)
+			{
+				if (bestValue < possibleActions[i])
+				{
+					bestValue = possibleActions[i];
+					currentAction = Action(i);
+				}
+			}
+
+			CalculateReward();
+			ExecuteAction();
+		}
 	}
 }
 
 void AEnemy_Pigeon::CalculateReward()
 {
-	float reward = 0.f;
+	float reward = rand() % 10 + 5;
+	//float reward = 0.f;
 
-	if (!inCombat)
+	/*if (!inCombat)
 	{
 		reward = rand() % 10 + 5;
 	}
@@ -821,7 +825,7 @@ void AEnemy_Pigeon::CalculateReward()
 				}
 		    }
         }
-	}
+	}*/
 
 	UpdateQ(reward);
 }
@@ -930,6 +934,10 @@ void AEnemy_Pigeon::UpdateState()
 		}
 		break;
 
+	case State3::Dead:
+		flipbookComponent->SetFlipbook(dead);
+		flipbookComponent->SetLooping(false);
+		break;
 	default:
 		break;
 	}
@@ -963,8 +971,7 @@ void AEnemy_Pigeon::UpdateState()
 		location.Y -= 0.1f;
 		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
 		cfx->spriteChanger(2);
-
-		Destroy();
+		currentState = State3::Dead;
 	}
 }
 
@@ -1063,6 +1070,23 @@ void AEnemy_Pigeon::EndAttack()
 		flipbookComponent->SetFlipbook(idle);
 	}
 
+	if (currentState != State3::Jumping && currentState != State3::Dead)
+	{
+		flipbookComponent->SetLooping(true);
+		flipbookComponent->Play();
+	}
+
+	if (currentState == State3::Dead)
+	{
+		Destroy();
+	}
+}
+
+void AEnemy_Pigeon::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	currentState = State3::Idle;
 	flipbookComponent->SetLooping(true);
 	flipbookComponent->Play();
 }
