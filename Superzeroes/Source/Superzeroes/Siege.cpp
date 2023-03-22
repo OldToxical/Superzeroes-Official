@@ -64,11 +64,8 @@ void ASiege::Tick(float DeltaTime)
 
 	if (boomBoomInputTimer >= InputTime && zipZapInputTimer >= InputTime && !modeIsActive)
 	{
-<<<<<<< Updated upstream
-=======
 		SetActorRotation(boomBoom->GetActorRotation());
 		bullets = 5;
->>>>>>> Stashed changes
 		modeIsActive = true;
 		flipbook->Play();
 	}
@@ -113,14 +110,16 @@ void ASiege::HandleBoomBoomInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && boomBoom->GetState() == State::Idle)
 		{
 			boomBoomInputTimer += GetWorld()->GetDeltaSeconds();
+			boomBoom->SetInputAvailability(false);
 			return;
 		}
 	}
 
 	boomBoomInputTimer = 0.f;
+	boomBoom->SetInputAvailability(true);
 }
 
 void ASiege::HandleZipZapInput(float scaleVal)
@@ -130,14 +129,16 @@ void ASiege::HandleZipZapInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && zipZap->GetState() == State2::Idle)
 		{
 			zipZapInputTimer += GetWorld()->GetDeltaSeconds();
+			zipZap->SetInputAvailability(false);
 			return;
 		}
 	}
 
 	zipZapInputTimer = 0.f;
+	zipZap->SetInputAvailability(true);
 }
 
 void ASiege::ExecuteSiegeMode()
@@ -146,13 +147,7 @@ void ASiege::ExecuteSiegeMode()
 	{
 		if (bullets > 0)
 		{
-<<<<<<< Updated upstream
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("atakuva"));
-			FVector muzzleFlashLocation = FVector(GetActorLocation().X + 54.f, GetActorLocation().Y, GetActorLocation().Z - 5.f);
-			FVector beamVelocity = FVector(50000.f, 0.f, 0.f);
-=======
 			executionTimer -= GetWorld()->GetDeltaSeconds();
->>>>>>> Stashed changes
 
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("MainCharacter"));
 			SetActorHiddenInGame(false);
@@ -274,6 +269,13 @@ void ASiege::EndAttackAnimation()
 
 void ASiege::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
 {
+	if (otherActor != this)
+	{
+		if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
+		{
+			Enemy->TakeEnemyDamage(100.f);
+		}
+	}
 }
 
 void ASiege::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex)

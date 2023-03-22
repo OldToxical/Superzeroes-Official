@@ -15,7 +15,7 @@
 #define StrongAttackMinimumInputTime 0.5
 #define SimpleAttackSequenceTimeout 0.6
 #define SimpleAttackAnimationLength 0.27
-#define MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack 60
+#define MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack 120
 #define AcutalPunchDelay 0.2
 
 UENUM()
@@ -40,9 +40,6 @@ public:
 	// Sets default values for this character's properties
 	ABoomBoom();
 	~ABoomBoom();
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -110,23 +107,34 @@ public:
 		void SetLevelIndex(int level) { currentLevel = level; }
 	UFUNCTION(BlueprintCallable)
 		void SetState(State state_) { characterState = state_; }
+	UFUNCTION(BlueprintCallable)
+		void SetInputAvailability(bool isAvailable) { inputAvailable = isAvailable; }
 
+	// Setters and getters
 	UFUNCTION(BlueprintCallable)
 		float getHealth() { return health; };
 	UFUNCTION(BlueprintCallable)
-		void setHealth(float newHealth);// Enum instance for the character's state
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		State characterState;
+		void setHealth(float newHealth);
+	UFUNCTION(BlueprintCallable)
+	    State GetState() { return characterState; }
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called when landed
+	virtual void Landed(const FHitResult& Hit) override;
+
 	// Rotator variable for the flipbook's rotation
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FRotator rotation;
 
-	
+	// Enum instance for the character's state
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		State characterState;
 
 	// Reference to Zip Zap's object
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -168,6 +176,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 		bool launchZipZap;
 
+	// Variable to keep track whether the input is available, depending on whether siege mode is being activated at the moment
+	UPROPERTY(EditAnywhere)
+		bool inputAvailable;
+
 	//Variable to keep track of Boom Boom's health
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float health;
@@ -175,9 +187,6 @@ protected:
 	// Particles' variables
 	UPROPERTY(BlueprintReadWrite)
 		UParticleSystemComponent* smokeParticle;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		//class UBoxComponent* collision;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;

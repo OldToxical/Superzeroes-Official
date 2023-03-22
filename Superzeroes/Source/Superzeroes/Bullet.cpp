@@ -5,7 +5,7 @@
 
 ABullet::ABullet()
 {
-	damage = 10.f;
+	damage = 0.f;
 	startPos = FVector(0.f, 0.f, 0.f);
 }
 
@@ -24,7 +24,7 @@ void ABullet::CalculateDamage()
 	FVector collidingPoint = GetActorLocation();
 	FVector distanceTravelled = FVector(abs(startPos.X - collidingPoint.X), abs(startPos.Y - collidingPoint.Y), abs(startPos.Z - collidingPoint.Z));
 	float distance = sqrt(pow(distanceTravelled.X, 2) + pow(distanceTravelled.Z, 2));
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::SanitizeFloat(distance));
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::SanitizeFloat(damage));
 
 	if (distance <= 50.f)
 	{
@@ -51,7 +51,7 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 				CalculateDamage();
 				boomBoom->setHealth(boomBoom->getHealth() - damage);
 				FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
-				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
+				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
 			}
 		}
 
@@ -62,16 +62,12 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 				CalculateDamage();
 				zipZap->setHealth(zipZap->getHealth() - damage);
 				FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
-<<<<<<< Updated upstream
-				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
-=======
 				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
 				FVector location = zipZap->GetActorLocation();
 				location.Z += 30.f;
 				location.Y -= 0.1f;
 				AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
 				cfx->spriteChanger(1);
->>>>>>> Stashed changes
 			}
 		}
 

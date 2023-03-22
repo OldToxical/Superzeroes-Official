@@ -21,7 +21,7 @@
 class ABoomBoom;
 class AZipZap;
 
-enum State3
+enum State4
 {
 	Idle,
 	Jumping,
@@ -36,7 +36,7 @@ enum Action
 	GoIdle,
 	Jump,
 	WalkLeft,
-	WalkRight,
+	WalkRight
 };
 
 UCLASS()
@@ -50,6 +50,7 @@ private:
 	virtual void AI() override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void TakeEnemyDamage(float damage_);
 
 	// AI Functions
 	void GetState();
@@ -71,9 +72,8 @@ private:
 	float stateUpdateTimer;
 	float speed;
 	float newX;
-	State3 currentState;
+	State4 currentState;
 	Action currentAction;
-	class UBoxComponent* collision;
 	TArray<TArray<float, TFixedAllocator<4>>, TFixedAllocator<4>> AI_Q;
 
 	UPROPERTY(EditAnywhere)
@@ -96,6 +96,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		UPaperFlipbook* jumpAnim;
+
+	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* hurtAnim;
 
 	// Particles
 	UPROPERTY(EditAnywhere)

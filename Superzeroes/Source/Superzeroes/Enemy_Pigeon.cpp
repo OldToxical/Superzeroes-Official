@@ -2,13 +2,9 @@
 
 
 #include "Enemy_Pigeon.h"
-#include "Components/BoxComponent.h"
 #include "Projectile.h"
-<<<<<<< Updated upstream
-=======
 #include "Math/Vector.h"
 #include "ComicFX.h"
->>>>>>> Stashed changes
 #include <chrono>
 #include <thread>
 
@@ -77,6 +73,7 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	speed = 0.f;
 	damage = 20.f;
 	healthPoints = 50.f;
+	difficulty = 1;
 	inCombat = false;
 }
 
@@ -138,8 +135,6 @@ void AEnemy_Pigeon::ChooseAction()
 void AEnemy_Pigeon::CalculateReward()
 {
 	float reward = rand() % 10 + 5;
-<<<<<<< Updated upstream
-=======
 	//float reward = 0.f;
 
 	/*if (!inCombat)
@@ -832,7 +827,6 @@ void AEnemy_Pigeon::CalculateReward()
         }
 	}*/
 
->>>>>>> Stashed changes
 	UpdateQ(reward);
 }
 
@@ -1102,5 +1096,4 @@ void AEnemy_Pigeon::TakeEnemyDamage(float damage_)
 	healthPoints -= damage_;
 	flipbookComponent->SetFlipbook(hurtAnim);
 	flipbookComponent->SetLooping(false);
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("udri"));
 }

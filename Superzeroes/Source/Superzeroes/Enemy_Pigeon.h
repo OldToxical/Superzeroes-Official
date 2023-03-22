@@ -83,6 +83,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	    bool inCombat;
 
+	UPROPERTY(EditAnywhere)
+		int difficulty;
+
 	// Animations
 	UPROPERTY(EditAnywhere)
 	    UPaperFlipbook* idle;

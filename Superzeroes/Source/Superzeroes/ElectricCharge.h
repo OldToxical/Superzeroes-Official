@@ -20,7 +20,6 @@ private:
 	AElectricCharge();
 
 	virtual void BeginPlay() override;
-	void CalculateDamage();
 
 	UFUNCTION()
 	    void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
@@ -33,7 +32,6 @@ private:
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* zipZapImpact;
 
-	float damage;
 	FVector startPos;
 
 protected:
