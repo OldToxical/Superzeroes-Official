@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "BoxTrigger.h"
 #include "ZipZap.h"
+#include "Siege.h"
 #include "Engine/EngineTypes.h"
 
 ABoxTrigger::ABoxTrigger()
@@ -12,7 +13,7 @@ void ABoxTrigger::OverlapBegin(AActor* otherActor)
 {
 	if (otherActor && (otherActor != this))
 	{
-		if (otherActor->IsA(AZipZap::StaticClass()))
+		if (otherActor->IsA(AZipZap::StaticClass()) || otherActor->IsA(ASiege::StaticClass()))
 		{
 			if (colliderPlaneActor != NULL)
 			{
@@ -22,10 +23,16 @@ void ABoxTrigger::OverlapBegin(AActor* otherActor)
 	}
 }
 
-void ABoxTrigger::OverlapEnd()
+void ABoxTrigger::OverlapEnd(AActor* otherActor)
 {
-	if (colliderPlaneActor != NULL)
+	if (otherActor && (otherActor != this))
 	{
-		colliderPlaneActor->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		if (otherActor->IsA(AZipZap::StaticClass()) || otherActor->IsA(ASiege::StaticClass()))
+		{
+			if (colliderPlaneActor != NULL)
+			{
+				colliderPlaneActor->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			}
+		}
 	}
 }

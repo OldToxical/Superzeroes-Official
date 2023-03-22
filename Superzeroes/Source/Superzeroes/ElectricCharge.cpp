@@ -2,6 +2,7 @@
 #include "ElectricCharge.h"
 #include "Button_But_Awesome.h"
 #include "BoxTrigger.h"
+#include "ComicFX.h"
 
 AElectricCharge::AElectricCharge()
 {
@@ -28,6 +29,8 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 			if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 			{
 				Enemy->TakeEnemyDamage(damage);
+				AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, Enemy->GetActorLocation(), GetActorRotation());
+				cfx->spriteChanger(0);
 			}
 		}
 

@@ -4,6 +4,7 @@
 #include "Enemy_Pigeon.h"
 #include "Projectile.h"
 #include "Math/Vector.h"
+#include "ComicFX.h"
 #include <chrono>
 #include <thread>
 
@@ -956,6 +957,13 @@ void AEnemy_Pigeon::UpdateState()
 		{
 			spawner->RemoveEnemy(this);
 		}
+
+		FVector location = GetActorLocation();
+		location.Z += 30.f;
+		location.Y -= 0.1f;
+		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+		cfx->spriteChanger(2);
+
 		Destroy();
 	}
 }

@@ -120,4 +120,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<AProjectile> bulletClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		TSubclassOf<class AComicFX> comicFX;
 };

@@ -33,4 +33,5 @@ private:
 		UParticleSystem* zipZapImpact;
 
 	FVector startPos;
+	TSubclassOf<class AComicFX> comicFX;
 };

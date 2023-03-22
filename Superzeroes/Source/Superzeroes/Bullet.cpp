@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Bullet.h"
 #include "BoxTrigger.h"
+#include "ComicFX.h"
 
 ABullet::ABullet()
 {
@@ -62,6 +63,11 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 				zipZap->setHealth(zipZap->getHealth() - damage);
 				FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
 				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
+				FVector location = zipZap->GetActorLocation();
+				location.Z += 30.f;
+				location.Y -= 0.1f;
+				AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+				cfx->spriteChanger(1);
 			}
 		}
 
