@@ -7,7 +7,7 @@
 #include "ComicFX.generated.h"
 
 /**
- *
+ * 
  */
 UCLASS()
 class SUPERZEROES_API AComicFX : public APaperSpriteActor
@@ -26,19 +26,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperSprite* zap;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperSprite* squeak;
+		class UPaperSprite* squeak; 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperSprite* squawk;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperSprite* bang;
+		class UPaperSprite* bang; 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperSprite* oof;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperSprite* bam;
+		class UPaperSprite* bam; 
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		FVector location;
+		// Called when the game starts or when spawned
+		virtual void BeginPlay() override;
+		UPROPERTY(EditAnywhere, BlueprintReadOnly)
+			FVector location;
 };

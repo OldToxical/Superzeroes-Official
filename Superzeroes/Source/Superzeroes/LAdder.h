@@ -21,8 +21,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* ladder;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* ladder_static;
 	UFUNCTION(BlueprintCallable)
 		void Activation();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
