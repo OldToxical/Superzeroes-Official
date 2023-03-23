@@ -6,7 +6,7 @@
 
 AElectricCharge::AElectricCharge()
 {
-	damage = 0.f;
+	damage = 20.f;
 	startPos = FVector(0.f, 0.f, 0.f);
 }
 
