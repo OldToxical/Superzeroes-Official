@@ -33,6 +33,9 @@ private:
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* zipZapImpact;
 
-	float damage;
 	FVector startPos;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		TSubclassOf<class AComicFX> comicFX;
 };

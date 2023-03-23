@@ -28,4 +28,3 @@ void AProjectile::Tick(float DeltaTime)
 	FVector newPos = GetActorLocation() + GetActorForwardVector() * speed * DeltaTime;
 	SetActorLocation(newPos);
 }
-

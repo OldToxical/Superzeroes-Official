@@ -64,3 +64,7 @@ void AEnemy::UpdateRotation()
 		GetCapsuleComponent()->SetRelativeRotation(rotation);
 	}
 }
+
+void AEnemy::TakeEnemyDamage(float damage_)
+{
+}

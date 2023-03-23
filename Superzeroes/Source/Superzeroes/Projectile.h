@@ -30,4 +30,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 		float speed;
+
+	UPROPERTY(EditAnywhere)
+		float damage;
 };
