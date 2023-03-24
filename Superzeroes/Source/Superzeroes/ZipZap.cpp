@@ -174,7 +174,7 @@ void AZipZap::move(float scaleVal)
 	{
 		if (characterState != State2::Combo_Projectile && characterState != State2::Siege && inputAvailable)
 		{
-			characterSpeed = 500.f;
+			characterSpeed = 300.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
 
 			// Handle rotation

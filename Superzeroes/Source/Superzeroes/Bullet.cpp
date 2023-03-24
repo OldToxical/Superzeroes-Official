@@ -5,7 +5,7 @@
 
 ABullet::ABullet()
 {
-	damage = 10.f;
+	damage = 0.f;
 	startPos = FVector(0.f, 0.f, 0.f);
 }
 

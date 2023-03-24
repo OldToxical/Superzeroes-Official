@@ -78,7 +78,7 @@ void AEnemy_Mouse::GetState()
 
 void AEnemy_Mouse::ChooseAction()
 {
-	if (!inCombat && currentState != State4::Dead)
+	if (!inCombat && currentState != Dead)
 	{
 		if (chooseActionTimeoutTimer > 0.f)
 		{

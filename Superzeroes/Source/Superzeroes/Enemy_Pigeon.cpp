@@ -100,7 +100,7 @@ void AEnemy_Pigeon::GetState()
 
 void AEnemy_Pigeon::ChooseAction()
 {
-	if (currentState != State3::Dead)
+	if (currentState != Dead)
 	{
 		if (chooseActionTimeoutTimer > 0.f)
 		{
@@ -1068,8 +1068,6 @@ void AEnemy_Pigeon::EndAttack()
 	if (flipbookComponent->GetFlipbook() == hurtAnim)
 	{
 		flipbookComponent->SetFlipbook(idle);
-		flipbookComponent->SetLooping(true);
-		flipbookComponent->Play();
 	}
 
 	if (currentState != State3::Jumping && currentState != State3::Dead)
