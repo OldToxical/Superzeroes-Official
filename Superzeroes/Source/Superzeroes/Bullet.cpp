@@ -24,18 +24,18 @@ void ABullet::CalculateDamage()
 	float distance = sqrt(pow(distanceTravelled.X, 2) + pow(distanceTravelled.Z, 2));
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::SanitizeFloat(distance));
 
-	if (distance <= 50.f)
-	{
-		damage = 15.f;
-		return;
-	}
-	else if (distance >= 100.f)
+	if (distance <= 200.f)
 	{
 		damage = 30.f;
 		return;
 	}
+	else if (distance >= 800.f)
+	{
+		damage = 15.f;
+		return;
+	}
 
-	damage = abs(((100.f - distance) / 100.f) * 30.f);
+	damage = abs(((800.f - distance) / 800.f) * 30.f);
 }
 
 void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
@@ -60,7 +60,16 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 				CalculateDamage();
 				zipZap->setHealth(zipZap->getHealth() - damage);
 				FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
+<<<<<<< Updated upstream
 				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(.3f, .3f, .3f));
+=======
+				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
+				FVector location = zipZap->GetActorLocation();
+				location.Z += 80.f;
+				location.Y -= 0.1f;
+				AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+				cfx->spriteChanger(1);
+>>>>>>> Stashed changes
 			}
 		}
 

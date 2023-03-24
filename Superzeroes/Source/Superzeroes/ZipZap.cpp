@@ -12,6 +12,12 @@
 #include "Toxic.h"
 #include "Trash.h"
 #include "Enemy.h"
+<<<<<<< Updated upstream
+=======
+#include "LAdder.h"
+#include "ComicFX.h"
+#include "BoxTriggerBoomBoom.h"
+>>>>>>> Stashed changes
 #include "Projectile.h"
 
 // Sets default values
@@ -55,10 +61,29 @@ AZipZap::AZipZap()
 
 void AZipZap::setHealth(float newHealth)
 {
+<<<<<<< Updated upstream
 	health = newHealth;
 	characterState = State2::Hurt;
 	flipbook->SetFlipbook(hurt);
 	flipbook->SetLooping(false);
+=======
+	if (characterState != State2::Siege)
+	{
+		health = newHealth;
+
+		if (health >= 100.f)
+		{
+			health = 100.f;
+		}
+
+		if (characterState != State2::Hurt && characterState != State2::Attacking && characterState != State2::Combo_Projectile && newHealth < health)
+		{
+			characterState = State2::Hurt;
+			flipbook->SetFlipbook(hurt);
+			flipbook->SetLooping(false);
+		}
+	}
+>>>>>>> Stashed changes
 }
 
 // Called when the game starts or when spawned
@@ -75,12 +100,27 @@ void AZipZap::BeginPlay()
 	//collision->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
 	//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
+<<<<<<< Updated upstream
 	//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	//hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
 	if (boomBoom != NULL)
 	{
 		//MoveIgnoreActorAdd(boomBoom->GetOwner());
+=======
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
+
+	FName tag = FName(TEXT("BB_Platform"));
+	TSubclassOf<ABoxTriggerBoomBoom> subclass;
+	subclass = ABoxTriggerBoomBoom::StaticClass();
+	TArray<AActor*> actorsToIgnoreWhenMoving;
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), subclass, tag, actorsToIgnoreWhenMoving);
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::SanitizeFloat(actorsToIgnoreWhenMoving.Num()));
+	for (AActor* actorToIgnore : actorsToIgnoreWhenMoving)
+	{
+		//MoveIgnoreActorAdd(actorToIgnore);
+		GetCapsuleComponent()->IgnoreActorWhenMoving(actorToIgnore, true);
+>>>>>>> Stashed changes
 	}
 }
 
@@ -216,19 +256,27 @@ void AZipZap::InitiateComboAttack_Projectile(float directionRotation)
 	projectileAttackResetStateTimeoutTimer = 0.2f;
 
 	// Calculate impulse vector
+<<<<<<< Updated upstream
 	float X_ImpulseDirection = 500.f;
+=======
+	float X_ImpulseDirection = 800.f;
+>>>>>>> Stashed changes
 
 	if (rotation.Yaw > 0) // Looking left
 	{
 		X_ImpulseDirection *= -1.f;
 	}
 
+<<<<<<< Updated upstream
 	LaunchCharacter(FVector(X_ImpulseDirection, 0.f, 300.f), false, false);
 }
 
 void AZipZap::UpdateComboAttack_Projectile()
 {
 	//HitCheck();
+=======
+	LaunchCharacter(FVector(X_ImpulseDirection, 0.f, 450.f), false, false);
+>>>>>>> Stashed changes
 }
 
 void AZipZap::Electrify()
@@ -373,6 +421,14 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		}
 		if (otherActor->IsA(ATrash::StaticClass()))
 		{
+<<<<<<< Updated upstream
+=======
+			FVector loc = GetActorLocation();
+			loc.Y -= 0.1;
+			loc.Z += 80;
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap, loc, GetActorRotation());
+			cfx->spriteChanger(5);
+>>>>>>> Stashed changes
 			setHealth(health - 10.f);
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))

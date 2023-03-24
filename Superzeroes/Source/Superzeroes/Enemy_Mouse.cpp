@@ -192,13 +192,21 @@ void AEnemy_Mouse::UpdateState()
 	// AI Sensing
 	if (boomBoom != NULL && zipZap != NULL)
 	{
+<<<<<<< Updated upstream
 		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && (!inCombat))
+=======
+		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && boomBoom->GetState() != State::Dead)
+>>>>>>> Stashed changes
 		{
 			inCombat = true;
 			playerToAttack = boomBoom;
 		}
 
+<<<<<<< Updated upstream
 		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && (!inCombat))
+=======
+		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && zipZap->GetState() != State2::Dead)
+>>>>>>> Stashed changes
 		{
 			inCombat = true;
 			playerToAttack = zipZap;
@@ -212,7 +220,17 @@ void AEnemy_Mouse::UpdateState()
 		{
 			spawner->RemoveEnemy(this);
 		}
+<<<<<<< Updated upstream
 		Destroy();
+=======
+
+		FVector location = GetActorLocation();
+		location.Z += 80.f;
+		location.Y -= 0.1f;
+		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+		cfx->spriteChanger(2);
+		currentState = State4::Dead;
+>>>>>>> Stashed changes
 	}
 }
 

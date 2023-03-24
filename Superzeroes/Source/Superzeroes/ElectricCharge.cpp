@@ -46,11 +46,34 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 		{
 			if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 			{
+<<<<<<< Updated upstream
 				Enemy->TakeEnemyDamage(20.f);
 			}
 		}
 
 		Destroy();
+=======
+				Enemy->TakeEnemyDamage(damage);
+				AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, FVector(Enemy->GetActorLocation().X, Enemy->GetActorLocation().Y, Enemy->GetActorLocation().Z + 80.f), GetActorRotation());
+				cfx->spriteChanger(0);
+			}
+		}
+
+		if (otherActor->ActorHasTag("Button"))
+		{
+			AButton_But_Awesome* button = (AButton_But_Awesome*)otherActor;
+			float distance = (startPos - GetActorLocation()).Size();
+			if (distance <= 75.f)
+			{
+				button->ButtPress();
+			}
+		}
+
+		if (!otherActor->IsA(ABoxTrigger::StaticClass()) && !otherActor->IsA(ABoomBoom::StaticClass()) && !otherActor->IsA(AZipZap::StaticClass()))
+		{
+			Destroy();
+		}
+>>>>>>> Stashed changes
 	}
 	
 }

@@ -9,6 +9,11 @@
 #include "Trash.h"
 #include "Enemy.h"
 #include "Kismet/GameplayStatics.h"
+<<<<<<< Updated upstream
+=======
+#include "BoxTrigger.h"
+#include "ComicFX.h"
+>>>>>>> Stashed changes
 
 // Sets default values
 ABoomBoom::ABoomBoom()
@@ -72,9 +77,24 @@ void ABoomBoom::setHealth(float newHealth)
 	if (characterState != State::Hurt && characterState != State::Attacking)
 	{
 		health = newHealth;
+<<<<<<< Updated upstream
 		characterState = State::Hurt;
 		flipbook->SetFlipbook(hurt);
 		flipbook->SetLooping(false);
+=======
+
+		if (health >= 200.f)
+		{
+			health = 200.f;
+		}
+
+		if (characterState != State::Hurt && characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Siege && newHealth < health)
+		{
+			characterState = State::Hurt;
+			flipbook->SetFlipbook(hurt);
+			flipbook->SetLooping(false);
+		}
+>>>>>>> Stashed changes
 	}
 }
 
@@ -101,6 +121,26 @@ void ABoomBoom::BeginPlay()
 		zipZap->SetBoomBoomReference(this);
 		zipZap->SetupPlayerInput(Super::InputComponent);
 	}
+<<<<<<< Updated upstream
+=======
+
+	if (siegeMode)
+	{
+		siegeMode->SetupPlayerInput(Super::InputComponent);
+	}
+
+	FName tag = FName(TEXT("ZZ_Platform"));
+	TSubclassOf<ABoxTrigger> subclass;
+	subclass = ABoxTrigger::StaticClass();
+	TArray<AActor*> actorsToIgnoreWhenMoving;
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), subclass, tag, actorsToIgnoreWhenMoving);
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::SanitizeFloat(actorsToIgnoreWhenMoving.Num()));
+	for (AActor* actorToIgnore : actorsToIgnoreWhenMoving)
+	{
+		//MoveIgnoreActorAdd(actorToIgnore);
+		GetCapsuleComponent()->IgnoreActorWhenMoving(actorToIgnore, true);
+	}
+>>>>>>> Stashed changes
 }
 
 // Called every frame
@@ -461,6 +501,14 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		}
 		if (otherActor->IsA(ATrash::StaticClass()))
 		{
+<<<<<<< Updated upstream
+=======
+			FVector loc = GetActorLocation();
+			loc.Y -= 0.1;
+			loc.Z += 80;
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, loc, GetActorRotation());
+			cfx->spriteChanger(4);
+>>>>>>> Stashed changes
 			setHealth(health - 5.f);
 			UE_LOG(LogTemp, Warning, TEXT("ROFL"));
 		}
@@ -502,15 +550,15 @@ void ABoomBoom::ProcessHit(float damage_)
 	TArray<AActor*> actorsToIgnore;
 	// For later: add other enemies and trash instances to the above-defined array
 	FVector startPoint = GetActorLocation();
-	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z - 5.f);
+	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z - 2.5f);
 
 	if (rotation.Yaw > 0.f) // Looking left
 	{
-		endPoint.X -= 50.f;
+		endPoint.X -= 150.f;
 	}
 	else // Looking right
 	{
-		endPoint.X += 50.f;
+		endPoint.X += 150.f;
 	}
 
 	bool hit = UKismetSystemLibrary::LineTraceSingle(this, startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::Persistent, OutHit, true);
@@ -521,7 +569,14 @@ void ABoomBoom::ProcessHit(float damage_)
 
 		if (HitActor->ActorHasTag("Enemy"))
 		{
+<<<<<<< Updated upstream
 			AEnemy* Enemy = (AEnemy*)HitActor;
+=======
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, FVector(endPoint.X, endPoint.Y, endPoint.Z + 80.f), GetActorRotation());
+			cfx->spriteChanger(3);
+			Enemy->TakeEnemyDamage(damage_);
+		}
+>>>>>>> Stashed changes
 
 			if (Enemy == NULL)
 			{
