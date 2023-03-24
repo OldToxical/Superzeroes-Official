@@ -5,7 +5,7 @@
 
 ABullet::ABullet()
 {
-	damage = 0.f;
+	damage = 10.f;
 	startPos = FVector(0.f, 0.f, 0.f);
 }
 
@@ -26,18 +26,18 @@ void ABullet::CalculateDamage()
 	float distance = sqrt(pow(distanceTravelled.X, 2) + pow(distanceTravelled.Z, 2));
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::SanitizeFloat(damage));
 
-	if (distance <= 50.f)
-	{
-		damage = 15.f;
-		return;
-	}
-	else if (distance >= 100.f)
+	if (distance <= 200.f)
 	{
 		damage = 30.f;
 		return;
 	}
+	else if (distance >= 800.f)
+	{
+		damage = 15.f;
+		return;
+	}
 
-	damage = abs(((100.f - distance) / 100.f) * 30.f);
+	damage = abs(((800.f - distance) / 800.f) * 30.f);
 }
 
 void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)

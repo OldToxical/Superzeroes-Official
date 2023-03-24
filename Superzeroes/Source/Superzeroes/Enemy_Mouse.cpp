@@ -78,7 +78,7 @@ void AEnemy_Mouse::GetState()
 
 void AEnemy_Mouse::ChooseAction()
 {
-	if (!inCombat && currentState != Dead)
+	if (!inCombat && currentState != State4::Dead)
 	{
 		if (chooseActionTimeoutTimer > 0.f)
 		{
@@ -102,7 +102,7 @@ void AEnemy_Mouse::ChooseAction()
 			ExecuteAction();
 		}
 	}
-	else if (inCombat && currentState != Dead)
+	else if (inCombat && currentState != State4::Dead)
 	{
 		Attack();
 	}
@@ -191,7 +191,7 @@ void AEnemy_Mouse::UpdateState()
 			WalkRight();
 			break;
 		case State4::Dead:
-			flipbookComponent->SetFlipbook(dead);
+			flipbookComponent->SetFlipbook(idle);
 			flipbookComponent->SetLooping(false);
 			break;
 	    default:

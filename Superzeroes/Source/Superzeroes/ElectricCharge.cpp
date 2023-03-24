@@ -2,11 +2,12 @@
 #include "ElectricCharge.h"
 #include "Button_But_Awesome.h"
 #include "BoxTrigger.h"
+#include "Siege.h"
 #include "ComicFX.h"
 
 AElectricCharge::AElectricCharge()
 {
-	damage = 0.f;
+	damage = 20.f;
 	startPos = FVector(0.f, 0.f, 0.f);
 }
 
@@ -29,11 +30,12 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 			if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 			{
 				Enemy->TakeEnemyDamage(damage);
-				AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, Enemy->GetActorLocation(), GetActorRotation());
+				AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, FVector(Enemy->GetActorLocation().X, Enemy->GetActorLocation().Y, Enemy->GetActorLocation().Z + 80.f), GetActorRotation());
 				cfx->spriteChanger(0);
+				Destroy();
 			}
 		}
-
+				
 		if (otherActor->ActorHasTag("Button"))
 		{
 			AButton_But_Awesome* button = (AButton_But_Awesome*)otherActor;
@@ -44,10 +46,9 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 				return;
 			}
 			button->ButtPress();
-
 		}
 
-		if (!otherActor->IsA(ABoxTrigger::StaticClass()) && !otherActor->IsA(ABoomBoom::StaticClass()) && !otherActor->IsA(AZipZap::StaticClass()))
+		if (!otherActor->IsA(ABoxTrigger::StaticClass()) && !otherActor->IsA(ABoomBoom::StaticClass()) && !otherActor->IsA(AZipZap::StaticClass()) && !otherActor->IsA(ASiege::StaticClass()))
 		{
 			Destroy();
 		}

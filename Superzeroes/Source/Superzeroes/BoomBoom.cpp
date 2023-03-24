@@ -12,6 +12,7 @@
 #include "Button_But_Awesome.h"
 #include "LAdder.h"
 #include "Kismet/GameplayStatics.h"
+#include "BoxTrigger.h"
 #include "ComicFX.h"
 
 // Sets default values
@@ -79,6 +80,14 @@ void ABoomBoom::setHealth(float newHealth)
 	if (characterState != State::Siege)
 	{
 		health = newHealth;
+		characterState = State::Hurt;
+		flipbook->SetFlipbook(hurt);
+		flipbook->SetLooping(false);
+
+		if (health >= 200.f)
+		{
+			health = 200.f;
+		}
 
 		if (characterState != State::Hurt && characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Siege && newHealth < health)
 		{
@@ -114,6 +123,18 @@ void ABoomBoom::BeginPlay()
 	if (siegeMode)
 	{
 		siegeMode->SetupPlayerInput(Super::InputComponent);
+	}
+
+	FName tag = FName(TEXT("ZZ_Platform"));
+	TSubclassOf<ABoxTrigger> subclass;
+	subclass = ABoxTrigger::StaticClass();
+	TArray<AActor*> actorsToIgnoreWhenMoving;
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), subclass, tag, actorsToIgnoreWhenMoving);
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::SanitizeFloat(actorsToIgnoreWhenMoving.Num()));
+	for (AActor* actorToIgnore : actorsToIgnoreWhenMoving)
+	{
+		//MoveIgnoreActorAdd(actorToIgnore);
+		GetCapsuleComponent()->IgnoreActorWhenMoving(actorToIgnore, true);
 	}
 }
 
@@ -557,15 +578,15 @@ void ABoomBoom::ProcessHit(float damage_)
 	FHitResult OutHit;
 	TArray<AActor*> actorsToIgnore;
 	FVector startPoint = GetActorLocation();
-	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z - 5.f);
+	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z - 2.5f);
 
 	if (rotation.Yaw > 0.f) // Looking left
 	{
-		endPoint.X -= 50.f;
+		endPoint.X -= 150.f;
 	}
 	else // Looking right
 	{
-		endPoint.X += 50.f;
+		endPoint.X += 150.f;
 	}
 
 	bool hit = UKismetSystemLibrary::LineTraceSingle(this, startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::Persistent, OutHit, true);
@@ -576,6 +597,7 @@ void ABoomBoom::ProcessHit(float damage_)
 
 		if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
 		{
+			Enemy->TakeEnemyDamage(damage_);
 			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, endPoint, GetActorRotation());
 			cfx->spriteChanger(3);
 			Enemy->TakeEnemyDamage(damage_);

@@ -14,6 +14,7 @@
 #include "Enemy.h"
 #include "LAdder.h"
 #include "ComicFX.h"
+#include "BoxTriggerBoomBoom.h"
 #include "Projectile.h"
 
 // Sets default values
@@ -53,9 +54,18 @@ AZipZap::AZipZap()
 
 void AZipZap::setHealth(float newHealth)
 {
+	health = newHealth;
+	characterState = State2::Hurt;
+	flipbook->SetFlipbook(hurt);
+	flipbook->SetLooping(false);
 	if (characterState != State2::Siege)
 	{
 		health = newHealth;
+
+		if (health >= 100.f)
+		{
+			health = 100.f;
+		}
 
 		if (characterState != State2::Hurt && characterState != State2::Attacking && characterState != State2::Combo_Projectile && newHealth < health)
 		{
@@ -79,6 +89,20 @@ void AZipZap::BeginPlay()
 	deathTimer = 0.0f;
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
+	//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	//hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+
+	FName tag = FName(TEXT("BB_Platform"));
+	TSubclassOf<ABoxTriggerBoomBoom> subclass;
+	subclass = ABoxTriggerBoomBoom::StaticClass();
+	TArray<AActor*> actorsToIgnoreWhenMoving;
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), subclass, tag, actorsToIgnoreWhenMoving);
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::SanitizeFloat(actorsToIgnoreWhenMoving.Num()));
+	for (AActor* actorToIgnore : actorsToIgnoreWhenMoving)
+	{
+		//MoveIgnoreActorAdd(actorToIgnore);
+		GetCapsuleComponent()->IgnoreActorWhenMoving(actorToIgnore, true);
+	}
 }
 
 // Called every frame
@@ -174,7 +198,7 @@ void AZipZap::move(float scaleVal)
 	{
 		if (characterState != State2::Combo_Projectile && characterState != State2::Siege && inputAvailable)
 		{
-			characterSpeed = 300.f;
+			characterSpeed = 500.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
 
 			// Handle rotation
@@ -227,14 +251,15 @@ void AZipZap::InitiateComboAttack_Projectile(float directionRotation)
 	characterState = State2::Combo_Projectile;
 
 	// Calculate impulse vector
-	float X_ImpulseDirection = 1000.f;
+
+	float X_ImpulseDirection = 800.f;
 
 	if (rotation.Yaw > 0) // Looking left
 	{
 		X_ImpulseDirection *= -1.f;
 	}
 
-	LaunchCharacter(FVector(X_ImpulseDirection, 0.f, 600.f), false, false);
+	LaunchCharacter(FVector(X_ImpulseDirection, 0.f, 350.f), false, false);
 }
 
 void AZipZap::Electrify()
