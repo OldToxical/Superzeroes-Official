@@ -11,7 +11,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "BoomBoom.generated.h"
 
-#define SavageComboExecutionTime 10
+#define SavageComboExecutionTime 3
 #define StrongAttackMinimumInputTime 0.5
 #define SimpleAttackSequenceTimeout 0.6
 #define SimpleAttackAnimationLength 0.27

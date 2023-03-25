@@ -294,7 +294,7 @@ void ABoomBoom::move(float scaleVal)
 	{
 		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && (characterState != State::Siege))
 		{
-			characterSpeed = 130.f;
+			characterSpeed = 200.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
 		}
 
@@ -318,7 +318,7 @@ void ABoomBoom::ExecuteJump()
 	{
 		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && characterState != State::Hurt && (characterState != State::Siege))
 		{
-			jumpPreludeTimer = 0.47f;
+			jumpPreludeTimer = 0.3f;//0.47f;
 			characterState = State::Jumping;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(jumping);
@@ -431,7 +431,7 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 	// Zip Zap has tased Boom Boom and he must start running like crazy in the direction Zip Zap was facing when he tased him
 	rotation.Yaw = directionRotation;
 	flipbook->SetWorldRotation(rotation);
-	characterSpeed = 350.f;
+	characterSpeed = 300.f;
 	characterState = State::Combo_Savage;
 }
 
