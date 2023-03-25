@@ -110,6 +110,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	    void EndAttack();
 
+	UFUNCTION(BlueprintCallable)
+		static void WriteStringToFile(FString FilePath, FString String);
+
 	// Called when landed
 	virtual void Landed(const FHitResult& Hit) override;
 

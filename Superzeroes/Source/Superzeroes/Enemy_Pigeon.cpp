@@ -58,10 +58,9 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
 	damage = 20.f;
-	healthPoints = 50.f;
 
 	Q_EstimatedOptimalFutureValue = 12.f;
-	Q_DiscountFactor = 0.07f;
+	Q_DiscountFactor = 0.17f;
 	Q_LearningRate = 0.9f;
 	difficulty = 1;
 	inCombat = false;
@@ -76,11 +75,35 @@ void AEnemy_Pigeon::AI()
 void AEnemy_Pigeon::BeginPlay()
 {
 	Super::BeginPlay();
+	healthPoints = 50.f;
+
+	/*FString Qtable;
+	FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/start.txt"));
+	for (int i = 0; i < 5; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			Qtable += FString::SanitizeFloat(AI_Q[i][j]);
+			Qtable += FString(TEXT(" "));
+		}
+		Qtable += FString(TEXT("\r\n"));
+	}
+	Qtable += FString(TEXT("\r\n"));
+	Qtable += FString(TEXT("\r\n"));
+	Qtable += FString(TEXT("\r\n"));
+	WriteStringToFile(path, Qtable);*/
 }
 
 void AEnemy_Pigeon::Tick(float DeltaTime)
 {
 	AI();
+}
+
+void AEnemy_Pigeon::TakeEnemyDamage(float damage_)
+{
+	healthPoints -= damage_;
+	flipbookComponent->SetFlipbook(hurtAnim);
+	flipbookComponent->SetLooping(false);
 }
 
 void AEnemy_Pigeon::GetState()
@@ -90,32 +113,35 @@ void AEnemy_Pigeon::GetState()
 
 void AEnemy_Pigeon::ChooseAction()
 {
-	if (chooseActionTimeoutTimer > 0.f)
+	if (currentState != State3::Dead)
 	{
-		chooseActionTimeoutTimer -= GetWorld()->GetDeltaSeconds();
-	}
-	else
-	{
-		TArray<float, TFixedAllocator<5>> possibleActions = AI_Q[currentState];
-		float bestValue = 0.f;
-		int actionsToBeChecked = possibleActions.Num();
-
-		if (!inCombat)
+		if (chooseActionTimeoutTimer > 0.f)
 		{
-			actionsToBeChecked = 4;
+			chooseActionTimeoutTimer -= GetWorld()->GetDeltaSeconds();
 		}
-
-		for (int i = 0; i < actionsToBeChecked; i++)
+		else
 		{
-			if (bestValue < possibleActions[i])
+			TArray<float, TFixedAllocator<5>> possibleActions = AI_Q[currentState];
+			float bestValue = 0.f;
+			int actionsToBeChecked = possibleActions.Num();
+
+			if (!inCombat)
 			{
-				bestValue = possibleActions[i];
-				currentAction = Action(i);
+				actionsToBeChecked = 4;
 			}
-		}
 
-		CalculateReward();
-		ExecuteAction();
+			for (int i = 0; i < actionsToBeChecked; i++)
+			{
+				if (bestValue < possibleActions[i])
+				{
+					bestValue = possibleActions[i];
+					currentAction = Action(i);
+				}
+			}
+
+			CalculateReward();
+			ExecuteAction();
+		}
 	}
 }
 
@@ -149,7 +175,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 8 + 3) * difficulty;
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad
 						reward -= (rand() % 10 + 6) * difficulty;
@@ -167,7 +193,7 @@ void AEnemy_Pigeon::CalculateReward()
 				// Check if it's going zip zap (better to go to him, cuz he's weaker)
 				if (zipZap->GetActorLocation().X < GetActorLocation().X)
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Boom Boom is around, so it's not that good
 						reward -= (rand() % 4 + 1);
@@ -180,7 +206,7 @@ void AEnemy_Pigeon::CalculateReward()
 				}
 				else // It's going away from zip zap, that's not good
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Worse, it's going to Boom Boom
 						reward -= (rand() % 6 + 2) * difficulty;
@@ -208,7 +234,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 8 + 3) * difficulty;
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Too close, that's very bad
 						reward -= (rand() % 10 + 6) * difficulty;
@@ -226,7 +252,7 @@ void AEnemy_Pigeon::CalculateReward()
 				}
 				else // It's going to zip zap, that's good, but let's see if boom boom is around
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// He is around, that's not very good
 						reward += (rand() % 6 + 1);
@@ -297,7 +323,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 8 + 3) * difficulty;
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad
 						reward -= (rand() % 10 + 6) * difficulty;
@@ -315,7 +341,7 @@ void AEnemy_Pigeon::CalculateReward()
 				// Check if he's going to zip zap, that's good, but let's see if boom boom is around
 				if (zipZap->GetActorLocation().X > GetActorLocation().X)
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Not so good, he's too close
 						reward -= (rand() % 4 + 1);
@@ -328,7 +354,7 @@ void AEnemy_Pigeon::CalculateReward()
 				}
 				else // It goes away from zip zap, that's not good
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad, going away from zip zap and going to boom boom
 						reward -= (rand() % 6 + 2) * difficulty;
@@ -356,7 +382,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 8 + 3) * difficulty;
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad, it's near boom boom and going even nearer
 						reward -= (rand() % 10 + 6) * difficulty;
@@ -372,7 +398,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 4 + 0);
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad, going away from zip zap and going to boom boom
 						reward -= (rand() % 3 + 0);
@@ -385,7 +411,7 @@ void AEnemy_Pigeon::CalculateReward()
 				}
 				else // It's going to zip zap, that's good, but let's see if boom boom is around
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Bad
 						reward += (rand() % 3 + 0);
@@ -456,7 +482,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 8 + 3) * difficulty;
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad
 						reward -= (rand() % 10 + 6) * difficulty;
@@ -474,7 +500,7 @@ void AEnemy_Pigeon::CalculateReward()
 				// Check if he's going to zip zap, that's good, but let's see if boom boom is around
 				if (zipZap->GetActorLocation().X > GetActorLocation().X)
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Not so good, he's too close
 						reward -= (rand() % 4 + 1);
@@ -487,7 +513,7 @@ void AEnemy_Pigeon::CalculateReward()
 				}
 				else // It goes away from zip zap, that's not good
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad, going away from zip zap and going to boom boom
 						reward -= (rand() % 6 + 2) * difficulty;
@@ -515,7 +541,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 8 + 3) * difficulty;
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad, it's near boom boom and going even nearer
 						reward -= (rand() % 10 + 6) * difficulty;
@@ -531,7 +557,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 4 + 0);
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad, going away from zip zap and going to boom boom
 						reward -= (rand() % 3 + 0);
@@ -544,7 +570,7 @@ void AEnemy_Pigeon::CalculateReward()
 				}
 				else // It's going to zip zap, that's good, but let's see if boom boom is around
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Bad
 						reward += (rand() % 3 + 0);
@@ -608,7 +634,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 8 + 3) * difficulty;
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad, it's near boom boom and going even nearer
 						reward -= (rand() % 10 + 6) * difficulty;
@@ -624,7 +650,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 4 + 0);
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad, going away from zip zap and going to boom boom
 						reward -= (rand() % 3 + 0);
@@ -637,7 +663,7 @@ void AEnemy_Pigeon::CalculateReward()
 				}
 				else // It's going to zip zap, that's good, but let's see if boom boom is around
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Bad
 						reward += (rand() % 3 + 0);
@@ -661,7 +687,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 8 + 3) * difficulty;
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad
 						reward -= (rand() % 10 + 6) * difficulty;
@@ -679,7 +705,7 @@ void AEnemy_Pigeon::CalculateReward()
 				// Check if he's going to zip zap, that's good, but let's see if boom boom is around
 				if (zipZap->GetActorLocation().X > GetActorLocation().X)
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Not so good, he's too close
 						reward -= (rand() % 4 + 1);
@@ -692,7 +718,7 @@ void AEnemy_Pigeon::CalculateReward()
 				}
 				else // It goes away from zip zap, that's not good
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad, going away from zip zap and going to boom boom
 						reward -= (rand() % 6 + 2) * difficulty;
@@ -756,7 +782,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 8 + 3) * difficulty;
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad, it's near boom boom and going even nearer
 						reward -= (rand() % 10 + 6) * difficulty;
@@ -772,7 +798,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 4 + 0);
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad, going away from zip zap and going to boom boom
 						reward -= (rand() % 3 + 0);
@@ -785,7 +811,7 @@ void AEnemy_Pigeon::CalculateReward()
 				}
 				else // It's going to zip zap, that's good, but let's see if boom boom is around
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Bad
 						reward += (rand() % 3 + 0);
@@ -809,7 +835,7 @@ void AEnemy_Pigeon::CalculateReward()
 				{
 					reward -= (rand() % 8 + 3) * difficulty;
 
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad
 						reward -= (rand() % 10 + 6) * difficulty;
@@ -827,7 +853,7 @@ void AEnemy_Pigeon::CalculateReward()
 				// Check if he's going to zip zap, that's good, but let's see if boom boom is around
 				if (zipZap->GetActorLocation().X > GetActorLocation().X)
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Not so good, he's too close
 						reward -= (rand() % 4 + 1);
@@ -840,7 +866,7 @@ void AEnemy_Pigeon::CalculateReward()
 				}
 				else // It goes away from zip zap, that's not good
 				{
-					if (distanceToBoomBoom <= 150.f)
+					if (distanceToBoomBoom <= 400.f)
 					{
 						// Very bad, going away from zip zap and going to boom boom
 						reward -= (rand() % 6 + 2) * difficulty;
@@ -914,11 +940,11 @@ void AEnemy_Pigeon::UpdateQ(float reward)
 	// Determine the maximum reward that could've been earned when deciding on a specific action, regardless of the state
 	if (currentAction == Action::WalkLeft)
 	{
-		Q_EstimatedOptimalFutureValue = 12.f;
+		Q_EstimatedOptimalFutureValue = 5.f; // The higher, the more it will say: "I'm doing good" when it receives half of this value
 	}
 	else if (currentAction == Action::WalkRight)
 	{
-		Q_EstimatedOptimalFutureValue = 12.f;
+		Q_EstimatedOptimalFutureValue = 5.f;
 	}
 	else if (currentAction == Action::Jump)
 	{
@@ -930,13 +956,13 @@ void AEnemy_Pigeon::UpdateQ(float reward)
 	}
 	else if (currentAction == Action::Attack)
 	{
-		Q_EstimatedOptimalFutureValue = 5.f;
+		Q_EstimatedOptimalFutureValue = 30.f;
 	}
 
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("State: ") + FString::SanitizeFloat(currentState));
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Action: ") + FString::SanitizeFloat(currentAction));
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Current Q: ") + FString::SanitizeFloat(AI_Q[currentState][currentAction]));
-	AI_Q[currentState][currentAction] = AI_Q[currentState][currentAction] + .9f * ((reward + Q_DiscountFactor * 12.f) - AI_Q[currentState][currentAction]);
+	AI_Q[currentState][currentAction] = AI_Q[currentState][currentAction] + .9f * ((reward + Q_DiscountFactor * Q_EstimatedOptimalFutureValue) - AI_Q[currentState][currentAction]);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("New Q: ") + FString::SanitizeFloat(AI_Q[currentState][currentAction]));
 }
 
@@ -983,32 +1009,51 @@ void AEnemy_Pigeon::UpdateState()
 	switch (currentState)
 	{
 	case State3::Idle:
-		flipbookComponent->SetFlipbook(idle);
-		flipbookComponent->SetLooping(true);
+		if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
+		{
+			flipbookComponent->SetFlipbook(idle);
+			flipbookComponent->SetLooping(true);
+		}
 		break;
+
 	case State3::Jumping:
-		flipbookComponent->SetFlipbook(jumpAnim);
-		flipbookComponent->SetLooping(false);
-		Jump();
+		if (flipbookComponent->GetFlipbook() != hurtAnim)
+		{
+			flipbookComponent->SetFlipbook(jumpAnim);
+			flipbookComponent->SetLooping(false);
+			Jump();
+		}
 		break;
+
 	case State3::WalkingLeft:
-		flipbookComponent->SetFlipbook(walk);
-		flipbookComponent->SetLooping(true);
-		WalkLeft();
+		if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
+		{
+			flipbookComponent->SetFlipbook(walk);
+			flipbookComponent->SetLooping(true);
+			WalkLeft();
+		}
 		break;
+
 	case State3::WalkingRight:
-		flipbookComponent->SetFlipbook(walk);
-		flipbookComponent->SetLooping(true);
-		WalkRight();
+		if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
+		{
+			flipbookComponent->SetFlipbook(walk);
+			flipbookComponent->SetLooping(true);
+			WalkRight();
+		}
 		break;
+
 	case State3::Attacking:
 		flipbookComponent->SetFlipbook(attack);
 		flipbookComponent->SetLooping(false);
 		Attack();
 		break;
+
 	case State3::Dead:
 		flipbookComponent->SetFlipbook(dead);
 		flipbookComponent->SetLooping(false);
+		break;
+
 	default:
 		break;
 	}
@@ -1016,6 +1061,21 @@ void AEnemy_Pigeon::UpdateState()
 	// AI Sensing
 	if (boomBoom != nullptr && zipZap != nullptr)
 	{
+		if (zipZap->GetState() == State2::Dead)
+		{
+			playerToAttack = boomBoom;
+		}
+
+		if (boomBoom->GetState() == State::Dead)
+		{
+			playerToAttack = zipZap;
+		}
+
+		if (zipZap->GetState() == State2::Dead && boomBoom->GetState() == State::Dead)
+		{
+			inCombat = false;
+		}
+
 		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && boomBoom->GetState() != State::Dead)
 		{
 			inCombat = true;
@@ -1113,28 +1173,70 @@ void AEnemy_Pigeon::FaceNearestPlayer()
 			rotation.Yaw = 180.f;
 			flipbookComponent->SetWorldRotation(rotation);
 		}
-	}
-	else // Zip Zap is closer
-	{
-		// Face him
-		if (zipZap->GetActorLocation().X < GetActorLocation().X) // He's on the left
-		{
-			rotation.Yaw = 0.f;
-			flipbookComponent->SetWorldRotation(rotation);
 
-		}
-		else // He's on the right
-		{
-			rotation.Yaw = 180.f;
-			flipbookComponent->SetWorldRotation(rotation);
-		}
+		return;
 	}
+
+	// // Zip Zap is closer, face him
+	if (zipZap->GetActorLocation().X < GetActorLocation().X) // He's on the left
+	{
+		rotation.Yaw = 0.f;
+		flipbookComponent->SetWorldRotation(rotation);
+
+	}
+	else // He's on the right
+	{
+		rotation.Yaw = 180.f;
+		flipbookComponent->SetWorldRotation(rotation);
+	}
+	
 }
 
 void AEnemy_Pigeon::EndAttack()
 {
+	if (flipbookComponent->GetFlipbook() == hurtAnim)
+	{
+		flipbookComponent->SetFlipbook(idle);
+	}
+
+	if (currentState != State3::Jumping && currentState != State3::Dead)
+	{
+		flipbookComponent->SetLooping(true);
+		flipbookComponent->Play();
+	}
+
+	if (currentState == State3::Dead)
+	{
+		/*FString Qtable;
+		FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/niska kruv.txt"));
+		for (int i = 0; i < 5; i++)
+		{
+			for (int j = 0; j < 5; j++)
+			{
+				Qtable += FString::SanitizeFloat(AI_Q[i][j]);
+				Qtable += FString(TEXT(" "));
+			}
+			Qtable += FString(TEXT("\r\n"));
+		}
+		WriteStringToFile(path, Qtable);*/
+		Destroy();
+	}
+}
+
+void AEnemy_Pigeon::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	
+	flipbookComponent->SetFlipbook(idle);
 	flipbookComponent->SetLooping(true);
 	flipbookComponent->Play();
+}
 
-	//characterState = State::Idle;
+void AEnemy_Pigeon::WriteStringToFile(FString FilePath, FString String)
+{
+	if (!FFileHelper::SaveStringToFile(String, *FilePath))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "kur");
+		return;
+	}
 }
