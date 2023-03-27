@@ -27,11 +27,7 @@ enum State3
 	WalkingLeft,
 	WalkingRight,
 	Attacking,
-<<<<<<< Updated upstream
-	RunningAway
-=======
 	Dead
->>>>>>> Stashed changes
 };
 
 enum Action
@@ -54,6 +50,7 @@ private:
 	virtual void AI() override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void TakeEnemyDamage(float damage_);
 
 	// AI Functions
 	void GetState();
@@ -78,16 +75,13 @@ private:
 	float Q_LearningRate;
 	State3 currentState;
 	Action currentAction;
-<<<<<<< Updated upstream
-	class UBoxComponent* hitbox;
-	class UBoxComponent* collision;
-	TArray<TArray<float, TFixedAllocator<6>>, TFixedAllocator<6>> AI_Q;
-=======
 	TArray<TArray<float, TFixedAllocator<5>>, TFixedAllocator<5>> AI_Q;
->>>>>>> Stashed changes
 
 	UPROPERTY(EditAnywhere)
 	    bool inCombat;
+
+	UPROPERTY(EditAnywhere)
+		int difficulty;
 
 	// Animations
 	UPROPERTY(EditAnywhere)
@@ -100,7 +94,13 @@ private:
 		UPaperFlipbook* attack;
 
 	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* dead;
+
+	UPROPERTY(EditAnywhere)
 		UPaperFlipbook* jumpAnim;
+
+	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* hurtAnim;
 
 	// Particles
 	UPROPERTY(EditAnywhere)
@@ -108,10 +108,13 @@ private:
 
 protected:
 	UFUNCTION(BlueprintCallable)
-		void ProcessBulletCollision(FVector hitPos);
+	    void EndAttack();
 
 	UFUNCTION(BlueprintCallable)
-	    void EndAttack();
+		static void WriteStringToFile(FString FilePath, FString String);
+
+	// Called when landed
+	virtual void Landed(const FHitResult& Hit) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	    ABoomBoom* boomBoom;
@@ -124,4 +127,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<AProjectile> bulletClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		TSubclassOf<class AComicFX> comicFX;
 };

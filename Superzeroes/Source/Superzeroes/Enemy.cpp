@@ -7,7 +7,6 @@ AEnemy::AEnemy()
 {
 	characterMovementComponent = NULL;
 	flipbookComponent = NULL;
-	healthPoints = 100.f;
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
