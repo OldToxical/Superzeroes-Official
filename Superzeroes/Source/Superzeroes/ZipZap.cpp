@@ -45,19 +45,17 @@ AZipZap::AZipZap()
 		flipbook->SetGenerateOverlapEvents(false);
 	}
 
-	spawnLoc.Add(FVector(-2873.f, .5f, -80.f));
-	spawnLoc.Add(FVector(-1133.f, .5f, -80.f));
-	spawnLoc.Add(FVector(577.f, .5f, -80.f));
-	spawnLoc.Add(FVector(2650.f, .5f, -80.f));
-	spawnLoc.Add(FVector(3930.f, .5f, -80.f));
+	spawnLoc.Add(FVector(-2740.f, .5f, -35.f));
+	spawnLoc.Add(FVector(-1050.f, .5f, -35.f));
+	spawnLoc.Add(FVector(600.f, .5f, 300.f));
+	spawnLoc.Add(FVector(2160.f, .5f, -35.f));
+	spawnLoc.Add(FVector(3760.f, .5f, -35.f));
 }
 
 void AZipZap::setHealth(float newHealth)
 {
 	health = newHealth;
-	characterState = State2::Hurt;
-	flipbook->SetFlipbook(hurt);
-	flipbook->SetLooping(false);
+
 	if (characterState != State2::Siege)
 	{
 		health = newHealth;

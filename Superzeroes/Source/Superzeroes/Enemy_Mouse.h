@@ -12,11 +12,11 @@
 #include "Enemy_Mouse.generated.h"
 
 #define Q_LearningRate 0.9
-#define Q_DiscountFactor 0.55
-#define Q_EstimatedOptimalFutureValue 20
-#define MinimumDistanceToGetIntoCombatX 100
+#define Q_DiscountFactor 0.2
+#define Q_EstimatedOptimalFutureValue 15
+#define MinimumDistanceToGetIntoCombatX 500
 #define MinimumDistanceToGetIntoCombatZ 50
-#define MinimumDistanceToDealDamage 50
+#define MinimumDistanceToDealDamage 100
 
 class ABoomBoom;
 class AZipZap;

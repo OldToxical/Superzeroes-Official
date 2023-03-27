@@ -1141,12 +1141,12 @@ void AEnemy_Pigeon::Attack()
 	{
 		FaceNearestPlayer();
 
-		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 45.34f, GetActorLocation().Y, GetActorLocation().Z + 13.f);
+		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 94.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
 		FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
 
 		if (rotation.Yaw > 0.f) // Right
 		{
-			muzzleFlashLocation.X += 90.68f;
+			muzzleFlashLocation.X += 188.68f;
 		}
 
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);

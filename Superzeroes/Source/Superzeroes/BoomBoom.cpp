@@ -43,11 +43,11 @@ ABoomBoom::ABoomBoom()
 	health = 200.f;
 	currentLevel = 0;
 
-	spawnLoc.Add(FVector(-2973.f, .5f, -80.f));
-	spawnLoc.Add(FVector(-1233.f, .5f, -80.f));
-	spawnLoc.Add(FVector(477.f, .5f, -80.f));
-	spawnLoc.Add(FVector(2550.f, .5f, -80.f));
-	spawnLoc.Add(FVector(3830.f, .5f, -80.f));
+	spawnLoc.Add(FVector(-2940.f, .5f, -50.f));
+	spawnLoc.Add(FVector(-1250.f, .5f, -50.f));
+	spawnLoc.Add(FVector(400.f, .5f, 300.f));
+	spawnLoc.Add(FVector(2160.f, .5f, -50.f));
+	spawnLoc.Add(FVector(3760.f, .5f, -50.f));
 
 	if (flipbook)
 	{
@@ -80,9 +80,6 @@ void ABoomBoom::setHealth(float newHealth)
 	if (characterState != State::Siege)
 	{
 		health = newHealth;
-		characterState = State::Hurt;
-		flipbook->SetFlipbook(hurt);
-		flipbook->SetLooping(false);
 
 		if (health >= 200.f)
 		{
