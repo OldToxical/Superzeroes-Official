@@ -7,11 +7,8 @@
 #include "NiagaraFunctionLibrary.h"
 #include "ZipZap.generated.h"
 
-#define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 60
+#define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 120
 
-/**
- *
- */
 UENUM(BlueprintType)
 enum class State2 : uint8
 {
@@ -24,6 +21,7 @@ enum class State2 : uint8
 	Siege,
 	Dead
 };
+
 class ABoomBoom;
 class AEnemy;
 class AProjectile;
@@ -36,9 +34,6 @@ class SUPERZEROES_API AZipZap : public APaperCharacter
 public:
 	// Sets default values for this character's properties
 	AZipZap();
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UCharacterMovementComponent* charMove;
@@ -58,6 +53,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* projectileFly;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* projectileFlyElectrified;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* hurt;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* dead;
@@ -71,10 +68,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ExecuteJump();
 	UFUNCTION(BlueprintCallable)
-
-
-		void Attack();
-	UFUNCTION(BlueprintCallable)
 		void climb(float scaleVal);
 	UFUNCTION(BlueprintCallable)
 
@@ -84,19 +77,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void InitiateComboAttack_Projectile(float directionRotation);
 	UFUNCTION(BlueprintCallable)
-		void UpdateComboAttack_Projectile();
-	UFUNCTION(BlueprintCallable)
 		void Electrify();
-	UFUNCTION(BlueprintCallable)
-		void StopProjectileAttack();
 	UFUNCTION(BlueprintCallable)
 		bool IsFacingBoomBoom();
 	UFUNCTION(BlueprintCallable)
 		void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
 	UFUNCTION(BlueprintCallable)
 		void SetupPlayerInput(UInputComponent* input_);
-	UFUNCTION(BlueprintCallable)
-		void ProcessHit(float damage_);
 	UFUNCTION(BlueprintCallable)
 		void ProcessShoot(float damage_);
 	UFUNCTION(BlueprintCallable)
@@ -105,6 +92,8 @@ public:
 		void Shoot();
 	UFUNCTION(BlueprintCallable)
 		void SetState(State2 state_) { characterState = state_; }
+	UFUNCTION(BlueprintCallable)
+		void SetInputAvailability(bool isAvailable) { inputAvailable = isAvailable; }
 
 	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
@@ -113,15 +102,36 @@ public:
 		void overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
 			UPrimitiveComponent* otherComp, int32 otherBodyIndex);
 
-
+	// Getters and setters
 	UFUNCTION(BlueprintCallable)
 		float getHealth() { return health; };
 	UFUNCTION(BlueprintCallable)
 		void setHealth(float newHealth);
 
+	UFUNCTION(BlueprintCallable)
+		float getMeter() { return meter; };
+	UFUNCTION(BlueprintCallable)
+		void setMeter(float newMeter)
+	{
+		meter += newMeter;
+		if (meter > 100.f)
+		{
+			meter = 100.f;
+		}
+	};
+
+	UFUNCTION(BlueprintCallable)
+		State2 GetState() { return characterState; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called when landed
+	virtual void Landed(const FHitResult& Hit) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FRotator rotation;
@@ -159,15 +169,24 @@ protected:
 	UPROPERTY(EditAnywhere)
 		bool damageDealt;
 
+	// Variable to keep track whether the input is available, depending on whether siege mode is being activated at the moment
+	UPROPERTY(EditAnywhere)
+		bool inputAvailable;
+
+	// Variable to keep track whether zip zap has iniated savage combo attack
+	UPROPERTY(EditAnywhere)
+		bool savageInitiated;
+
 	//Variable to keep track of Zip Zap's health
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float health;
-
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class UBoxComponent* hitbox;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class UBoxComponent* collision;*/
+	//Variable to keep track of Zip Zap's special meter
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
+		float meter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
+		float refillTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
+		float skillCost;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
@@ -184,7 +203,7 @@ protected:
 		TSubclassOf<AProjectile> electricChargeClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
-		TSubclassOf<class AComicFX> comicFX;
+		TSubclassOf<class AComicFX> zap;
 
 	// Particles
 	UPROPERTY(EditAnywhere)

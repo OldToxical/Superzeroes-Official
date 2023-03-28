@@ -7,7 +7,7 @@
 #include "Button_But_Awesome.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class SUPERZEROES_API AButton_But_Awesome : public APaperFlipbookActor
@@ -19,7 +19,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* button;
 	UFUNCTION(BlueprintCallable)

@@ -7,13 +7,16 @@
 #include "Enemy.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "Components/Image.h"
 #include "Siege.generated.h"
 
-#define SiegeModeExecutionLength 10
+#define SiegeModeExecutionLength 22
 #define InputTime 1.3
 #define ShootCooldownTime 0.5
-#define MaximumXDistanceBetweenPlayersForInitiatingSiegeMode 60
-#define MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 20
+#define MaximumXDistanceBetweenPlayersForInitiatingSiegeMode 120
+#define MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 30
+#define InitiationAnimationLength 2
 
 UENUM()
 enum class SiegeState : uint8
@@ -98,11 +101,20 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UParticleSystem* muzzleFlash;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		UUserWidget* initiationAnimationUserWidget;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool modeIsActive;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		int bullets;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool shotFired;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		bool inputAvailable;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float boomBoomInputTimer;
@@ -112,4 +124,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float executionTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		float inititationAnimationTimer;
 };

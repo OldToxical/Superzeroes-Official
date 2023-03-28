@@ -12,11 +12,8 @@
 #include "NiagaraComponent.h"
 #include "Enemy_Pigeon.generated.h"
 
-#define Q_LearningRate 0.9
-#define Q_DiscountFactor 0.55
-#define Q_EstimatedOptimalFutureValue 20
-#define MinimumDistanceToGetIntoCombatX 100
-#define MinimumDistanceToGetIntoCombatZ 50
+#define MinimumDistanceToGetIntoCombatX 500
+#define MinimumDistanceToGetIntoCombatZ 40
 #define ShootingAnimationLength 0.6
 
 class ABoomBoom;
@@ -30,7 +27,7 @@ enum State3
 	WalkingLeft,
 	WalkingRight,
 	Attacking,
-	RunningAway
+	Dead
 };
 
 enum Action
@@ -39,8 +36,7 @@ enum Action
 	Jump,
 	WalkLeft,
 	WalkRight,
-	Attack,
-	RunAway
+	Attack
 };
 
 UCLASS()
@@ -54,6 +50,7 @@ private:
 	virtual void AI() override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void TakeEnemyDamage(float damage_);
 
 	// AI Functions
 	void GetState();
@@ -67,25 +64,28 @@ private:
 	void WalkLeft();
 	void WalkRight();
 	void Attack();
-	void RunAway();
 	void FaceNearestPlayer();
 
 	float chooseActionTimeoutTimer;
 	float stateUpdateTimer;
 	float speed;
 	float newX;
+	float Q_EstimatedOptimalFutureValue;
+	float Q_DiscountFactor;
+	float Q_LearningRate;
 	State3 currentState;
 	Action currentAction;
-	class UBoxComponent* hitbox;
-	class UBoxComponent* collision;
-	TArray<TArray<float, TFixedAllocator<6>>, TFixedAllocator<6>> AI_Q;
+	TArray<TArray<float, TFixedAllocator<5>>, TFixedAllocator<5>> AI_Q;
 
 	UPROPERTY(EditAnywhere)
-	    bool inCombat;
+		bool inCombat;
+
+	UPROPERTY(EditAnywhere)
+		int difficulty;
 
 	// Animations
 	UPROPERTY(EditAnywhere)
-	    UPaperFlipbook* idle;
+		UPaperFlipbook* idle;
 
 	UPROPERTY(EditAnywhere)
 		UPaperFlipbook* walk;
@@ -94,7 +94,13 @@ private:
 		UPaperFlipbook* attack;
 
 	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* dead;
+
+	UPROPERTY(EditAnywhere)
 		UPaperFlipbook* jumpAnim;
+
+	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* hurtAnim;
 
 	// Particles
 	UPROPERTY(EditAnywhere)
@@ -102,22 +108,26 @@ private:
 
 protected:
 	UFUNCTION(BlueprintCallable)
-		void ProcessBulletCollision(FVector hitPos);
+		void EndAttack();
 
 	UFUNCTION(BlueprintCallable)
-	    void EndAttack();
+		static void WriteStringToFile(FString FilePath, FString String);
+
+	// Called when landed
+	virtual void Landed(const FHitResult& Hit) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	    ABoomBoom* boomBoom;
+		ABoomBoom* boomBoom;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	    AZipZap* zipZap;
+		AZipZap* zipZap;
 
 	UPROPERTY(VisibleAnywhere)
 		AActor* playerToAttack;
 
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<AProjectile> bulletClass;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
 		TSubclassOf<class AComicFX> comicFX;
 };

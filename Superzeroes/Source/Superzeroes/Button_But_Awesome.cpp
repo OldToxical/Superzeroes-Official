@@ -27,7 +27,7 @@ AButton_But_Awesome::~AButton_But_Awesome()
 
 void AButton_But_Awesome::BeginPlay()
 {
-	Super::BeginPlay(); 
+	Super::BeginPlay();
 	GetRenderComponent()->SetFlipbook(button);
 	GetRenderComponent()->SetLooping(false);
 	GetRenderComponent()->Stop();
@@ -45,7 +45,7 @@ void AButton_But_Awesome::ButtPress()
 	GetRenderComponent()->Play();
 	TArray<AActor*> ladders;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALAdder::StaticClass(), ladders);
-	
+
 	for (int i = 0; i < ladders.Num(); i++)
 	{
 		ALAdder* oneLadder = (ALAdder*)ladders[i];

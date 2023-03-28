@@ -12,22 +12,23 @@
 #include "Enemy_Mouse.generated.h"
 
 #define Q_LearningRate 0.9
-#define Q_DiscountFactor 0.55
-#define Q_EstimatedOptimalFutureValue 20
-#define MinimumDistanceToGetIntoCombatX 100
+#define Q_DiscountFactor 0.2
+#define Q_EstimatedOptimalFutureValue 15
+#define MinimumDistanceToGetIntoCombatX 500
 #define MinimumDistanceToGetIntoCombatZ 50
-#define MinimumDistanceToDealDamage 50
+#define MinimumDistanceToDealDamage 100
 
 class ABoomBoom;
 class AZipZap;
 
-enum State3
+enum State4
 {
 	Idle,
 	Jumping,
 	WalkingLeft,
 	WalkingRight,
-	Attacking
+	Attacking,
+	Dead
 };
 
 enum Action
@@ -35,7 +36,7 @@ enum Action
 	GoIdle,
 	Jump,
 	WalkLeft,
-	WalkRight,
+	WalkRight
 };
 
 UCLASS()
@@ -49,6 +50,7 @@ private:
 	virtual void AI() override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void TakeEnemyDamage(float damage_);
 
 	// AI Functions
 	void GetState();
@@ -70,19 +72,18 @@ private:
 	float stateUpdateTimer;
 	float speed;
 	float newX;
-	State3 currentState;
+	State4 currentState;
 	Action currentAction;
-	class UBoxComponent* collision;
 	TArray<TArray<float, TFixedAllocator<4>>, TFixedAllocator<4>> AI_Q;
 
 	UPROPERTY(EditAnywhere)
-	    bool inCombat;
+		bool inCombat;
 
 	bool hitAvailable;
 
 	// Animations
 	UPROPERTY(EditAnywhere)
-	    UPaperFlipbook* idle;
+		UPaperFlipbook* idle;
 
 	UPROPERTY(EditAnywhere)
 		UPaperFlipbook* walk;
@@ -91,7 +92,13 @@ private:
 		UPaperFlipbook* attack;
 
 	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* dead;
+
+	UPROPERTY(EditAnywhere)
 		UPaperFlipbook* jumpAnim;
+
+	UPROPERTY(EditAnywhere)
+		UPaperFlipbook* hurtAnim;
 
 	// Particles
 	UPROPERTY(EditAnywhere)
@@ -99,14 +106,20 @@ private:
 
 protected:
 	UFUNCTION(BlueprintCallable)
-	    void EndAttack();
+		void EndAttack();
+
+	// Called when landed
+	virtual void Landed(const FHitResult& Hit) override;
 
 	UPROPERTY(BlueprintReadWrite)
-	    ABoomBoom* boomBoom;
+		ABoomBoom* boomBoom;
 
 	UPROPERTY(BlueprintReadWrite)
-	    AZipZap* zipZap;
+		AZipZap* zipZap;
 
 	UPROPERTY(VisibleAnywhere)
 		AActor* playerToAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		TSubclassOf<class AComicFX> comicFX;
 };

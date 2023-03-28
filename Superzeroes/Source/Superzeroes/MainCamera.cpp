@@ -6,7 +6,7 @@
 // Sets default values
 AMainCamera::AMainCamera()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
@@ -15,7 +15,7 @@ AMainCamera::AMainCamera()
 void AMainCamera::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	GetWorld()->GetFirstPlayerController()->SetViewTarget(GetOwner());
 }
 
@@ -25,4 +25,3 @@ void AMainCamera::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-

@@ -14,12 +14,16 @@ ASiege::ASiege()
 	Input = nullptr;
 	charMove = nullptr;
 	electricChargeClass = nullptr;
+	initiationAnimationUserWidget = nullptr;
 	rotation = FRotator::ZeroRotator;
 	executionTimer = SiegeModeExecutionLength;
 	boomBoomInputTimer = 0.f;
 	zipZapInputTimer = 0.f;
+	bullets = 5;
+	inititationAnimationTimer = InitiationAnimationLength;
 	modeIsActive = false;
 	shotFired = false;
+	inputAvailable = false;
 	state = SiegeState::Idle;
 
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
@@ -60,16 +64,32 @@ void ASiege::Tick(float DeltaTime)
 
 	if (boomBoomInputTimer >= InputTime && zipZapInputTimer >= InputTime && !modeIsActive)
 	{
+		SetActorRotation(boomBoom->GetActorRotation());
+		bullets = 5;
 		modeIsActive = true;
 		flipbook->Play();
 	}
 
 	if (modeIsActive)
 	{
+		if (inititationAnimationTimer > 0.f)
+		{
+			//initiationAnimationUserWidget->AddToViewport();
+			inititationAnimationTimer -= GetWorld()->GetDeltaSeconds();
+		}
+		else
+		{
+			//initiationAnimationUserWidget->RemoveFromViewport();
+			inputAvailable = true;
+		}
+
 		ExecuteSiegeMode();
 		return;
 	}
 
+	inititationAnimationTimer = InitiationAnimationLength;
+	executionTimer = SiegeModeExecutionLength;
+	inputAvailable = false;
 	SetActorLocation(boomBoom->GetActorLocation());
 }
 
@@ -90,14 +110,16 @@ void ASiege::HandleBoomBoomInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && boomBoom->GetState() == State::Idle)
 		{
 			boomBoomInputTimer += GetWorld()->GetDeltaSeconds();
+			boomBoom->SetInputAvailability(false);
 			return;
 		}
 	}
 
 	boomBoomInputTimer = 0.f;
+	boomBoom->SetInputAvailability(true);
 }
 
 void ASiege::HandleZipZapInput(float scaleVal)
@@ -107,53 +129,58 @@ void ASiege::HandleZipZapInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && zipZap->GetState() == State2::Idle)
 		{
 			zipZapInputTimer += GetWorld()->GetDeltaSeconds();
+			zipZap->SetInputAvailability(false);
 			return;
 		}
 	}
 
 	zipZapInputTimer = 0.f;
+	zipZap->SetInputAvailability(true);
 }
 
 void ASiege::ExecuteSiegeMode()
 {
 	if (executionTimer > 0.f)
 	{
-		executionTimer -= GetWorld()->GetDeltaSeconds();
-
-		GetCapsuleComponent()->SetCollisionProfileName(TEXT("MainCharacter"));
-		SetActorHiddenInGame(false);
-		boomBoom->SetActorHiddenInGame(true);
-		boomBoom->SetState(State::Siege);
-		zipZap->SetActorHiddenInGame(true);
-		zipZap->SetState(State2::Siege);
-
-		boomBoom->SetActorLocation(GetActorLocation());
-		zipZap->SetActorLocation(FVector(GetActorLocation().X + 50.f, GetActorLocation().Y, GetActorLocation().Z));
-
-		if (flipbook->GetPlaybackPositionInFrames() == 4 && shotFired)
+		if (bullets > 0)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("atakuva"));
-			FVector muzzleFlashLocation = FVector(GetActorLocation().X + 54.f, GetActorLocation().Y, GetActorLocation().Z - 5.f);
-			FVector beamVelocity = FVector(50000.f, 0.f, 0.f);
+			executionTimer -= GetWorld()->GetDeltaSeconds();
 
-			if (rotation.Yaw > 0.f) // Left
+			GetCapsuleComponent()->SetCollisionProfileName(TEXT("MainCharacter"));
+			SetActorHiddenInGame(false);
+			boomBoom->SetActorHiddenInGame(true);
+			boomBoom->SetState(State::Siege);
+			zipZap->SetActorHiddenInGame(true);
+			zipZap->SetState(State2::Siege);
+
+			boomBoom->SetActorLocation(GetActorLocation());
+			zipZap->SetActorLocation(FVector(GetActorLocation().X + 50.f, GetActorLocation().Y, GetActorLocation().Z));
+
+			if (flipbook->GetPlaybackPositionInFrames() == 4 && shotFired)
 			{
-				muzzleFlashLocation.X -= 108.f;
-				beamVelocity.X *= -1.f;
+				FVector muzzleFlashLocation = FVector(GetActorLocation().X + 54.f, GetActorLocation().Y, GetActorLocation().Z - 5.f);
+				FVector beamVelocity = FVector(60000.f, 0.f, 0.f);
+
+				if (rotation.Yaw > 0.f) // Left
+				{
+					muzzleFlashLocation.X -= 108.f;
+					beamVelocity.X *= -1.f;
+				}
+
+				UNiagaraComponent* beam = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), electricBeam, FVector(muzzleFlashLocation.X, muzzleFlashLocation.Y + 1, muzzleFlashLocation.Z), rotation);
+				beam->SetVectorParameter("Velocity", beamVelocity);
+				UParticleSystemComponent* muzzleFlashParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlash, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.2f, .2f, .2f));
+				muzzleFlashParticle->CustomTimeDilation = 3.f;
+				AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
+				shotFired = false;
+				bullets--;
 			}
 
-			UNiagaraComponent* beam = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), electricBeam, muzzleFlashLocation, rotation);
-			beam->SetVectorParameter("Velocity", beamVelocity);
-			UParticleSystemComponent* muzzleFlashParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlash, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.2f, .2f, .2f));
-			muzzleFlashParticle->CustomTimeDilation = 3.f;
-			AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
-			shotFired = false;
+			return;
 		}
-
-		return;
 	}
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
@@ -168,7 +195,7 @@ void ASiege::ExecuteSiegeMode()
 
 void ASiege::Move(float scaleVal)
 {
-	if (modeIsActive)
+	if (modeIsActive && inputAvailable)
 	{
 		if (scaleVal > 0.f) // Right
 		{
@@ -205,7 +232,7 @@ void ASiege::Move(float scaleVal)
 
 void ASiege::Shoot()
 {
-	if (state != SiegeState::Attacking)
+	if (state != SiegeState::Attacking && inputAvailable)
 	{
 		state = SiegeState::Attacking;
 		shotFired = true;
@@ -216,19 +243,19 @@ void ASiege::UpdateAnimation()
 {
 	switch (state)
 	{
-	    case SiegeState::Idle:
-			flipbook->SetFlipbook(idle);
-			flipbook->SetLooping(true);
+	case SiegeState::Idle:
+		flipbook->SetFlipbook(idle);
+		flipbook->SetLooping(true);
 		break;
-		    case SiegeState::Walking:
-			flipbook->SetFlipbook(walk);
-			flipbook->SetLooping(true);
+	case SiegeState::Walking:
+		flipbook->SetFlipbook(walk);
+		flipbook->SetLooping(true);
 		break;
-		    case SiegeState::Attacking:
-			flipbook->SetFlipbook(attack);
-			flipbook->SetLooping(false);
+	case SiegeState::Attacking:
+		flipbook->SetFlipbook(attack);
+		flipbook->SetLooping(false);
 		break;
-		    default:
+	default:
 		break;
 	}
 }
@@ -242,6 +269,13 @@ void ASiege::EndAttackAnimation()
 
 void ASiege::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
 {
+	if (otherActor != this)
+	{
+		if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
+		{
+			Enemy->TakeEnemyDamage(100.f);
+		}
+	}
 }
 
 void ASiege::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex)

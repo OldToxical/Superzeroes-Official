@@ -7,20 +7,20 @@
 #include "BoxTriggerBoomBoom.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class SUPERZEROES_API ABoxTriggerBoomBoom : public ATriggerBox
 {
 	GENERATED_BODY()
-	
+
 protected:
 	ABoxTriggerBoomBoom();
 
 	UFUNCTION(BlueprintCallable)
 		void OverlapBegin(AActor* otherActor);
 	UFUNCTION(BlueprintCallable)
-		void OverlapEnd();
+		void OverlapEnd(AActor* otherActor);
 
 	UPROPERTY(BlueprintReadWrite)
 		UStaticMeshComponent* colliderPlaneActor;

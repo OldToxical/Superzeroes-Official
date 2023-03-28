@@ -7,7 +7,6 @@ AEnemy::AEnemy()
 {
 	characterMovementComponent = NULL;
 	flipbookComponent = NULL;
-	healthPoints = 100.f;
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -45,7 +44,7 @@ void AEnemy::AI()
 
 void AEnemy::UpdateAnimation()
 {
-	
+
 }
 
 void AEnemy::UpdateRotation()
@@ -63,4 +62,8 @@ void AEnemy::UpdateRotation()
 
 		GetCapsuleComponent()->SetRelativeRotation(rotation);
 	}
+}
+
+void AEnemy::TakeEnemyDamage(float damage_)
+{
 }

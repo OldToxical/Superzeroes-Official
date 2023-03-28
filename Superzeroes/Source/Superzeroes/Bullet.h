@@ -9,7 +9,7 @@
 #include "Bullet.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class SUPERZEROES_API ABullet : public AProjectile
@@ -23,9 +23,9 @@ private:
 	void CalculateDamage();
 
 	UFUNCTION()
-	    void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
 	UFUNCTION()
-	    void overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex);
+		void overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex);
 
 	// Particles
 	UPROPERTY(EditAnywhere)
@@ -33,6 +33,9 @@ private:
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* zipZapImpact;
 
-	float damage;
 	FVector startPos;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		TSubclassOf<class AComicFX> comicFX;
 };

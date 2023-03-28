@@ -11,14 +11,14 @@
 #include "Enemy.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class SUPERZEROES_API AEnemy : public APaperCharacter
 {
 protected:
 	GENERATED_BODY()
-	AEnemy();
+		AEnemy();
 
 	virtual void Tick(float DeltaTime) override;
 	virtual void BeginPlay() override;
@@ -52,7 +52,7 @@ protected:
 		AEnemySpawner* spawner;
 
 public:
-	void TakeEnemyDamage(float damage_) { healthPoints -= damage_; }
+	virtual void TakeEnemyDamage(float damage_);
 	void AddToGetActorsToIgnore(AActor* actor) { actorsToIgnore.Add(actor); }
 	void SetSpawner(AEnemySpawner* spawner_) { spawner = spawner_; }
 };
