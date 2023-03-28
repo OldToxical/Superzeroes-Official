@@ -117,7 +117,7 @@ void AZipZap::Tick(float DeltaTime)
 
 		if (toxicDamage == true)
 		{
-			setHealth(health - 0.5f); //this damages Zip Zap far more than Boom Boom
+			setHealth(health - 20.0f); //this damages Zip Zap far more than Boom Boom
 		}
 		if (characterState == State2::Idle)
 		{
