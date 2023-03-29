@@ -133,7 +133,7 @@ void AEnemy_Mouse::ExecuteAction()
 	else if (currentAction == Action::Jump)
 	{
 		currentState = State4::Jumping;
-		chooseActionTimeoutTimer = (2 * (characterMovementComponent->JumpZVelocity)) / -9.8f;
+		chooseActionTimeoutTimer = (2 * (characterMovementComponent->JumpZVelocity)) / 980.f;
 	}
 	else if (currentAction == Action::WalkLeft)
 	{
@@ -203,13 +203,28 @@ void AEnemy_Mouse::UpdateState()
 	// AI Sensing
 	if (boomBoom != NULL && zipZap != NULL && currentState != State4::Dead)
 	{
-		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ))
+		if (zipZap->GetState() == State2::Dead)
+		{
+			playerToAttack = boomBoom;
+		}
+
+		if (boomBoom->GetState() == State::Dead)
+		{
+			playerToAttack = zipZap;
+		}
+
+		if (zipZap->GetState() == State2::Dead && boomBoom->GetState() == State::Dead)
+		{
+			inCombat = false;
+		}
+
+		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && boomBoom->GetState() != State::Dead)
 		{
 			inCombat = true;
 			playerToAttack = boomBoom;
 		}
 
-		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ))
+		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && zipZap->GetState() != State2::Dead)
 		{
 			inCombat = true;
 			playerToAttack = zipZap;
