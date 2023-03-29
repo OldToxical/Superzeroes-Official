@@ -112,7 +112,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		float getMeter() { return meter; };
 	UFUNCTION(BlueprintCallable)
-		void setMeter(float newMeter) { meter += newMeter; if (meter > 100.f) { meter = 100.f; } };
+		void setMeter(float newMeter) {	meter += newMeter; if (meter > 100.f) { meter = 100.f; } if (meter < 0.0f) { meter = 0.0f; }};
 
 protected:
 	// Called when the game starts or when spawned

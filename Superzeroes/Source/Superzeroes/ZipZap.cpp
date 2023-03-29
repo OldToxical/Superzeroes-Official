@@ -107,11 +107,14 @@ void AZipZap::BeginPlay()
 void AZipZap::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	setMeter(refillTime);
+	if (characterState != State2::Siege)
+	{
+		setMeter(refillTime);
+	}
 
 	if (characterState != State2::Dead)
 	{
+		
 		UpdateAnimation();
 		UpdateState();
 

@@ -67,6 +67,8 @@ void ASiege::Tick(float DeltaTime)
 		SetActorRotation(boomBoom->GetActorRotation());
 		bullets = 5;
 		modeIsActive = true;
+		boomBoom->setMeter(-100.f);
+		zipZap->setMeter(-100.f);
 		flipbook->Play();
 	}
 
@@ -86,7 +88,6 @@ void ASiege::Tick(float DeltaTime)
 		ExecuteSiegeMode();
 		return;
 	}
-
 	inititationAnimationTimer = InitiationAnimationLength;
 	executionTimer = SiegeModeExecutionLength;
 	inputAvailable = false;
@@ -188,10 +189,8 @@ void ASiege::ExecuteSiegeMode()
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
 	SetActorHiddenInGame(true);
 	boomBoom->SetActorHiddenInGame(false);
-	boomBoom->setMeter(-100.f);
 	boomBoom->SetState(State::Idle);
 	zipZap->SetActorHiddenInGame(false);
-	zipZap->setMeter(-100.f);
 	zipZap->SetState(State2::Idle);
 	executionTimer = SiegeModeExecutionLength;
 	modeIsActive = false;

@@ -142,11 +142,14 @@ void ABoomBoom::BeginPlay()
 void ABoomBoom::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	setMeter(refillTime);
+	if (characterState != State::Siege)
+	{
+		setMeter(refillTime);
+	}
 
 	if (characterState != State::Dead)
 	{
+		
 		UpdateState();
 		UpdateAnimation();
 	
