@@ -976,7 +976,7 @@ void AEnemy_Pigeon::ExecuteAction()
 	else if (currentAction == Action::Jump)
 	{
 		currentState = State3::Jumping;
-		chooseActionTimeoutTimer = (2 * (characterMovementComponent->JumpZVelocity)) / -9.8f;
+		chooseActionTimeoutTimer = (2 * (characterMovementComponent->JumpZVelocity)) / 980.f;
 	}
 	else if (currentAction == Action::WalkLeft)
 	{
@@ -1019,7 +1019,7 @@ void AEnemy_Pigeon::UpdateState()
 		break;
 
 	case State3::Jumping:
-		if (flipbookComponent->GetFlipbook() != hurtAnim)
+		if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
 		{
 			flipbookComponent->SetFlipbook(jumpAnim);
 			flipbookComponent->SetLooping(false);

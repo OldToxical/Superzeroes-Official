@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Bullet.h"
 #include "BoxTrigger.h"
+#include "Enemy.h"
 #include "ComicFX.h"
 
 ABullet::ABullet()
@@ -77,7 +78,7 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 			}
 		}
 
-		if (!otherActor->IsA(ABoxTrigger::StaticClass()))
+		if (!otherActor->IsA(ABoxTrigger::StaticClass()) && !otherActor->IsA(AEnemy::StaticClass()))
 		{
 			Destroy();
 		}

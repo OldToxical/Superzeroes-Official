@@ -49,12 +49,6 @@ AZipZap::AZipZap()
 		flipbook->SetCollisionProfileName(CollisionProfileName);
 		flipbook->SetGenerateOverlapEvents(false);
 	}
-
-	spawnLoc.Add(FVector(-2740.f, .5f, -35.f));
-	spawnLoc.Add(FVector(-1050.f, .5f, -35.f));
-	spawnLoc.Add(FVector(600.f, .5f, 300.f));
-	spawnLoc.Add(FVector(2160.f, .5f, -35.f));
-	spawnLoc.Add(FVector(3760.f, .5f, -35.f));
 }
 
 void AZipZap::setHealth(float newHealth)
@@ -101,6 +95,13 @@ void AZipZap::BeginPlay()
 	{
 		GetCapsuleComponent()->IgnoreActorWhenMoving(actorToIgnore, true);
 	}
+
+	spawnLoc.Empty();
+	spawnLoc.Add(FVector(-2740.f, .5f, -35.f));
+	spawnLoc.Add(FVector(-1050.f, .5f, -35.f));
+	spawnLoc.Add(FVector(600.f, .5f, 300.f));
+	spawnLoc.Add(FVector(2160.f, .5f, -35.f));
+	spawnLoc.Add(FVector(3760.f, .5f, -35.f));
 }
 
 // Called every frame
@@ -108,7 +109,10 @@ void AZipZap::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	setMeter(refillTime);
+	if (characterState != State2::Siege)
+	{
+		setMeter(refillTime);
+	}
 
 	if (characterState != State2::Dead)
 	{
@@ -119,6 +123,7 @@ void AZipZap::Tick(float DeltaTime)
 		{
 			setHealth(health - 0.5f); // This damages Zip Zap far more than Boom Boom
 		}
+
 		if (characterState == State2::Idle)
 		{
 			healTimer += DeltaTime;
@@ -132,6 +137,7 @@ void AZipZap::Tick(float DeltaTime)
 		{
 			healTimer = 0.0f;
 		}
+
 		if (health <= 0.f)
 		{
 			//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator")); // Disable collision while dead
@@ -224,7 +230,7 @@ void AZipZap::InitiateComboAttack_Savage()
 	{
 		if (characterState != State2::Dead)
 		{
-			if (characterState != State2::Siege && characterState != State2::Attacking && characterState != State2::Combo_Projectile && boomBoom->GetState() != State::Combo_Savage && inputAvailable)
+			if (characterState != State2::Siege && characterState != State2::Attacking && characterState != State2::Combo_Projectile && boomBoom->GetState() != State::Combo_Savage && boomBoom->GetState() != State::Dead && inputAvailable)
 			{
 				float proximityToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
 
@@ -351,7 +357,7 @@ void AZipZap::climb(float scaleVal)
 			if (canClimb == true)
 			{
 				charMove->GravityScale = 0.0f;
-				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + scaleVal));
+				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + (scaleVal * 2)));
 				if (scaleVal != 0)
 				{
 					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;

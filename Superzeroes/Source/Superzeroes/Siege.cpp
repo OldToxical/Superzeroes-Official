@@ -67,6 +67,8 @@ void ASiege::Tick(float DeltaTime)
 		SetActorRotation(boomBoom->GetActorRotation());
 		bullets = 5;
 		modeIsActive = true;
+		boomBoom->setMeter(-100.f);
+		zipZap->setMeter(-100.f);
 		flipbook->Play();
 	}
 
@@ -110,7 +112,7 @@ void ASiege::HandleBoomBoomInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && boomBoom->GetState() == State::Idle)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && boomBoom->GetState() == State::Idle && boomBoom->getMeter() >= 100.f)
 		{
 			boomBoomInputTimer += GetWorld()->GetDeltaSeconds();
 			boomBoom->SetInputAvailability(false);
@@ -129,7 +131,7 @@ void ASiege::HandleZipZapInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && zipZap->GetState() == State2::Idle)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && zipZap->GetState() == State2::Idle && zipZap->getMeter() >= 100.f)
 		{
 			zipZapInputTimer += GetWorld()->GetDeltaSeconds();
 			zipZap->SetInputAvailability(false);

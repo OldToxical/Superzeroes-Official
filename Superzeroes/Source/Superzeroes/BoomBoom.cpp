@@ -47,12 +47,6 @@ ABoomBoom::ABoomBoom()
 	skillCost = 50.f;
 	currentLevel = 0;
 
-	spawnLoc.Add(FVector(-2940.f, .5f, -50.f));
-	spawnLoc.Add(FVector(-1250.f, .5f, -50.f));
-	spawnLoc.Add(FVector(400.f, .5f, 300.f));
-	spawnLoc.Add(FVector(2160.f, .5f, -50.f));
-	spawnLoc.Add(FVector(3760.f, .5f, -50.f));
-
 	if (flipbook)
 	{
 		flipbook->bOwnerNoSee = false;
@@ -136,6 +130,13 @@ void ABoomBoom::BeginPlay()
 	{
 		GetCapsuleComponent()->IgnoreActorWhenMoving(actorToIgnore, true);
 	}
+
+	spawnLoc.Empty();
+	spawnLoc.Add(FVector(-2940.f, .5f, -50.f));
+	spawnLoc.Add(FVector(-1250.f, .5f, -50.f));
+	spawnLoc.Add(FVector(400.f, .5f, 300.f));
+	spawnLoc.Add(FVector(2160.f, .5f, -50.f));
+	spawnLoc.Add(FVector(3760.f, .5f, -50.f));
 }
 
 // Called every frame
@@ -143,7 +144,10 @@ void ABoomBoom::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	setMeter(refillTime);
+	if (characterState != State::Siege)
+	{
+		setMeter(refillTime);
+	}
 
 	if (characterState != State::Dead)
 	{
@@ -189,6 +193,7 @@ void ABoomBoom::Tick(float DeltaTime)
 			characterState = State::Idle;
 			flipbook->SetLooping(true);
 			flipbook->Play();
+			//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::SanitizeFloat(spawnLoc[currentLevel].X));
 		}
 	}
 }
@@ -321,7 +326,7 @@ void ABoomBoom::ExecuteJump()
 {
 	if (characterState != State::Dead && inputAvailable)
 	{
-		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && characterState != State::Hurt && (characterState != State::Siege))
+		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && (characterState != State::Hurt) && (characterState != State::Siege) && (characterState != State::Jumping))
 		{
 			jumpPreludeTimer = 0.3f;
 			characterState = State::Jumping;
