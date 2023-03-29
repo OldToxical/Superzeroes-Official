@@ -42,6 +42,9 @@ ABoomBoom::ABoomBoom()
 	launchZipZap = false;
 	inputAvailable = true;
 	health = 200.f;
+	meter = 0.0f;
+	refillTime = 0.1f;
+	skillCost = 50.f;
 	currentLevel = 0;
 
 	spawnLoc.Add(FVector(-2940.f, .5f, -50.f));
@@ -139,6 +142,9 @@ void ABoomBoom::BeginPlay()
 void ABoomBoom::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	setMeter(refillTime);
+
 	if (characterState != State::Dead)
 	{
 		UpdateState();
@@ -435,7 +441,7 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 
 void ABoomBoom::InitiateZipZapComboAttack_Projectile()
 {
-	if (zipZap != NULL)
+	if (zipZap != NULL && meter >= skillCost)
 	{
 		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && (characterState != State::Siege) && inputAvailable)
 		{
@@ -451,6 +457,7 @@ void ABoomBoom::InitiateZipZapComboAttack_Projectile()
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(simpleAttack);
 					characterState = State::Attacking;
+					setMeter(-skillCost);
 				}
 			}
 		}

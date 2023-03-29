@@ -26,6 +26,9 @@ AZipZap::AZipZap()
 	PrimaryActorTick.bCanEverTick = true;
 	jumpPreludeTimer = 0.f;
 	health = 100.f;
+	meter = 0.0f;
+	refillTime = 0.1f;
+	skillCost = 50.f;
 	currentLevel = 0;
 	isElectrified = false;
 	isShooting = false;
@@ -104,6 +107,8 @@ void AZipZap::BeginPlay()
 void AZipZap::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	setMeter(refillTime);
 
 	if (characterState != State2::Dead)
 	{
@@ -215,7 +220,7 @@ void AZipZap::move(float scaleVal)
 
 void AZipZap::InitiateComboAttack_Savage()
 {
-	if (boomBoom != nullptr)
+	if (boomBoom != nullptr && meter >= skillCost)
 	{
 		if (characterState != State2::Dead)
 		{
@@ -230,6 +235,7 @@ void AZipZap::InitiateComboAttack_Savage()
 						characterState = State2::Attacking;
 						flipbook->SetFlipbook(initiateBoomBoomSavageComboAttack);
 						flipbook->SetLooping(false);
+						setMeter(-skillCost);
 					}
 				}
 			}
