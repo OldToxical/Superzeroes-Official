@@ -128,10 +128,12 @@ void AEnemy_Mouse::ExecuteAction()
 	if (currentAction == Action::GoIdle)
 	{
 		currentState = State4::Idle;
+		chooseActionTimeoutTimer = (2 * healthPoints) / 100.f;
 	}
 	else if (currentAction == Action::Jump)
 	{
 		currentState = State4::Jumping;
+		chooseActionTimeoutTimer = (2 * (characterMovementComponent->JumpZVelocity)) / -9.8f;
 	}
 	else if (currentAction == Action::WalkLeft)
 	{
@@ -160,7 +162,7 @@ void AEnemy_Mouse::UpdateState()
 	switch (currentState)
 	{
 	    case State4::Idle:
-			if (flipbookComponent->GetFlipbook() != hurtAnim)
+			if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
 			{
 				flipbookComponent->SetFlipbook(idle);
 				flipbookComponent->SetLooping(true);
@@ -175,7 +177,7 @@ void AEnemy_Mouse::UpdateState()
 			Jump();
 			break;
 		case State4::WalkingLeft:
-			if (flipbookComponent->GetFlipbook() != hurtAnim)
+			if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
 			{
 				flipbookComponent->SetFlipbook(walk);
 				flipbookComponent->SetLooping(true);
@@ -183,7 +185,7 @@ void AEnemy_Mouse::UpdateState()
 			WalkLeft();
 			break;
 		case State4::WalkingRight:
-			if (flipbookComponent->GetFlipbook() != hurtAnim)
+			if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
 			{
 				flipbookComponent->SetFlipbook(walk);
 				flipbookComponent->SetLooping(true);
@@ -191,7 +193,7 @@ void AEnemy_Mouse::UpdateState()
 			WalkRight();
 			break;
 		case State4::Dead:
-			flipbookComponent->SetFlipbook(idle);
+			flipbookComponent->SetFlipbook(dead);
 			flipbookComponent->SetLooping(false);
 			break;
 	    default:
@@ -290,10 +292,6 @@ void AEnemy_Mouse::Attack()
 	}
 }
 
-void AEnemy_Mouse::RunAway()
-{
-}
-
 void AEnemy_Mouse::GoToPlayer()
 {
 	// Face the player
@@ -337,6 +335,7 @@ void AEnemy_Mouse::EndAttack()
 
 	if (currentState != State4::Jumping && currentState != State4::Dead)
 	{
+		flipbookComponent->SetFlipbook(idle);
 		flipbookComponent->SetLooping(true);
 		flipbookComponent->Play();
 	}

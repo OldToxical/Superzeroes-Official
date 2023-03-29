@@ -13,6 +13,7 @@
 #include "LAdder.h"
 #include "Kismet/GameplayStatics.h"
 #include "BoxTrigger.h"
+#include "Button_But_Awesome.h"
 #include "ComicFX.h"
 
 // Sets default values
@@ -41,13 +42,16 @@ ABoomBoom::ABoomBoom()
 	launchZipZap = false;
 	inputAvailable = true;
 	health = 200.f;
+	meter = 0.0f;
+	refillTime = 0.1f;
+	skillCost = 50.f;
 	currentLevel = 0;
 
-	spawnLoc.Add(FVector(-2973.f, .5f, -80.f));
-	spawnLoc.Add(FVector(-1233.f, .5f, -80.f));
-	spawnLoc.Add(FVector(477.f, .5f, -80.f));
-	spawnLoc.Add(FVector(2550.f, .5f, -80.f));
-	spawnLoc.Add(FVector(3830.f, .5f, -80.f));
+	spawnLoc.Add(FVector(-2940.f, .5f, -50.f));
+	spawnLoc.Add(FVector(-1250.f, .5f, -50.f));
+	spawnLoc.Add(FVector(400.f, .5f, 300.f));
+	spawnLoc.Add(FVector(2160.f, .5f, -50.f));
+	spawnLoc.Add(FVector(3760.f, .5f, -50.f));
 
 	if (flipbook)
 	{
@@ -79,21 +83,18 @@ void ABoomBoom::setHealth(float newHealth)
 {
 	if (characterState != State::Siege)
 	{
-		health = newHealth;
-		characterState = State::Hurt;
-		flipbook->SetFlipbook(hurt);
-		flipbook->SetLooping(false);
-
-		if (health >= 200.f)
-		{
-			health = 200.f;
-		}
-
 		if (characterState != State::Hurt && characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Siege && newHealth < health)
 		{
 			characterState = State::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
+		}
+
+		health = newHealth;
+
+		if (health >= 200.f)
+		{
+			health = 200.f;
 		}
 	}
 }
@@ -130,10 +131,9 @@ void ABoomBoom::BeginPlay()
 	subclass = ABoxTrigger::StaticClass();
 	TArray<AActor*> actorsToIgnoreWhenMoving;
 	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), subclass, tag, actorsToIgnoreWhenMoving);
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::SanitizeFloat(actorsToIgnoreWhenMoving.Num()));
+
 	for (AActor* actorToIgnore : actorsToIgnoreWhenMoving)
 	{
-		//MoveIgnoreActorAdd(actorToIgnore);
 		GetCapsuleComponent()->IgnoreActorWhenMoving(actorToIgnore, true);
 	}
 }
@@ -142,6 +142,9 @@ void ABoomBoom::BeginPlay()
 void ABoomBoom::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	setMeter(refillTime);
+
 	if (characterState != State::Dead)
 	{
 		UpdateState();
@@ -149,7 +152,7 @@ void ABoomBoom::Tick(float DeltaTime)
 	
 		if (toxicDamage == true)
 		{
-			setHealth(health - 0.03f); //this damages Boom Boom, but not as much as Zip Zap
+			setHealth(health - 0.03f); // This damages Boom Boom, but not as much as Zip Zap
 		}
 	
 		if (characterState == State::Idle)
@@ -167,7 +170,7 @@ void ABoomBoom::Tick(float DeltaTime)
 
 		if (health <= 0.f)
 		{
-			GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator"));
+			//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator"));
 			characterState = State::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
@@ -176,7 +179,9 @@ void ABoomBoom::Tick(float DeltaTime)
 	else
 	{
 		deathTimer += DeltaTime;
-		if (deathTimer >= 15.0f) {
+
+		if (deathTimer >= 15.0f) 
+		{
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("MainCharacter")); // Enable collision when alive
 			health = 200.0f;
 			deathTimer = 0.0f;
@@ -318,7 +323,7 @@ void ABoomBoom::ExecuteJump()
 	{
 		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && characterState != State::Hurt && (characterState != State::Siege))
 		{
-			jumpPreludeTimer = 0.3f;//0.47f;
+			jumpPreludeTimer = 0.3f;
 			characterState = State::Jumping;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(jumping);
@@ -351,7 +356,7 @@ void ABoomBoom::Attack(float scaleVal)
 	if (characterState != State::Dead && inputAvailable)
 	{
 		// Allow the execution of the simple attack only if the character is not in a state of savage attack
-		if (characterState != State::Combo_Savage && characterState != State::Siege)
+		if (characterState != State::Combo_Savage && characterState != State::Siege && !charMove->IsFalling())
 		{
 			// If the attack button is pressed (or held), keep track of how long the user is holding the button down
 			if (scaleVal > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength))
@@ -359,6 +364,7 @@ void ABoomBoom::Attack(float scaleVal)
 				// Whatever the length is, change the state to "attacking"
 				characterState = State::Attacking;
 
+				//if (flipbook->GetFlipbook() == simpleAttack) --------------------------------------------------------------------------------------------------
 				// Increase the time the button has been held down
 				attackInputTimer += GetWorld()->GetDeltaSeconds();
 
@@ -381,6 +387,7 @@ void ABoomBoom::Attack(float scaleVal)
 						flipbook->SetFlipbook(simpleAttack);
 						isSimpleAttackSequenced = true;
 						punchPreludeTimer = AcutalPunchDelay;
+						simpleAttack_sequenceTimeoutTimer = SimpleAttackSequenceTimeout;
 						launchZipZap = false;
 						ProcessHit(25.f);
 					}
@@ -391,9 +398,6 @@ void ABoomBoom::Attack(float scaleVal)
 						isSimpleAttackSequenced = false;
 						ProcessHit(25.f);
 					}
-
-					// Regardless whether the attack was executed for the first time or second, 
-					simpleAttack_sequenceTimeoutTimer = SimpleAttackSequenceTimeout;
 				}
 				else if (attackInputTimer >= StrongAttackMinimumInputTime) // Strong attack
 				{
@@ -437,7 +441,7 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 
 void ABoomBoom::InitiateZipZapComboAttack_Projectile()
 {
-	if (zipZap != NULL)
+	if (zipZap != NULL && meter >= skillCost)
 	{
 		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && (characterState != State::Siege) && inputAvailable)
 		{
@@ -453,6 +457,7 @@ void ABoomBoom::InitiateZipZapComboAttack_Projectile()
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(simpleAttack);
 					characterState = State::Attacking;
+					setMeter(-skillCost);
 				}
 			}
 		}
@@ -603,14 +608,8 @@ void ABoomBoom::ProcessHit(float damage_)
 			Enemy->TakeEnemyDamage(damage_);
 		}
 
-		if (HitActor->ActorHasTag("Button"))
+		if (AButton_But_Awesome* button = Cast<AButton_But_Awesome>(HitActor))
 		{
-			AButton_But_Awesome* button = (AButton_But_Awesome*)HitActor;
-
-			if (button == NULL)
-			{
-				return;
-			}
 			button->ButtPress();
 		}
 	}

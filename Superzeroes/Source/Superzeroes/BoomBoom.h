@@ -117,6 +117,10 @@ public:
 		void setHealth(float newHealth);
 	UFUNCTION(BlueprintCallable)
 	    State GetState() { return characterState; }
+	UFUNCTION(BlueprintCallable)
+		float getMeter() { return meter; };
+	UFUNCTION(BlueprintCallable)
+		void setMeter(float newMeter) { meter += newMeter; if (meter > 100.f) { meter = 100.f; } };
 
 protected:
 	// Called when the game starts or when spawned
@@ -183,6 +187,14 @@ protected:
 	//Variable to keep track of Boom Boom's health
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float health;
+
+	//Variable to keep track of Boom Boom's special meter
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
+		float meter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
+		float refillTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
+		float skillCost;
 
 	// Particles' variables
 	UPROPERTY(BlueprintReadWrite)

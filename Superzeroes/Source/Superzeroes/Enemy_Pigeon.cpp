@@ -76,6 +76,22 @@ void AEnemy_Pigeon::BeginPlay()
 {
 	Super::BeginPlay();
 	healthPoints = 50.f;
+
+	/*FString Qtable;
+	FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/start.txt"));
+	for (int i = 0; i < 5; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			Qtable += FString::SanitizeFloat(AI_Q[i][j]);
+			Qtable += FString(TEXT(" "));
+		}
+		Qtable += FString(TEXT("\r\n"));
+	}
+	Qtable += FString(TEXT("\r\n"));
+	Qtable += FString(TEXT("\r\n"));
+	Qtable += FString(TEXT("\r\n"));
+	WriteStringToFile(path, Qtable);*/
 }
 
 void AEnemy_Pigeon::Tick(float DeltaTime)
@@ -946,8 +962,8 @@ void AEnemy_Pigeon::UpdateQ(float reward)
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("State: ") + FString::SanitizeFloat(currentState));
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Action: ") + FString::SanitizeFloat(currentAction));
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Current Q: ") + FString::SanitizeFloat(AI_Q[currentState][currentAction]));
-	AI_Q[currentState][currentAction] = AI_Q[currentState][currentAction] + .9f * ((reward + Q_DiscountFactor * Q_EstimatedOptimalFutureValue) - AI_Q[currentState][currentAction]);
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("New Q: ") + FString::SanitizeFloat(AI_Q[currentState][currentAction]));
+	AI_Q[currentState][currentAction] = AI_Q[currentState][currentAction] + Q_LearningRate * ((reward + Q_DiscountFactor * Q_EstimatedOptimalFutureValue) - AI_Q[currentState][currentAction]);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("New Q: ") + FString::SanitizeFloat(AI_Q[currentState][currentAction]));
 }
 
 void AEnemy_Pigeon::ExecuteAction()
@@ -955,10 +971,12 @@ void AEnemy_Pigeon::ExecuteAction()
 	if (currentAction == Action::GoIdle)
 	{
 		currentState = State3::Idle;
+		chooseActionTimeoutTimer = (2 * healthPoints) / 50.f;
 	}
 	else if (currentAction == Action::Jump)
 	{
 		currentState = State3::Jumping;
+		chooseActionTimeoutTimer = (2 * (characterMovementComponent->JumpZVelocity)) / -9.8f;
 	}
 	else if (currentAction == Action::WalkLeft)
 	{
@@ -1125,12 +1143,12 @@ void AEnemy_Pigeon::Attack()
 	{
 		FaceNearestPlayer();
 
-		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 45.34f, GetActorLocation().Y, GetActorLocation().Z + 13.f);
+		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 94.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
 		FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
 
 		if (rotation.Yaw > 0.f) // Right
 		{
-			muzzleFlashLocation.X += 90.68f;
+			muzzleFlashLocation.X += 188.68f;
 		}
 
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
@@ -1191,6 +1209,18 @@ void AEnemy_Pigeon::EndAttack()
 
 	if (currentState == State3::Dead)
 	{
+		/*FString Qtable;
+		FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/niska kruv.txt"));
+		for (int i = 0; i < 5; i++)
+		{
+			for (int j = 0; j < 5; j++)
+			{
+				Qtable += FString::SanitizeFloat(AI_Q[i][j]);
+				Qtable += FString(TEXT(" "));
+			}
+			Qtable += FString(TEXT("\r\n"));
+		}
+		WriteStringToFile(path, Qtable);*/
 		Destroy();
 	}
 }
@@ -1202,4 +1232,13 @@ void AEnemy_Pigeon::Landed(const FHitResult& Hit)
 	flipbookComponent->SetFlipbook(idle);
 	flipbookComponent->SetLooping(true);
 	flipbookComponent->Play();
+}
+
+void AEnemy_Pigeon::WriteStringToFile(FString FilePath, FString String)
+{
+	if (!FFileHelper::SaveStringToFile(String, *FilePath))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "Failed To save");
+		return;
+	}
 }

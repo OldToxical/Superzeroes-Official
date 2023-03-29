@@ -38,14 +38,14 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 				
 		if (otherActor->ActorHasTag("Button"))
 		{
-			AButton_But_Awesome* button = (AButton_But_Awesome*)otherActor;
-
-			if (button == NULL)
+			if (AButton_But_Awesome* button = Cast<AButton_But_Awesome>(otherActor))
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("null"));
-				return;
+				float distanceTravelled = (startPos - GetActorLocation()).Size();
+				if (((startPos - GetActorLocation()).Size()) <= 200.f)
+				{
+					button->ButtPress();
+				}
 			}
-			button->ButtPress();
 		}
 
 		if (!otherActor->IsA(ABoxTrigger::StaticClass()) && !otherActor->IsA(ABoomBoom::StaticClass()) && !otherActor->IsA(AZipZap::StaticClass()) && !otherActor->IsA(ASiege::StaticClass()))
