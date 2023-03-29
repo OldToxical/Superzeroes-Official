@@ -7,14 +7,15 @@
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "ZipZap.h"
+#include "Siege.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "BoomBoom.generated.h"
 
-#define SavageComboExecutionTime 10
+#define SavageComboExecutionTime 3
 #define StrongAttackMinimumInputTime 0.5
 #define SimpleAttackSequenceTimeout 0.6
 #define SimpleAttackAnimationLength 0.27
-#define MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack 60
+#define MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack 120
 #define AcutalPunchDelay 0.2
 
 UENUM()
@@ -26,6 +27,7 @@ enum class State : uint8
 	Attacking,
 	Combo_Savage,
 	Hurt,
+	Siege,
 	Dead
 };
 
@@ -38,9 +40,6 @@ public:
 	// Sets default values for this character's properties
 	ABoomBoom();
 	~ABoomBoom();
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -85,6 +84,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ExecuteJump();
 	UFUNCTION(BlueprintCallable)
+		void climb(float scaleVal);
+	UFUNCTION(BlueprintCallable)
 		void Attack(float scaleVal);
 	UFUNCTION(BlueprintCallable)
 		void EndAttack();
@@ -104,15 +105,32 @@ public:
 		void ProcessHit(float damage_);
 	UFUNCTION(BlueprintCallable)
 		void SetLevelIndex(int level) { currentLevel = level; }
+	UFUNCTION(BlueprintCallable)
+		void SetState(State state_) { characterState = state_; }
+	UFUNCTION(BlueprintCallable)
+		void SetInputAvailability(bool isAvailable) { inputAvailable = isAvailable; }
 
+	// Setters and getters
 	UFUNCTION(BlueprintCallable)
 		float getHealth() { return health; };
 	UFUNCTION(BlueprintCallable)
 		void setHealth(float newHealth);
+	UFUNCTION(BlueprintCallable)
+	    State GetState() { return characterState; }
+	UFUNCTION(BlueprintCallable)
+		float getMeter() { return meter; };
+	UFUNCTION(BlueprintCallable)
+		void setMeter(float newMeter) { meter += newMeter; if (meter > 100.f) { meter = 100.f; } };
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called when landed
+	virtual void Landed(const FHitResult& Hit) override;
 
 	// Rotator variable for the flipbook's rotation
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -125,6 +143,10 @@ protected:
 	// Reference to Zip Zap's object
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AZipZap* zipZap;
+
+	// Reference to Siege's object
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ASiege* siegeMode;
 
 	// Variable for the character's speed
 	UPROPERTY(EditAnywhere)
@@ -158,16 +180,25 @@ protected:
 	UPROPERTY(EditAnywhere)
 		bool launchZipZap;
 
+	// Variable to keep track whether the input is available, depending on whether siege mode is being activated at the moment
+	UPROPERTY(EditAnywhere)
+		bool inputAvailable;
+
 	//Variable to keep track of Boom Boom's health
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float health;
 
+	//Variable to keep track of Boom Boom's special meter
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
+		float meter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
+		float refillTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
+		float skillCost;
+
 	// Particles' variables
 	UPROPERTY(BlueprintReadWrite)
 		UParticleSystemComponent* smokeParticle;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		//class UBoxComponent* collision;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
@@ -175,7 +206,11 @@ protected:
 	float healTimer;
 	float deathTimer;
 	int currentLevel;
+	bool canClimb;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<FVector> spawnLoc;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
+		TSubclassOf<class AComicFX> comicFX;
 };
