@@ -128,10 +128,12 @@ void AEnemy_Mouse::ExecuteAction()
 	if (currentAction == Action::GoIdle)
 	{
 		currentState = State4::Idle;
+		chooseActionTimeoutTimer = (2 * healthPoints) / 100.f;
 	}
 	else if (currentAction == Action::Jump)
 	{
 		currentState = State4::Jumping;
+		chooseActionTimeoutTimer = (2 * (characterMovementComponent->JumpZVelocity)) / -9.8f;
 	}
 	else if (currentAction == Action::WalkLeft)
 	{
@@ -159,43 +161,43 @@ void AEnemy_Mouse::UpdateState()
 
 	switch (currentState)
 	{
-	case State4::Idle:
-		if (flipbookComponent->GetFlipbook() != hurtAnim)
-		{
-			flipbookComponent->SetFlipbook(idle);
-			flipbookComponent->SetLooping(true);
-		}
-		break;
-	case State4::Jumping:
-		if (flipbookComponent->GetFlipbook() != hurtAnim)
-		{
-			flipbookComponent->SetFlipbook(jumpAnim);
+	    case State4::Idle:
+			if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
+			{
+				flipbookComponent->SetFlipbook(idle);
+				flipbookComponent->SetLooping(true);
+			}
+			break;
+		case State4::Jumping:
+			if (flipbookComponent->GetFlipbook() != hurtAnim)
+			{
+				flipbookComponent->SetFlipbook(jumpAnim);
+				flipbookComponent->SetLooping(false);
+			}
+			Jump();
+			break;
+		case State4::WalkingLeft:
+			if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
+			{
+				flipbookComponent->SetFlipbook(walk);
+				flipbookComponent->SetLooping(true);
+			}
+			WalkLeft();
+			break;
+		case State4::WalkingRight:
+			if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
+			{
+				flipbookComponent->SetFlipbook(walk);
+				flipbookComponent->SetLooping(true);
+			}
+			WalkRight();
+			break;
+		case State4::Dead:
+			flipbookComponent->SetFlipbook(dead);
 			flipbookComponent->SetLooping(false);
-		}
-		Jump();
-		break;
-	case State4::WalkingLeft:
-		if (flipbookComponent->GetFlipbook() != hurtAnim)
-		{
-			flipbookComponent->SetFlipbook(walk);
-			flipbookComponent->SetLooping(true);
-		}
-		WalkLeft();
-		break;
-	case State4::WalkingRight:
-		if (flipbookComponent->GetFlipbook() != hurtAnim)
-		{
-			flipbookComponent->SetFlipbook(walk);
-			flipbookComponent->SetLooping(true);
-		}
-		WalkRight();
-		break;
-	case State4::Dead:
-		flipbookComponent->SetFlipbook(idle);
-		flipbookComponent->SetLooping(false);
-		break;
-	default:
-		break;
+			break;
+	    default:
+			break;
 	}
 
 	// AI Sensing
@@ -290,10 +292,6 @@ void AEnemy_Mouse::Attack()
 	}
 }
 
-void AEnemy_Mouse::RunAway()
-{
-}
-
 void AEnemy_Mouse::GoToPlayer()
 {
 	// Face the player
@@ -337,6 +335,7 @@ void AEnemy_Mouse::EndAttack()
 
 	if (currentState != State4::Jumping && currentState != State4::Dead)
 	{
+		flipbookComponent->SetFlipbook(idle);
 		flipbookComponent->SetLooping(true);
 		flipbookComponent->Play();
 	}

@@ -962,7 +962,7 @@ void AEnemy_Pigeon::UpdateQ(float reward)
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("State: ") + FString::SanitizeFloat(currentState));
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Action: ") + FString::SanitizeFloat(currentAction));
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Current Q: ") + FString::SanitizeFloat(AI_Q[currentState][currentAction]));
-	AI_Q[currentState][currentAction] = AI_Q[currentState][currentAction] + .9f * ((reward + Q_DiscountFactor * Q_EstimatedOptimalFutureValue) - AI_Q[currentState][currentAction]);
+	AI_Q[currentState][currentAction] = AI_Q[currentState][currentAction] + Q_LearningRate * ((reward + Q_DiscountFactor * Q_EstimatedOptimalFutureValue) - AI_Q[currentState][currentAction]);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("New Q: ") + FString::SanitizeFloat(AI_Q[currentState][currentAction]));
 }
 
@@ -971,10 +971,12 @@ void AEnemy_Pigeon::ExecuteAction()
 	if (currentAction == Action::GoIdle)
 	{
 		currentState = State3::Idle;
+		chooseActionTimeoutTimer = (2 * healthPoints) / 50.f;
 	}
 	else if (currentAction == Action::Jump)
 	{
 		currentState = State3::Jumping;
+		chooseActionTimeoutTimer = (2 * (characterMovementComponent->JumpZVelocity)) / -9.8f;
 	}
 	else if (currentAction == Action::WalkLeft)
 	{
@@ -1189,7 +1191,7 @@ void AEnemy_Pigeon::FaceNearestPlayer()
 		rotation.Yaw = 180.f;
 		flipbookComponent->SetWorldRotation(rotation);
 	}
-
+	
 }
 
 void AEnemy_Pigeon::EndAttack()
@@ -1226,7 +1228,7 @@ void AEnemy_Pigeon::EndAttack()
 void AEnemy_Pigeon::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
-
+	
 	flipbookComponent->SetFlipbook(idle);
 	flipbookComponent->SetLooping(true);
 	flipbookComponent->Play();
@@ -1236,7 +1238,7 @@ void AEnemy_Pigeon::WriteStringToFile(FString FilePath, FString String)
 {
 	if (!FFileHelper::SaveStringToFile(String, *FilePath))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "kur");
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "Failed To save");
 		return;
 	}
 }

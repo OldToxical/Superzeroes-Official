@@ -64,7 +64,6 @@ private:
 	void WalkLeft();
 	void WalkRight();
 	void Attack();
-	void RunAway();
 	void GoToPlayer();
 	void DealDamage();
 
@@ -77,13 +76,13 @@ private:
 	TArray<TArray<float, TFixedAllocator<4>>, TFixedAllocator<4>> AI_Q;
 
 	UPROPERTY(EditAnywhere)
-		bool inCombat;
+	    bool inCombat;
 
 	bool hitAvailable;
 
 	// Animations
 	UPROPERTY(EditAnywhere)
-		UPaperFlipbook* idle;
+	    UPaperFlipbook* idle;
 
 	UPROPERTY(EditAnywhere)
 		UPaperFlipbook* walk;
@@ -106,16 +105,16 @@ private:
 
 protected:
 	UFUNCTION(BlueprintCallable)
-		void EndAttack();
+	    void EndAttack();
 
 	// Called when landed
 	virtual void Landed(const FHitResult& Hit) override;
 
 	UPROPERTY(BlueprintReadWrite)
-		ABoomBoom* boomBoom;
+	    ABoomBoom* boomBoom;
 
 	UPROPERTY(BlueprintReadWrite)
-		AZipZap* zipZap;
+	    AZipZap* zipZap;
 
 	UPROPERTY(VisibleAnywhere)
 		AActor* playerToAttack;

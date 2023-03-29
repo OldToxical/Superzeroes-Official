@@ -74,12 +74,12 @@ void ASiege::Tick(float DeltaTime)
 	{
 		if (inititationAnimationTimer > 0.f)
 		{
-			//initiationAnimationUserWidget->AddToViewport();
+			initiationAnimationUserWidget->AddToViewport();
 			inititationAnimationTimer -= GetWorld()->GetDeltaSeconds();
 		}
 		else
 		{
-			//initiationAnimationUserWidget->RemoveFromViewport();
+			initiationAnimationUserWidget->RemoveFromViewport();
 			inputAvailable = true;
 		}
 
@@ -110,7 +110,8 @@ void ASiege::HandleBoomBoomInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && boomBoom->GetState() == State::Idle)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 
+			&& boomBoom->GetState() == State::Idle && boomBoom->getMeter() >= 100.f)
 		{
 			boomBoomInputTimer += GetWorld()->GetDeltaSeconds();
 			boomBoom->SetInputAvailability(false);
@@ -129,7 +130,8 @@ void ASiege::HandleZipZapInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && zipZap->GetState() == State2::Idle)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 
+			&& zipZap->GetState() == State2::Idle && zipZap->getMeter() >= 100.f)
 		{
 			zipZapInputTimer += GetWorld()->GetDeltaSeconds();
 			zipZap->SetInputAvailability(false);
@@ -186,8 +188,10 @@ void ASiege::ExecuteSiegeMode()
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
 	SetActorHiddenInGame(true);
 	boomBoom->SetActorHiddenInGame(false);
+	boomBoom->setMeter(-100.f);
 	boomBoom->SetState(State::Idle);
 	zipZap->SetActorHiddenInGame(false);
+	zipZap->setMeter(-100.f);
 	zipZap->SetState(State2::Idle);
 	executionTimer = SiegeModeExecutionLength;
 	modeIsActive = false;

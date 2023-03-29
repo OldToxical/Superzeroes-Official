@@ -107,21 +107,12 @@ public:
 		float getHealth() { return health; };
 	UFUNCTION(BlueprintCallable)
 		void setHealth(float newHealth);
-
+	UFUNCTION(BlueprintCallable)
+		State2 GetState() { return characterState; }
 	UFUNCTION(BlueprintCallable)
 		float getMeter() { return meter; };
 	UFUNCTION(BlueprintCallable)
-		void setMeter(float newMeter)
-	{
-		meter += newMeter;
-		if (meter > 100.f)
-		{
-			meter = 100.f;
-		}
-	};
-
-	UFUNCTION(BlueprintCallable)
-		State2 GetState() { return characterState; }
+		void setMeter(float newMeter) { meter += newMeter; if (meter > 100.f) { meter = 100.f; } };
 
 protected:
 	// Called when the game starts or when spawned
@@ -132,7 +123,7 @@ protected:
 
 	// Called when landed
 	virtual void Landed(const FHitResult& Hit) override;
-
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FRotator rotation;
 	// Enum instance for the character's state
@@ -180,6 +171,7 @@ protected:
 	//Variable to keep track of Zip Zap's health
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float health;
+
 	//Variable to keep track of Zip Zap's special meter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
 		float meter;

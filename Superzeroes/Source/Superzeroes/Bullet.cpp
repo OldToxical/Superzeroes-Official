@@ -48,10 +48,13 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		{
 			if (ABoomBoom* boomBoom = Cast<ABoomBoom>(otherActor))
 			{
-				CalculateDamage();
-				boomBoom->setHealth(boomBoom->getHealth() - damage);
-				FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
-				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
+				if (boomBoom->GetState() != State::Dead)
+				{
+					CalculateDamage();
+					boomBoom->setHealth(boomBoom->getHealth() - damage);
+					FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
+					UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
+				}
 			}
 		}
 
@@ -59,15 +62,18 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		{
 			if (AZipZap* zipZap = Cast<AZipZap>(otherActor))
 			{
-				CalculateDamage();
-				zipZap->setHealth(zipZap->getHealth() - damage);
-				FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
-				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
-				FVector location = zipZap->GetActorLocation();
-				location.Z += 30.f;
-				location.Y -= 0.1f;
-				//AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
-				//cfx->spriteChanger(1);
+				if (zipZap->GetState() != State2::Dead)
+				{
+					CalculateDamage();
+					zipZap->setHealth(zipZap->getHealth() - damage);
+					FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
+					UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
+					FVector location = zipZap->GetActorLocation();
+					location.Z += 30.f;
+					location.Y -= 0.1f;
+					AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+					cfx->spriteChanger(1);
+				}
 			}
 		}
 
@@ -80,5 +86,5 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 
 void ABullet::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex)
 {
-
+	
 }

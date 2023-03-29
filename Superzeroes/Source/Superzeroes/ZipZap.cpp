@@ -15,6 +15,8 @@
 #include "LAdder.h"
 #include "ComicFX.h"
 #include "BoxTriggerBoomBoom.h"
+#include "Button_But_Awesome.h"
+#include "Siege.h"
 #include "Projectile.h"
 
 // Sets default values
@@ -57,22 +59,20 @@ AZipZap::AZipZap()
 
 void AZipZap::setHealth(float newHealth)
 {
-	health = newHealth;
-
 	if (characterState != State2::Siege)
 	{
-		health = newHealth;
-
-		if (health >= 100.f)
-		{
-			health = 100.f;
-		}
-
 		if (characterState != State2::Hurt && characterState != State2::Attacking && characterState != State2::Combo_Projectile && newHealth < health)
 		{
 			characterState = State2::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
+		}
+
+		health = newHealth;
+
+		if (health >= 100.f)
+		{
+			health = 100.f;
 		}
 	}
 }
@@ -90,18 +90,15 @@ void AZipZap::BeginPlay()
 	deathTimer = 0.0f;
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AZipZap::overlapBegin);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AZipZap::overlapEnd);
-	//collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
-	//hitbox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
 	FName tag = FName(TEXT("BB_Platform"));
 	TSubclassOf<ABoxTriggerBoomBoom> subclass;
 	subclass = ABoxTriggerBoomBoom::StaticClass();
 	TArray<AActor*> actorsToIgnoreWhenMoving;
 	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), subclass, tag, actorsToIgnoreWhenMoving);
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::SanitizeFloat(actorsToIgnoreWhenMoving.Num()));
+
 	for (AActor* actorToIgnore : actorsToIgnoreWhenMoving)
 	{
-		//MoveIgnoreActorAdd(actorToIgnore);
 		GetCapsuleComponent()->IgnoreActorWhenMoving(actorToIgnore, true);
 	}
 }
@@ -111,18 +108,21 @@ void AZipZap::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	setMeter(refillTime);
+
 	if (characterState != State2::Dead)
 	{
 		UpdateAnimation();
 		UpdateState();
-		setMeter(refillTime);
+
 		if (toxicDamage == true)
 		{
-			setHealth(health - 0.5f); //this damages Zip Zap far more than Boom Boom
+			setHealth(health - 0.5f); // This damages Zip Zap far more than Boom Boom
 		}
 		if (characterState == State2::Idle)
 		{
 			healTimer += DeltaTime;
+
 			if (healTimer >= 10.f)
 			{
 				setHealth(health + 0.5f);
@@ -134,18 +134,19 @@ void AZipZap::Tick(float DeltaTime)
 		}
 		if (health <= 0.f)
 		{
-			//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator")); //disable collision while dead
+			//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator")); // Disable collision while dead
 			characterState = State2::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
 		}
 	}
-	if (characterState == State2::Dead)
+	else
 	{
 		deathTimer += DeltaTime;
-		//when 15 seconds have passed
-		if (deathTimer >= 15.0f) {
-			//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn")); //enable collision for zip zap when respawning
+
+		if (deathTimer >= 15.0f) // When 15 seconds have passed
+		{
+			GetCapsuleComponent()->SetCollisionProfileName(TEXT("MainCharacter")); // Enable collision for zip zap when respawning
 			health = 100.0f;
 			deathTimer = 0.0f;
 			SetActorLocation(spawnLoc[currentLevel]);
@@ -349,8 +350,9 @@ void AZipZap::climb(float scaleVal)
 		{
 			if (canClimb == true)
 			{
+
 				charMove->GravityScale = 0.0f;
-				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + scaleVal));
+				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + (scaleVal*2)));
 				if (scaleVal != 0)
 				{
 					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
@@ -472,14 +474,38 @@ void AZipZap::ProcessShoot(float damage_)
 	location.Y -= 0.1f;
 	AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap, location, GetActorRotation());
 	cfx->spriteChanger(0);
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("shart"));
+
+	// Check for close range collision
+	FHitResult OutHit;
+	TArray<AActor*> actorsToIgnore;
+	actorsToIgnore.Add(boomBoom);
+	actorsToIgnore.Add(UGameplayStatics::GetActorOfClass(GetWorld(), ASiege::StaticClass()));
+	bool hit = UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), muzzleFlashLocation, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::Persistent, OutHit, true);
+	if (hit)
+	{
+		AActor* HitActor = OutHit.GetActor();
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, HitActor->GetName());
+
+		if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
+		{
+			Enemy->TakeEnemyDamage(damage_);
+			AComicFX* cfx2 = GetWorld()->SpawnActor<AComicFX>(zap, Enemy->GetActorLocation(), GetActorRotation());
+			cfx2->spriteChanger(3);
+			Enemy->TakeEnemyDamage(damage_);
+		}
+
+		if (AButton_But_Awesome* button = Cast<AButton_But_Awesome>(HitActor))
+		{
+			button->ButtPress();
+		}
+	}
 }
 
 void AZipZap::Shoot()
 {
-	if (characterState != State2::Dead)
+	if (characterState != State2::Dead && inputAvailable)
 	{
-		if (characterState != State2::Combo_Projectile && characterState != State2::Siege && inputAvailable)
+		if (characterState != State2::Combo_Projectile && characterState != State2::Siege && !charMove->IsFalling())
 		{
 			isShooting = true;
 			characterState = State2::Attacking;
