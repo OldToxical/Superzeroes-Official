@@ -42,6 +42,9 @@ ABoomBoom::ABoomBoom()
 	launchZipZap = false;
 	inputAvailable = true;
 	health = 200.f;
+	timeToHeal = 10.f;
+	healing = false;
+	respawnTime = 15.0f;
 	meter = 0.0f;
 	refillTime = 0.1f;
 	skillCost = 50.f;
@@ -63,6 +66,9 @@ ABoomBoom::ABoomBoom()
 		flipbook->SetCollisionProfileName(CollisionProfileName);
 		flipbook->SetGenerateOverlapEvents(false);
 	}
+
+	TimeBetweenWalkSounds = 16.0f;
+	walkSoundTimer = TimeBetweenWalkSounds;
 }
 
 ABoomBoom::~ABoomBoom()
@@ -88,6 +94,7 @@ void ABoomBoom::setHealth(float newHealth)
 			characterState = State::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
+			UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
 		}
 
 		health = newHealth;
@@ -144,7 +151,12 @@ void ABoomBoom::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (characterState != State::Siege)
 	{
-		setMeter(refillTime);
+		setMeter(refillTime); 
+		if (meter >= 99.8f && meter <= 99.9f)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
+
+		}
 	}
 
 	if (characterState != State::Dead)
@@ -161,19 +173,31 @@ void ABoomBoom::Tick(float DeltaTime)
 		if (characterState == State::Idle)
 		{
 			healTimer += DeltaTime;
-			if (healTimer >= 10.f)
+			if (healTimer >= timeToHeal && health < 200.0f)
 			{
-				setHealth(health + 0.5f);
+				healing = true;
+				UGameplayStatics::PlaySound2D(GetWorld(), healthRecharge);
+				healTimer = 0.0f;
 			}
 		}
 		else
 		{
 			healTimer = 0.0f;
+			healing = false;
+		}
+
+		if (healing)
+		{
+			setHealth(health + 0.5f);
+
 		}
 
 		if (health <= 0.f)
 		{
 			//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator"));
+			
+			UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
+			
 			characterState = State::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
@@ -183,9 +207,10 @@ void ABoomBoom::Tick(float DeltaTime)
 	{
 		deathTimer += DeltaTime;
 
-		if (deathTimer >= 15.0f) 
+		if (deathTimer >= respawnTime) 
 		{
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("MainCharacter")); // Enable collision when alive
+
 			health = 200.0f;
 			deathTimer = 0.0f;
 			SetActorLocation(spawnLoc[currentLevel]); // Respawn at last known location
@@ -201,6 +226,7 @@ void ABoomBoom::Landed(const FHitResult& Hit)
 	Super::Landed(Hit);
 
 	//smokeParticle->ActivateSystem();
+	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
 	characterState = State::Idle;
 	flipbook->SetLooping(true);
 	flipbook->Play();
@@ -268,6 +294,7 @@ void ABoomBoom::UpdateState()
 	{
 		if (characterState == State::Jumping && !charMove->IsFalling())
 		{
+			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
 			Jump();
 			jumpPreludeTimer = 1.5f;
 		}
@@ -304,16 +331,27 @@ void ABoomBoom::move(float scaleVal)
 		{
 			characterSpeed = 200.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
+			walkSoundTimer += 0.1f;
 		}
 
 		// Determine the character's facing direction, regardless of the state
 		if (scaleVal > 0.f)
 		{
+			if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+				walkSoundTimer = 0.0f;
+			}
 			rotation.Yaw = 0.f;
 			flipbook->SetWorldRotation(rotation);
 		}
 		else if (scaleVal < 0.f)
 		{
+			if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+				walkSoundTimer = 0.0f;
+			}
 			rotation.Yaw = 180.0f;
 			flipbook->SetWorldRotation(rotation);
 		}
@@ -392,6 +430,7 @@ void ABoomBoom::Attack(float scaleVal)
 						punchPreludeTimer = AcutalPunchDelay;
 						simpleAttack_sequenceTimeoutTimer = SimpleAttackSequenceTimeout;
 						launchZipZap = false;
+						UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 						ProcessHit(25.f);
 					}
 					else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
@@ -399,6 +438,7 @@ void ABoomBoom::Attack(float scaleVal)
 						flipbook->SetLooping(false);
 						flipbook->SetFlipbook(simpleAttackSequence);
 						isSimpleAttackSequenced = false;
+						UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 						ProcessHit(25.f);
 					}
 				}
@@ -407,6 +447,7 @@ void ABoomBoom::Attack(float scaleVal)
 					// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(strongAttack);
+					UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 					ProcessHit(50.f);
 				}
 				else if (simpleAttack_sequenceTimeoutTimer <= 0.f && characterState == State::Attacking)
@@ -550,6 +591,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 				if (AWindowTrigger* window = Cast<AWindowTrigger>(otherActor))
 				{
 					window->BreakWindow();
+					UGameplayStatics::PlaySound2D(GetWorld(), glassBreak);
 				}
 			}
 		}

@@ -50,6 +50,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		AEnemySpawner* spawner;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* jumpSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* deathSFX;
 
 public:
 	virtual void TakeEnemyDamage(float damage_);

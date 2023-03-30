@@ -121,4 +121,17 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
 		TSubclassOf<class AComicFX> comicFX;
+
+	//Audio variables
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* attack1SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* attack2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* attack3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* attack4SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* attack5SFX;
 };

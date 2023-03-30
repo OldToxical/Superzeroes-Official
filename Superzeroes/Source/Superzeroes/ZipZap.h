@@ -188,18 +188,24 @@ protected:
 		bool toxicDamage;
 
 	float healTimer;
-	float deathTimer;
+	float deathTimer; 
+	float walkSoundTimer;
 	//Values for respawn timer and heal timer that can be changed in blueprint, so it can be tested without compiling
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
 		float respawnTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
 		float timeToHeal;
+	//This is so that the walk sound effect doesn't play every single frame
+	//there may be a better way of doing this?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float TimeBetweenWalkSounds;
+
 	int currentLevel;
 	bool canClimb;
-
+	bool healing;
 
 	//Audio variables
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* jumpSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* landSFX;
@@ -211,11 +217,13 @@ protected:
 		class USoundBase* death2SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* death3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* healthRecharge;
 
-	//This is so that the walk sound effect doesn't play every single frame
-	//there may be a better way of doing this?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
-	float walkSoundTimer;*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* meterFull;
+
+	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<FVector> spawnLoc;

@@ -40,6 +40,7 @@ AZipZap::AZipZap()
 	savageInitiated = false;
 	inputAvailable = true;
 	canClimb = false;
+	healing = false;
 
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	if (flipbook)
@@ -59,7 +60,8 @@ AZipZap::AZipZap()
 	spawnLoc.Add(FVector(2160.f, .5f, -35.f));
 	spawnLoc.Add(FVector(3760.f, .5f, -35.f));
 
-	//walkSoundTimer = 1.0f;
+	TimeBetweenWalkSounds = 3.5f;
+	walkSoundTimer = TimeBetweenWalkSounds;
 }
 
 void AZipZap::setHealth(float newHealth)
@@ -115,6 +117,11 @@ void AZipZap::Tick(float DeltaTime)
 	if (characterState != State2::Siege)
 	{
 		setMeter(refillTime);
+		if (meter >= 99.8f && meter <= 99.9f)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
+
+		}
 	}
 
 	if (characterState != State2::Dead)
@@ -130,26 +137,33 @@ void AZipZap::Tick(float DeltaTime)
 		if (characterState == State2::Idle)
 		{
 			healTimer += DeltaTime;
-
-			if (healTimer >= timeToHeal)
+			if (healTimer >= timeToHeal && health < 100.0f)
 			{
-				setHealth(health + 0.5f);
+				healing = true;
+				UGameplayStatics::PlaySound2D(GetWorld(), healthRecharge);
+				healTimer = 0.0f;
 			}
 		}
 		else
 		{
 			healTimer = 0.0f;
+			healing = false;
+		}
+		if (healing)
+		{
+			setHealth(health + 0.5f);
+
 		}
 		if (health <= 0.f)
 		{
 			//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator")); // Disable collision while dead
-			/*int randomSound = rand() % 2 + 1;
+			int randomSound = rand() % 2 + 1;
 			switch (randomSound)
 			{
 				case 1:	UGameplayStatics::PlaySound2D(GetWorld(), death1SFX);
 				case 2:	UGameplayStatics::PlaySound2D(GetWorld(), death2SFX);
 				case 3:	UGameplayStatics::PlaySound2D(GetWorld(), death3SFX);
-			}*/
+			}
 			characterState = State2::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
@@ -182,7 +196,7 @@ void AZipZap::Landed(const FHitResult& Hit)
 		isElectrified = false;
 	}
 
-	//UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
+	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
 	characterState = State2::Idle;
 	flipbook->SetLooping(true);
 	flipbook->Play();
@@ -196,7 +210,6 @@ void AZipZap::UpdateAnimation()
 		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping && characterState != State2::Hurt)
 		{
 			characterState = State2::Running;
-			//UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
 			flipbook->SetFlipbook(run);
 		}
 	}
@@ -219,15 +232,25 @@ void AZipZap::move(float scaleVal)
 		{
 			characterSpeed = 500.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
-
+			walkSoundTimer += 0.1f;
 			// Handle rotation
 			if (scaleVal > 0.f)
 			{
+				if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
+				{
+					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					walkSoundTimer = 0.0f;
+				}
 				rotation.Yaw = 0.f;
 				flipbook->SetWorldRotation(rotation);
 			}
 			else if (scaleVal < 0.f)
 			{
+				if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
+				{
+					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					walkSoundTimer = 0.0f;
+				}
 				rotation.Yaw = 180.0f;
 				flipbook->SetWorldRotation(rotation);
 			}
@@ -373,7 +396,7 @@ void AZipZap::ExecuteJump()
 			characterState = State2::Jumping;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(jumping);
-			//UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
+			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
 		}
 	}
 }
