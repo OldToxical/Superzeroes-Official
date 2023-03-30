@@ -70,6 +70,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void climb(float scaleVal);
 	UFUNCTION(BlueprintCallable)
+		void Attack();
+	UFUNCTION(BlueprintCallable)
 
 		void EndAttack();
 	UFUNCTION(BlueprintCallable)
@@ -84,6 +86,8 @@ public:
 		void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
 	UFUNCTION(BlueprintCallable)
 		void SetupPlayerInput(UInputComponent* input_);
+	UFUNCTION(BlueprintCallable)
+		void ProcessHit(float damage_);
 	UFUNCTION(BlueprintCallable)
 		void ProcessShoot(float damage_);
 	UFUNCTION(BlueprintCallable)
@@ -172,7 +176,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float health;
 
-	//Variable to keep track of Zip Zap's special meter
+	//Variables to keep track of Zip Zap's special meter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
 		float meter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
@@ -185,8 +189,33 @@ protected:
 
 	float healTimer;
 	float deathTimer;
+	//Values for respawn timer and heal timer that can be changed in blueprint, so it can be tested without compiling
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float respawnTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float timeToHeal;
 	int currentLevel;
 	bool canClimb;
+
+
+	//Audio variables
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* jumpSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* landSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* walkSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* death1SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* death2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* death3SFX;
+
+	//This is so that the walk sound effect doesn't play every single frame
+	//there may be a better way of doing this?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+	float walkSoundTimer;*/
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<FVector> spawnLoc;

@@ -8,6 +8,7 @@
 #include "PaperFlipbookComponent.h"
 #include "BoomBoom.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Sound/SoundBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Toxic.h"
 #include "Trash.h"
@@ -26,6 +27,8 @@ AZipZap::AZipZap()
 	PrimaryActorTick.bCanEverTick = true;
 	jumpPreludeTimer = 0.f;
 	health = 100.f;
+	timeToHeal = 10.f;
+	respawnTime = 15.0f;
 	meter = 0.0f;
 	refillTime = 0.1f;
 	skillCost = 50.f;
@@ -55,6 +58,8 @@ AZipZap::AZipZap()
 	spawnLoc.Add(FVector(600.f, .5f, 300.f));
 	spawnLoc.Add(FVector(2160.f, .5f, -35.f));
 	spawnLoc.Add(FVector(3760.f, .5f, -35.f));
+
+	//walkSoundTimer = 1.0f;
 }
 
 void AZipZap::setHealth(float newHealth)
@@ -126,7 +131,7 @@ void AZipZap::Tick(float DeltaTime)
 		{
 			healTimer += DeltaTime;
 
-			if (healTimer >= 10.f)
+			if (healTimer >= timeToHeal)
 			{
 				setHealth(health + 0.5f);
 			}
@@ -138,6 +143,13 @@ void AZipZap::Tick(float DeltaTime)
 		if (health <= 0.f)
 		{
 			//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator")); // Disable collision while dead
+			/*int randomSound = rand() % 2 + 1;
+			switch (randomSound)
+			{
+				case 1:	UGameplayStatics::PlaySound2D(GetWorld(), death1SFX);
+				case 2:	UGameplayStatics::PlaySound2D(GetWorld(), death2SFX);
+				case 3:	UGameplayStatics::PlaySound2D(GetWorld(), death3SFX);
+			}*/
 			characterState = State2::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
@@ -147,7 +159,7 @@ void AZipZap::Tick(float DeltaTime)
 	{
 		deathTimer += DeltaTime;
 
-		if (deathTimer >= 15.0f) // When 15 seconds have passed
+		if (deathTimer >= respawnTime) // When 15 seconds have passed
 		{
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("MainCharacter")); // Enable collision for zip zap when respawning
 			health = 100.0f;
@@ -170,6 +182,7 @@ void AZipZap::Landed(const FHitResult& Hit)
 		isElectrified = false;
 	}
 
+	//UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
 	characterState = State2::Idle;
 	flipbook->SetLooping(true);
 	flipbook->Play();
@@ -183,6 +196,7 @@ void AZipZap::UpdateAnimation()
 		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping && characterState != State2::Hurt)
 		{
 			characterState = State2::Running;
+			//UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
 			flipbook->SetFlipbook(run);
 		}
 	}
@@ -218,6 +232,23 @@ void AZipZap::move(float scaleVal)
 				flipbook->SetWorldRotation(rotation);
 			}
 	    }
+	}
+}
+
+void AZipZap::Attack()
+{
+	// Allow the execution of the simple attack only if the character is not in a state of savage attack
+	if (characterState != State2::Dead)
+	{
+		if (characterState != State2::Combo_Projectile)
+		{
+			// Change the state to "attacking"
+			isShooting = false;
+			characterState = State2::Attacking;
+			flipbook->SetLooping(false);
+			flipbook->SetFlipbook(simpleAttack);
+			ProcessHit(25.f);
+		}
 	}
 }
 
@@ -283,6 +314,7 @@ void AZipZap::SetupPlayerInput(UInputComponent* input_)
 
 	Input->BindAxis("MoveZipZap", this, &AZipZap::move);
 	Input->BindAxis("ClimbZipZap", this, &AZipZap::climb);
+	Input->BindAction("AttackZipZap", IE_Pressed, this, &AZipZap::Attack);
 	Input->BindAction("JumpZipZap", IE_Pressed, this, &AZipZap::ExecuteJump);
 	Input->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
 	Input->BindAction("ElectrifyZipZap", IE_Pressed, this, &AZipZap::Electrify);
@@ -307,7 +339,7 @@ void AZipZap::UpdateState()
 	charMove->MaxWalkSpeed = characterSpeed;
 
 	// Execute attacking functions depending on the flipbook's frame position
-	if (characterState == State2::Attacking && flipbook->GetFlipbook() != initiateBoomBoomSavageComboAttack)
+	if (characterState == State2::Attacking && flipbook->GetFlipbook() != initiateBoomBoomSavageComboAttack && isShooting)
 	{
 		if (flipbook->GetPlaybackPositionInFrames() == 3 && !damageDealt)
 		{
@@ -341,6 +373,7 @@ void AZipZap::ExecuteJump()
 			characterState = State2::Jumping;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(jumping);
+			//UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
 		}
 	}
 }
@@ -456,6 +489,44 @@ bool AZipZap::IsFacingBoomBoom()
 	return false;
 }
 
+void AZipZap::ProcessHit(float damage_)
+{
+	// Check for close range collision
+	FHitResult OutHit;
+	FVector endPoint = FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 5.f); 
+	
+	if (rotation.Yaw > 0.f) // Looking left
+	{
+		endPoint.X -= 138.f;
+	}
+	else // Looking right
+	{
+		endPoint.X += 138.f;
+	}
+	TArray<AActor*> actorsToIgnore;
+	actorsToIgnore.Add(boomBoom);
+	actorsToIgnore.Add(UGameplayStatics::GetActorOfClass(GetWorld(), ASiege::StaticClass()));
+	bool hit = UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), endPoint, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::Persistent, OutHit, true);
+	if (hit)
+	{
+		AActor* HitActor = OutHit.GetActor();
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, HitActor->GetName());
+
+		if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
+		{
+			Enemy->TakeEnemyDamage(damage_);
+			AComicFX* cfx2 = GetWorld()->SpawnActor<AComicFX>(zap, Enemy->GetActorLocation(), GetActorRotation());
+			cfx2->spriteChanger(3);
+			Enemy->TakeEnemyDamage(damage_);
+		}
+
+		if (AButton_But_Awesome* button = Cast<AButton_But_Awesome>(HitActor))
+		{
+			button->ButtPress();
+		}
+	}
+}
+
 void AZipZap::ProcessShoot(float damage_)
 {
 	FVector muzzleFlashLocation = FVector(GetActorLocation().X + 138.f, GetActorLocation().Y, GetActorLocation().Z - 22.f);
@@ -478,30 +549,7 @@ void AZipZap::ProcessShoot(float damage_)
 	AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap, location, GetActorRotation());
 	cfx->spriteChanger(0);
 
-	// Check for close range collision
-	FHitResult OutHit;
-	TArray<AActor*> actorsToIgnore;
-	actorsToIgnore.Add(boomBoom);
-	actorsToIgnore.Add(UGameplayStatics::GetActorOfClass(GetWorld(), ASiege::StaticClass()));
-	bool hit = UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), muzzleFlashLocation, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::Persistent, OutHit, true);
-	if (hit)
-	{
-		AActor* HitActor = OutHit.GetActor();
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, HitActor->GetName());
-
-		if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
-		{
-			Enemy->TakeEnemyDamage(damage_);
-			AComicFX* cfx2 = GetWorld()->SpawnActor<AComicFX>(zap, Enemy->GetActorLocation(), GetActorRotation());
-			cfx2->spriteChanger(3);
-			Enemy->TakeEnemyDamage(damage_);
-		}
-
-		if (AButton_But_Awesome* button = Cast<AButton_But_Awesome>(HitActor))
-		{
-			button->ButtPress();
-		}
-	}
+	ProcessHit(damage_);
 }
 
 void AZipZap::Shoot()
