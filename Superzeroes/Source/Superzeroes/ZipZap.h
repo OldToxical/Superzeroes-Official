@@ -186,6 +186,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
+	//used for changing between the two toxic walk sound sfx
+	bool toxicWalkSoundBool;
 
 	float healTimer;
 	float deathTimer; 
@@ -211,6 +213,10 @@ protected:
 		class USoundBase* landSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* walkSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* toxicWalk1SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* toxicWalk2SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* death1SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)

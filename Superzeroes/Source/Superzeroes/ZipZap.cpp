@@ -62,6 +62,7 @@ AZipZap::AZipZap()
 
 	TimeBetweenWalkSounds = 3.5f;
 	walkSoundTimer = TimeBetweenWalkSounds;
+	toxicWalkSoundBool = false;
 }
 
 void AZipZap::setHealth(float newHealth)
@@ -238,7 +239,19 @@ void AZipZap::move(float scaleVal)
 			{
 				if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
 				{
-					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					if (toxicDamage)
+					{
+						switch (toxicWalkSoundBool)
+						{
+						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
+						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+						}
+						toxicWalkSoundBool = !toxicWalkSoundBool;
+					}
+					else
+					{
+						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					}
 					walkSoundTimer = 0.0f;
 				}
 				rotation.Yaw = 0.f;
@@ -248,7 +261,19 @@ void AZipZap::move(float scaleVal)
 			{
 				if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
 				{
-					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					if (toxicDamage)
+					{
+						switch (toxicWalkSoundBool)
+						{
+						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
+						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+						}
+						toxicWalkSoundBool = !toxicWalkSoundBool;
+					}
+					else
+					{
+						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					}
 					walkSoundTimer = 0.0f;
 				}
 				rotation.Yaw = 180.0f;

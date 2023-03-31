@@ -69,6 +69,7 @@ ABoomBoom::ABoomBoom()
 
 	TimeBetweenWalkSounds = 16.0f;
 	walkSoundTimer = TimeBetweenWalkSounds;
+	toxicWalkSoundBool = false;
 }
 
 ABoomBoom::~ABoomBoom()
@@ -94,7 +95,11 @@ void ABoomBoom::setHealth(float newHealth)
 			characterState = State::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
-			UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
+			//hurt clip will play over and over without this
+			if (!toxicDamage)
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
+			}
 		}
 
 		health = newHealth;
@@ -339,7 +344,19 @@ void ABoomBoom::move(float scaleVal)
 		{
 			if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
 			{
-				UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+				if (toxicDamage)
+				{
+					switch(toxicWalkSoundBool)
+					{
+						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
+						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+					}
+					toxicWalkSoundBool = !toxicWalkSoundBool;
+				}
+				else 
+				{
+					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+				}
 				walkSoundTimer = 0.0f;
 			}
 			rotation.Yaw = 0.f;
@@ -349,7 +366,19 @@ void ABoomBoom::move(float scaleVal)
 		{
 			if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
 			{
-				UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+				if (toxicDamage)
+				{
+					switch (toxicWalkSoundBool)
+					{
+					case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
+					case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+					}
+					toxicWalkSoundBool = !toxicWalkSoundBool;
+				}
+				else
+				{
+					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+				}
 				walkSoundTimer = 0.0f;
 			}
 			rotation.Yaw = 180.0f;
