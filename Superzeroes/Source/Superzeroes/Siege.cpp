@@ -11,7 +11,6 @@ ASiege::ASiege()
 {
 	boomBoom = nullptr;
 	zipZap = nullptr;
-	Input = nullptr;
 	charMove = nullptr;
 	electricChargeClass = nullptr;
 	initiationAnimationUserWidget = nullptr;
@@ -95,14 +94,16 @@ void ASiege::Tick(float DeltaTime)
 	SetActorLocation(boomBoom->GetActorLocation());
 }
 
-void ASiege::SetupPlayerInput(UInputComponent* input_)
+void ASiege::SetupBoomBoomInputComponent(UInputComponent* bbInput)
 {
-	Input = input_;
+	bbInput->BindAxis("SiegeBoomBoom", this, &ASiege::HandleBoomBoomInput);
+	bbInput->BindAxis("MoveBoomBoom", this, &ASiege::Move);
+}
 
-	Input->BindAxis("SiegeBoomBoom", this, &ASiege::HandleBoomBoomInput);
-	Input->BindAxis("SiegeZipZap", this, &ASiege::HandleZipZapInput);
-	Input->BindAxis("MoveBoomBoom", this, &ASiege::Move);
-	Input->BindAction("ShootZipZap", IE_Pressed, this, &ASiege::Shoot);
+void ASiege::SetupZipZapInputComponent(UInputComponent* zzInput)
+{
+	zzInput->BindAxis("SiegeZipZap", this, &ASiege::HandleZipZapInput);
+	zzInput->BindAction("ShootZipZap", IE_Pressed, this, &ASiege::Shoot);
 }
 
 void ASiege::HandleBoomBoomInput(float scaleVal)

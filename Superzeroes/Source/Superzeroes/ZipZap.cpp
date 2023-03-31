@@ -280,16 +280,24 @@ void AZipZap::Electrify()
 	}
 }
 
-void AZipZap::SetupPlayerInput(UInputComponent* input_)
+void AZipZap::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Input = input_;
+	//Input = input_;
 
-	Input->BindAxis("MoveZipZap", this, &AZipZap::move);
-	Input->BindAxis("ClimbZipZap", this, &AZipZap::climb);
-	Input->BindAction("JumpZipZap", IE_Pressed, this, &AZipZap::ExecuteJump);
-	Input->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
-	Input->BindAction("ElectrifyZipZap", IE_Pressed, this, &AZipZap::Electrify);
-	Input->BindAction("ShootZipZap", IE_Pressed, this, &AZipZap::Shoot);
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (PlayerInputComponent == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Zip Zap has no input component"));
+		return;
+	}
+
+	PlayerInputComponent->BindAxis("MoveZipZap", this, &AZipZap::move);
+	PlayerInputComponent->BindAxis("ClimbZipZap", this, &AZipZap::climb);
+	PlayerInputComponent->BindAction("JumpZipZap", IE_Pressed, this, &AZipZap::ExecuteJump);
+	PlayerInputComponent->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
+	PlayerInputComponent->BindAction("ElectrifyZipZap", IE_Pressed, this, &AZipZap::Electrify);
+	PlayerInputComponent->BindAction("ShootZipZap", IE_Pressed, this, &AZipZap::Shoot);
 }
 
 void AZipZap::EndAttack()
@@ -368,6 +376,11 @@ void AZipZap::climb(float scaleVal)
 	}
 }
 
+void AZipZap::PassSiegeInput(ASiege* siegeMode)
+{
+	siegeMode->SetupZipZapInputComponent(InputComponent);
+}
+
 void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
 	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
 {
@@ -411,8 +424,6 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		{
 			canClimb = true;
 		}
-
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, otherActor->GetName());
 	}
 }
 

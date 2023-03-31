@@ -83,8 +83,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
 	UFUNCTION(BlueprintCallable)
-		void SetupPlayerInput(UInputComponent* input_);
-	UFUNCTION(BlueprintCallable)
 		void ProcessShoot(float damage_);
 	UFUNCTION(BlueprintCallable)
 		void SetLevelIndex(int level) { currentLevel = level; }
@@ -94,6 +92,8 @@ public:
 		void SetState(State2 state_) { characterState = state_; }
 	UFUNCTION(BlueprintCallable)
 		void SetInputAvailability(bool isAvailable) { inputAvailable = isAvailable; }
+	UFUNCTION(BlueprintCallable)
+		void PassSiegeInput(class ASiege* siegeMode);
 
 	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
@@ -113,6 +113,7 @@ public:
 		float getMeter() { return meter; };
 	UFUNCTION(BlueprintCallable)
 		void setMeter(float newMeter) { meter += newMeter; if (meter > 100.f) { meter = 100.f; } if (meter < 0.0f) { meter = 0.0f; } };
+	UInputComponent* GetInputComponent() { return InputComponent; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -123,6 +124,10 @@ protected:
 
 	// Called when landed
 	virtual void Landed(const FHitResult& Hit) override;
+
+	// Called when Pawn is possessed
+	UFUNCTION(BlueprintCallable)
+		virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FRotator rotation;

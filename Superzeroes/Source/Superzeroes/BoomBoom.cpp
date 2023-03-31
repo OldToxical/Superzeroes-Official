@@ -97,8 +97,14 @@ void ABoomBoom::setHealth(float newHealth)
 void ABoomBoom::BeginPlay()
 {
 	Super::BeginPlay(); 
+
+	if (GetName() == TEXT("BoomBoom_BP_C_1"))
+	{
+		Destroy();
+	}
+
 	toxicDamage = false;
-	SetupPlayerInputComponent(Super::InputComponent);
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
 
@@ -112,12 +118,12 @@ void ABoomBoom::BeginPlay()
 	if (zipZap)
 	{
 		zipZap->SetBoomBoomReference(this);
-		zipZap->SetupPlayerInput(Super::InputComponent);
 	}
 
-	if (siegeMode)
+	if (siegeMode && InputComponent)
 	{
-		siegeMode->SetupPlayerInput(Super::InputComponent);
+		siegeMode->SetupBoomBoomInputComponent(InputComponent);
+		zipZap->PassSiegeInput(siegeMode);
 	}
 
 	FName tag = FName(TEXT("ZZ_Platform"));
@@ -212,6 +218,12 @@ void ABoomBoom::Landed(const FHitResult& Hit)
 void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (PlayerInputComponent == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Boom Boom has no input component"));
+		return;
+	}
 
 	PlayerInputComponent->BindAxis("MoveBoomBoom", this, &ABoomBoom::move);
 	PlayerInputComponent->BindAxis("AttackBoomBoom", this, &ABoomBoom::Attack);
@@ -559,7 +571,6 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		{
 			canClimb = true;
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, otherActor->GetName());
 	}
 }
 
