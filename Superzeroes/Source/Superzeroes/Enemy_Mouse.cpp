@@ -174,6 +174,7 @@ void AEnemy_Mouse::UpdateState()
 				flipbookComponent->SetFlipbook(jumpAnim);
 				flipbookComponent->SetLooping(false);
 			}
+			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
 			Jump();
 			break;
 		case State4::WalkingLeft:
@@ -242,8 +243,9 @@ void AEnemy_Mouse::UpdateState()
 		FVector location = GetActorLocation();
 		location.Z += 30.f;
 		location.Y -= 0.1f;
-		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
-		cfx->spriteChanger(2);
+		//AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+		//cfx->spriteChanger(2);
+		//UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
 		currentState = State4::Dead;
 	}
 }
@@ -291,6 +293,15 @@ void AEnemy_Mouse::Attack()
 		if (flipbookComponent->GetPlaybackPositionInFrames() == 5 && hitAvailable)
 		{
 			hitAvailable = false;
+			int attackSFX = rand() % 4 + 1;
+			switch (attackSFX)
+			{
+				case 1: UGameplayStatics::PlaySound2D(GetWorld(), attack1SFX);
+				case 2: UGameplayStatics::PlaySound2D(GetWorld(), attack2SFX);
+				case 3:	UGameplayStatics::PlaySound2D(GetWorld(), attack3SFX);
+				case 4:	UGameplayStatics::PlaySound2D(GetWorld(), attack4SFX);
+				case 5:	UGameplayStatics::PlaySound2D(GetWorld(), attack5SFX);
+			}
 			DealDamage();
 		}
 
@@ -302,6 +313,15 @@ void AEnemy_Mouse::Attack()
 		if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && hitAvailable)
 		{
 			hitAvailable = false;
+			int attackSFX = rand() % 4 + 1;
+			switch (attackSFX)
+			{
+				case 1: UGameplayStatics::PlaySound2D(GetWorld(), attack1SFX);
+				case 2: UGameplayStatics::PlaySound2D(GetWorld(), attack2SFX);
+				case 3:	UGameplayStatics::PlaySound2D(GetWorld(), attack3SFX);
+				case 4:	UGameplayStatics::PlaySound2D(GetWorld(), attack4SFX);
+				case 5:	UGameplayStatics::PlaySound2D(GetWorld(), attack5SFX);
+			}
 			DealDamage();
 		}
 	}

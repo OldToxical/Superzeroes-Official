@@ -68,6 +68,7 @@ void ASiege::Tick(float DeltaTime)
 		modeIsActive = true;
 		boomBoom->setMeter(-100.f);
 		zipZap->setMeter(-100.f);
+		UGameplayStatics::PlaySound2D(GetWorld(), siegeActivate);
 		flipbook->Play();
 	}
 
@@ -178,6 +179,7 @@ void ASiege::ExecuteSiegeMode()
 				UParticleSystemComponent* muzzleFlashParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlash, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.2f, .2f, .2f));
 				muzzleFlashParticle->CustomTimeDilation = 3.f;
 				AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
+				UGameplayStatics::PlaySound2D(GetWorld(), siegeShoot);
 				shotFired = false;
 				bullets--;
 			}

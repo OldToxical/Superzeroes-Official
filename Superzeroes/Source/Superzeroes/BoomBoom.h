@@ -203,10 +203,48 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
 
+	//used for changing between the two toxic walk sound sfx
+	bool toxicWalkSoundBool;
 	float healTimer;
+	bool healing;
 	float deathTimer;
+	float walkSoundTimer;
+	//Values for respawn timer and heal timer that can be changed in blueprint, so it can be tested without compiling
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float respawnTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float timeToHeal;
+	//This is so that the walk sound effect doesn't play every single frame
+	//there may be a better way of doing this?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float TimeBetweenWalkSounds;
+
 	int currentLevel;
 	bool canClimb;
+
+	//Audio variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* jumpSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* landSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* walkSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* toxicWalk1SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* toxicWalk2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* deathSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* attackSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* hurtSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* healthRecharge;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* meterFull;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* glassBreak;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<FVector> spawnLoc;
