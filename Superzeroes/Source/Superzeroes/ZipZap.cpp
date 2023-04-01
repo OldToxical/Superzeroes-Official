@@ -416,7 +416,7 @@ void AZipZap::ExecuteJump()
 			characterState = State2::Jumping;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(jumping);
-			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX)
+			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
 		}
 	}
 }
