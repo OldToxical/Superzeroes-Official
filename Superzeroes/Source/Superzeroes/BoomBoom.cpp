@@ -42,6 +42,9 @@ ABoomBoom::ABoomBoom()
 	launchZipZap = false;
 	inputAvailable = true;
 	health = 200.f;
+	timeToHeal = 10.f;
+	healing = false;
+	respawnTime = 15.0f;
 	meter = 0.0f;
 	refillTime = 0.1f;
 	skillCost = 50.f;
@@ -57,6 +60,10 @@ ABoomBoom::ABoomBoom()
 		flipbook->SetCollisionProfileName(CollisionProfileName);
 		flipbook->SetGenerateOverlapEvents(false);
 	}
+
+	TimeBetweenWalkSounds = 16.0f;
+	walkSoundTimer = TimeBetweenWalkSounds;
+	toxicWalkSoundBool = false;
 }
 
 ABoomBoom::~ABoomBoom()
@@ -82,6 +89,12 @@ void ABoomBoom::setHealth(float newHealth)
 			characterState = State::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
+
+			//hurt clip will play over and over without this
+			if (!toxicDamage)
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
+			}
 		}
 
 		health = newHealth;
@@ -97,8 +110,14 @@ void ABoomBoom::setHealth(float newHealth)
 void ABoomBoom::BeginPlay()
 {
 	Super::BeginPlay(); 
+
+	if (GetName() == TEXT("BoomBoom_BP_C_1"))
+	{
+		Destroy();
+	}
+
 	toxicDamage = false;
-	SetupPlayerInputComponent(Super::InputComponent);
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
 
@@ -112,12 +131,12 @@ void ABoomBoom::BeginPlay()
 	if (zipZap)
 	{
 		zipZap->SetBoomBoomReference(this);
-		zipZap->SetupPlayerInput(Super::InputComponent);
 	}
 
-	if (siegeMode)
+	if (siegeMode && InputComponent)
 	{
-		siegeMode->SetupPlayerInput(Super::InputComponent);
+		siegeMode->SetupBoomBoomInputComponent(InputComponent);
+		zipZap->PassSiegeInput(siegeMode);
 	}
 
 	FName tag = FName(TEXT("ZZ_Platform"));
@@ -147,6 +166,11 @@ void ABoomBoom::Tick(float DeltaTime)
 	if (characterState != State::Siege)
 	{
 		setMeter(refillTime);
+
+		if (meter >= 99.8f && meter <= 99.9f)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
+		}
 	}
 
 	if (characterState != State::Dead)
@@ -162,19 +186,28 @@ void ABoomBoom::Tick(float DeltaTime)
 		if (characterState == State::Idle)
 		{
 			healTimer += DeltaTime;
-			if (healTimer >= 10.f)
+
+			if (healTimer >= timeToHeal && health < 200.0f)
 			{
-				setHealth(health + 0.5f);
+				healing = true;
+				UGameplayStatics::PlaySound2D(GetWorld(), healthRecharge);
+				healTimer = 0.0f;
 			}
 		}
 		else
 		{
 			healTimer = 0.0f;
+			healing = false;
+		}
+
+		if (healing)
+		{
+			setHealth(health + 0.5f);
 		}
 
 		if (health <= 0.f)
 		{
-			//GetCapsuleComponent()->SetCollisionProfileName(TEXT("Spectator"));
+			UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
 			characterState = State::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
@@ -184,7 +217,7 @@ void ABoomBoom::Tick(float DeltaTime)
 	{
 		deathTimer += DeltaTime;
 
-		if (deathTimer >= 15.0f) 
+		if (deathTimer >= respawnTime)
 		{
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("MainCharacter")); // Enable collision when alive
 			health = 200.0f;
@@ -193,7 +226,6 @@ void ABoomBoom::Tick(float DeltaTime)
 			characterState = State::Idle;
 			flipbook->SetLooping(true);
 			flipbook->Play();
-			//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::SanitizeFloat(spawnLoc[currentLevel].X));
 		}
 	}
 }
@@ -203,6 +235,7 @@ void ABoomBoom::Landed(const FHitResult& Hit)
 	Super::Landed(Hit);
 
 	//smokeParticle->ActivateSystem();
+	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
 	characterState = State::Idle;
 	flipbook->SetLooping(true);
 	flipbook->Play();
@@ -212,6 +245,12 @@ void ABoomBoom::Landed(const FHitResult& Hit)
 void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (PlayerInputComponent == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Boom Boom has no input component"));
+		return;
+	}
 
 	PlayerInputComponent->BindAxis("MoveBoomBoom", this, &ABoomBoom::move);
 	PlayerInputComponent->BindAxis("AttackBoomBoom", this, &ABoomBoom::Attack);
@@ -270,6 +309,7 @@ void ABoomBoom::UpdateState()
 	{
 		if (characterState == State::Jumping && !charMove->IsFalling())
 		{
+			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
 			Jump();
 			jumpPreludeTimer = 1.5f;
 		}
@@ -306,16 +346,53 @@ void ABoomBoom::move(float scaleVal)
 		{
 			characterSpeed = 200.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
+			walkSoundTimer += 0.1f;
 		}
 
 		// Determine the character's facing direction, regardless of the state
 		if (scaleVal > 0.f)
 		{
+			if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
+			{
+				if (toxicDamage)
+				{
+					switch (toxicWalkSoundBool)
+					{
+						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
+						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+					}
+					toxicWalkSoundBool = !toxicWalkSoundBool;
+				}
+				else
+				{
+					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+				}
+				walkSoundTimer = 0.0f;
+			}
+
 			rotation.Yaw = 0.f;
 			flipbook->SetWorldRotation(rotation);
 		}
 		else if (scaleVal < 0.f)
 		{
+			if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
+			{
+				if (toxicDamage)
+				{
+					switch (toxicWalkSoundBool)
+					{
+					case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
+					case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+					}
+					toxicWalkSoundBool = !toxicWalkSoundBool;
+				}
+				else
+				{
+					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+				}
+				walkSoundTimer = 0.0f;
+			}
+
 			rotation.Yaw = 180.0f;
 			flipbook->SetWorldRotation(rotation);
 		}
@@ -369,7 +446,6 @@ void ABoomBoom::Attack(float scaleVal)
 				// Whatever the length is, change the state to "attacking"
 				characterState = State::Attacking;
 
-				//if (flipbook->GetFlipbook() == simpleAttack) --------------------------------------------------------------------------------------------------
 				// Increase the time the button has been held down
 				attackInputTimer += GetWorld()->GetDeltaSeconds();
 
@@ -394,6 +470,7 @@ void ABoomBoom::Attack(float scaleVal)
 						punchPreludeTimer = AcutalPunchDelay;
 						simpleAttack_sequenceTimeoutTimer = SimpleAttackSequenceTimeout;
 						launchZipZap = false;
+						UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 						ProcessHit(25.f);
 					}
 					else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
@@ -401,6 +478,7 @@ void ABoomBoom::Attack(float scaleVal)
 						flipbook->SetLooping(false);
 						flipbook->SetFlipbook(simpleAttackSequence);
 						isSimpleAttackSequenced = false;
+						UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 						ProcessHit(25.f);
 					}
 				}
@@ -409,6 +487,7 @@ void ABoomBoom::Attack(float scaleVal)
 					// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(strongAttack);
+					UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 					ProcessHit(50.f);
 				}
 				else if (simpleAttack_sequenceTimeoutTimer <= 0.f && characterState == State::Attacking)
@@ -440,7 +519,7 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 	// Zip Zap has tased Boom Boom and he must start running like crazy in the direction Zip Zap was facing when he tased him
 	rotation.Yaw = directionRotation;
 	flipbook->SetWorldRotation(rotation);
-	characterSpeed = 400.f;
+	characterSpeed = 300.f;
 	characterState = State::Combo_Savage;
 }
 
@@ -552,6 +631,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 				if (AWindowTrigger* window = Cast<AWindowTrigger>(otherActor))
 				{
 					window->BreakWindow();
+					UGameplayStatics::PlaySound2D(GetWorld(), glassBreak);
 				}
 			}
 		}
@@ -559,7 +639,6 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		{
 			canClimb = true;
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, otherActor->GetName());
 	}
 }
 

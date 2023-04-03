@@ -11,7 +11,6 @@ ASiege::ASiege()
 {
 	boomBoom = nullptr;
 	zipZap = nullptr;
-	Input = nullptr;
 	charMove = nullptr;
 	electricChargeClass = nullptr;
 	initiationAnimationUserWidget = nullptr;
@@ -69,6 +68,7 @@ void ASiege::Tick(float DeltaTime)
 		modeIsActive = true;
 		boomBoom->setMeter(-100.f);
 		zipZap->setMeter(-100.f);
+		UGameplayStatics::PlaySound2D(GetWorld(), siegeActivate);
 		flipbook->Play();
 	}
 
@@ -95,14 +95,16 @@ void ASiege::Tick(float DeltaTime)
 	SetActorLocation(boomBoom->GetActorLocation());
 }
 
-void ASiege::SetupPlayerInput(UInputComponent* input_)
+void ASiege::SetupBoomBoomInputComponent(UInputComponent* bbInput)
 {
-	Input = input_;
+	bbInput->BindAxis("SiegeBoomBoom", this, &ASiege::HandleBoomBoomInput);
+	bbInput->BindAxis("MoveBoomBoom", this, &ASiege::Move);
+}
 
-	Input->BindAxis("SiegeBoomBoom", this, &ASiege::HandleBoomBoomInput);
-	Input->BindAxis("SiegeZipZap", this, &ASiege::HandleZipZapInput);
-	Input->BindAxis("MoveBoomBoom", this, &ASiege::Move);
-	Input->BindAction("ShootZipZap", IE_Pressed, this, &ASiege::Shoot);
+void ASiege::SetupZipZapInputComponent(UInputComponent* zzInput)
+{
+	zzInput->BindAxis("SiegeZipZap", this, &ASiege::HandleZipZapInput);
+	zzInput->BindAction("ShootZipZap", IE_Pressed, this, &ASiege::Shoot);
 }
 
 void ASiege::HandleBoomBoomInput(float scaleVal)
@@ -177,6 +179,7 @@ void ASiege::ExecuteSiegeMode()
 				UParticleSystemComponent* muzzleFlashParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlash, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.2f, .2f, .2f));
 				muzzleFlashParticle->CustomTimeDilation = 3.f;
 				AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
+				UGameplayStatics::PlaySound2D(GetWorld(), siegeShoot);
 				shotFired = false;
 				bullets--;
 			}

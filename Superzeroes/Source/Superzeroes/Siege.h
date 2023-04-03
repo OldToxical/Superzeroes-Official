@@ -15,7 +15,7 @@
 #define InputTime 1.3
 #define ShootCooldownTime 0.5
 #define MaximumXDistanceBetweenPlayersForInitiatingSiegeMode 120
-#define MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 30
+#define MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 40
 #define InitiationAnimationLength 2
 
 UENUM()
@@ -41,7 +41,8 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-	void SetupPlayerInput(UInputComponent* input_);
+	void SetupBoomBoomInputComponent(UInputComponent* bbInput);
+	void SetupZipZapInputComponent(UInputComponent* zzInput);
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -54,13 +55,12 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 		void EndAttackAnimation();
-
+	void ExecuteSiegeMode();
+	void UpdateAnimation();
 	void HandleBoomBoomInput(float scaleVal);
 	void HandleZipZapInput(float scaleVal);
-	void ExecuteSiegeMode();
 	void Move(float scaleVal);
 	void Shoot();
-	void UpdateAnimation();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		SiegeState state;
@@ -85,9 +85,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AZipZap* zipZap;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UInputComponent* Input;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FRotator rotation;
@@ -127,4 +124,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float inititationAnimationTimer;
+
+	//Audio variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* siegeActivate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* siegeShoot;
 };

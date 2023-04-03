@@ -83,8 +83,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
 	UFUNCTION(BlueprintCallable)
-		void SetupPlayerInput(UInputComponent* input_);
-	UFUNCTION(BlueprintCallable)
 		void ProcessShoot(float damage_);
 	UFUNCTION(BlueprintCallable)
 		void SetLevelIndex(int level) { currentLevel = level; }
@@ -94,6 +92,8 @@ public:
 		void SetState(State2 state_) { characterState = state_; }
 	UFUNCTION(BlueprintCallable)
 		void SetInputAvailability(bool isAvailable) { inputAvailable = isAvailable; }
+	UFUNCTION(BlueprintCallable)
+		void PassSiegeInput(class ASiege* siegeMode);
 
 	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
@@ -113,6 +113,7 @@ public:
 		float getMeter() { return meter; };
 	UFUNCTION(BlueprintCallable)
 		void setMeter(float newMeter) { meter += newMeter; if (meter > 100.f) { meter = 100.f; } if (meter < 0.0f) { meter = 0.0f; } };
+	UInputComponent* GetInputComponent() { return InputComponent; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -123,6 +124,10 @@ protected:
 
 	// Called when landed
 	virtual void Landed(const FHitResult& Hit) override;
+
+	// Called when Pawn is possessed
+	UFUNCTION(BlueprintCallable)
+		virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FRotator rotation;
@@ -172,7 +177,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float health;
 
-	//Variable to keep track of Zip Zap's special meter
+	//Variables to keep track of Zip Zap's special meter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
 		float meter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
@@ -182,11 +187,48 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
+	//used for changing between the two toxic walk sound sfx
+	bool toxicWalkSoundBool;
 
 	float healTimer;
 	float deathTimer;
+	float walkSoundTimer;
+	//Values for respawn timer and heal timer that can be changed in blueprint, so it can be tested without compiling
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float respawnTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float timeToHeal;
+	//This is so that the walk sound effect doesn't play every single frame
+	//there may be a better way of doing this?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float TimeBetweenWalkSounds;
+
 	int currentLevel;
 	bool canClimb;
+
+	bool healing;
+
+	//Audio variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* jumpSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* landSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* walkSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* toxicWalk1SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* toxicWalk2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* death1SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* death2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* death3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* healthRecharge;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* meterFull;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<FVector> spawnLoc;

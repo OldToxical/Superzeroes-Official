@@ -1023,6 +1023,7 @@ void AEnemy_Pigeon::UpdateState()
 		{
 			flipbookComponent->SetFlipbook(jumpAnim);
 			flipbookComponent->SetLooping(false);
+			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
 			Jump();
 		}
 		break;
@@ -1105,6 +1106,7 @@ void AEnemy_Pigeon::UpdateState()
 		location.Y -= 0.1f;
 		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
 		cfx->spriteChanger(2);
+		UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
 		currentState = State3::Dead;
 	}
 }
@@ -1154,6 +1156,7 @@ void AEnemy_Pigeon::Attack()
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
 
 		// Spawn bullet
+		UGameplayStatics::PlaySound2D(GetWorld(), shootSFX);
 		AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
 	}
 }

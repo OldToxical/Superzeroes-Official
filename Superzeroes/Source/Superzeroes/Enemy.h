@@ -51,6 +51,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		AEnemySpawner* spawner;
 
+	// Audio ariables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* jumpSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* deathSFX;
+
 public:
 	virtual void TakeEnemyDamage(float damage_);
 	void AddToGetActorsToIgnore(AActor* actor) { actorsToIgnore.Add(actor); }
