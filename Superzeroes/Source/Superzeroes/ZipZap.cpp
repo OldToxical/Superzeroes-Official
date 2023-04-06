@@ -95,6 +95,11 @@ void AZipZap::BeginPlay()
 	subclass = ABoxTriggerBoomBoom::StaticClass();
 	TArray<AActor*> actorsToIgnoreWhenMoving;
 	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), subclass, tag, actorsToIgnoreWhenMoving);
+	boomBoom = Cast<ABoomBoom>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass()));
+	if (boomBoom)
+	{
+		boomBoom->SetZipZapReference(this);
+	}
 
 	for (AActor* actorToIgnore : actorsToIgnoreWhenMoving)
 	{
@@ -362,6 +367,16 @@ void AZipZap::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
 	PlayerInputComponent->BindAction("ElectrifyZipZap", IE_Pressed, this, &AZipZap::Electrify);
 	PlayerInputComponent->BindAction("ShootZipZap", IE_Pressed, this, &AZipZap::Shoot);
+
+	FActorSpawnParameters a;
+	ESpawnActorCollisionHandlingMethod b = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	a.SpawnCollisionHandlingOverride = b;
+	ASiege* siege = GetWorld()->SpawnActor<ASiege>(siegeBPClass, FVector(0.f, 0.5f, 0.f), FRotator(0.f, 0.f, 0.f), a);
+	if (siege)
+	{
+		//SetActorScale3D(FVector(2.f, 2.f, 2.f));
+		siege->SetupZipZapInputComponent(InputComponent);
+	}
 }
 
 void AZipZap::EndAttack()
@@ -439,11 +454,6 @@ void AZipZap::climb(float scaleVal)
 			}
 		}
 	}
-}
-
-void AZipZap::PassSiegeInput(ASiege* siegeMode)
-{
-	siegeMode->SetupZipZapInputComponent(InputComponent);
 }
 
 void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,

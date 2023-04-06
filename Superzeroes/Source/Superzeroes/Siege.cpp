@@ -53,6 +53,10 @@ void ASiege::BeginPlay()
 	flipbook->SetFlipbook(idle);
 	flipbook->SetLooping(false);
 	flipbook->Stop();
+	boomBoom = Cast<ABoomBoom>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass()));
+	zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
+	SetupBoomBoomInputComponent(boomBoom->InputComponent);
+	SetupZipZapInputComponent(zipZap->InputComponent);
 }
 
 void ASiege::Tick(float DeltaTime)

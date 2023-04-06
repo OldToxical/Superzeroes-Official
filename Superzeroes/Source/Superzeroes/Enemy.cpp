@@ -32,6 +32,7 @@ void AEnemy::BeginPlay()
 		flipbookComponent->bAffectDynamicIndirectLighting = true;
 		flipbookComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
 		flipbookComponent->SetupAttachment(GetCapsuleComponent());
+		//flipbookComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 		static FName CollisionProfileName(TEXT("CharacterMesh"));
 		flipbookComponent->SetCollisionProfileName(CollisionProfileName);
 		flipbookComponent->SetGenerateOverlapEvents(false);
