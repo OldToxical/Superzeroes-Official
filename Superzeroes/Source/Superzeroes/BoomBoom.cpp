@@ -41,6 +41,7 @@ ABoomBoom::ABoomBoom()
 	canClimb = false;
 	launchZipZap = false;
 	inputAvailable = true;
+	canSpawnZipZap = false;
 	health = 200.f;
 	timeToHeal = 10.f;
 	healing = false;
@@ -80,6 +81,16 @@ ABoomBoom::~ABoomBoom()
 	Destroy();
 }
 
+void ABoomBoom::WriteFile(FString text)
+{
+	FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/start.txt"));
+	if (!FFileHelper::SaveStringToFile(text, *path))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "Failed To save");
+		return;
+	}
+}
+
 void ABoomBoom::setHealth(float newHealth)
 {
 	if (characterState != State::Siege)
@@ -111,16 +122,10 @@ void ABoomBoom::BeginPlay()
 {
 	Super::BeginPlay(); 
 
-	if (GetName() == TEXT("BoomBoom_BP_C_1"))
-	{
-		Destroy();
-	}
-
 	toxicDamage = false;
-	AutoPossessPlayer = EAutoReceiveInput::Player0;
+	//AutoPossessPlayer = EAutoReceiveInput::Player0;
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
-
 	flipbook->SetFlipbook(idle);
 	flipbook->OnFinishedPlaying.AddDynamic(this, &ABoomBoom::EndAttack);
 	rotation = FRotator::ZeroRotator;
@@ -130,13 +135,7 @@ void ABoomBoom::BeginPlay()
 
 	if (zipZap)
 	{
-		zipZap->SetBoomBoomReference(this);
-	}
-
-	if (siegeMode && InputComponent)
-	{
-		siegeMode->SetupBoomBoomInputComponent(InputComponent);
-		zipZap->PassSiegeInput(siegeMode);
+		//zipZap->SetBoomBoomReference(this);
 	}
 
 	FName tag = FName(TEXT("ZZ_Platform"));
@@ -257,6 +256,8 @@ void ABoomBoom::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("ClimbBoomBoom", this, &ABoomBoom::climb);
 	PlayerInputComponent->BindAction("JumpBoomBoom", IE_Pressed, this, &ABoomBoom::ExecuteJump);
 	PlayerInputComponent->BindAction("InitiateComboAttack_Projectile", IE_Pressed, this, &ABoomBoom::InitiateZipZapComboAttack_Projectile);
+
+	canSpawnZipZap = true;
 }
 
 void ABoomBoom::UpdateState()

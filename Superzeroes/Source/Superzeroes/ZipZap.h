@@ -81,8 +81,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool IsFacingBoomBoom();
 	UFUNCTION(BlueprintCallable)
-		void SetBoomBoomReference(ABoomBoom* boomBoom_) { boomBoom = boomBoom_; }
-	UFUNCTION(BlueprintCallable)
 		void ProcessShoot(float damage_);
 	UFUNCTION(BlueprintCallable)
 		void SetLevelIndex(int level) { currentLevel = level; }
@@ -92,8 +90,6 @@ public:
 		void SetState(State2 state_) { characterState = state_; }
 	UFUNCTION(BlueprintCallable)
 		void SetInputAvailability(bool isAvailable) { inputAvailable = isAvailable; }
-	UFUNCTION(BlueprintCallable)
-		void PassSiegeInput(class ASiege* siegeMode);
 
 	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
@@ -235,6 +231,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<AProjectile> electricChargeClass;
+
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class ASiege> siegeBPClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
 		TSubclassOf<class AComicFX> zap;

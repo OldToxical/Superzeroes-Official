@@ -109,6 +109,10 @@ public:
 		void SetState(State state_) { characterState = state_; }
 	UFUNCTION(BlueprintCallable)
 		void SetInputAvailability(bool isAvailable) { inputAvailable = isAvailable; }
+	UFUNCTION(BlueprintCallable)
+		void SetZipZapReference(AZipZap* zipZap_) { zipZap = zipZap_; };
+	UFUNCTION(BlueprintCallable)
+		void WriteFile(FString text);
 
 	// Setters and getters
 	UFUNCTION(BlueprintCallable)
@@ -221,6 +225,10 @@ protected:
 
 	int currentLevel;
 	bool canClimb;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool canSpawnZipZap;
 
 	//Audio variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
