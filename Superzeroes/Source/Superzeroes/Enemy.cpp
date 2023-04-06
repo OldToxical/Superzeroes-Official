@@ -10,6 +10,10 @@ AEnemy::AEnemy()
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	TimeBetweenWalkSounds = 5.0f;
+	walkSoundTimer = TimeBetweenWalkSounds;
+
 }
 
 void AEnemy::Tick(float DeltaTime)

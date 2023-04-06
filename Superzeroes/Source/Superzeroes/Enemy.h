@@ -56,6 +56,17 @@ protected:
 		USoundBase* jumpSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		USoundBase* deathSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* walkSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* hurtSFX;
+
+
+	float walkSoundTimer;
+	//This is so that the walk sound effect doesn't play every single frame
+	//there may be a better way of doing this?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float TimeBetweenWalkSounds;
 
 public:
 	virtual void TakeEnemyDamage(float damage_);

@@ -4,6 +4,7 @@
 #include "ZipZap.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/AudioComponent.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "BoomBoom.h"
@@ -38,6 +39,7 @@ AZipZap::AZipZap()
 	inputAvailable = true;
 	canClimb = false;
 	healing = false;
+	audComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	if (flipbook)
@@ -65,6 +67,11 @@ void AZipZap::setHealth(float newHealth)
 			characterState = State2::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
+			//hurt clip will play over and over without this
+			if (!toxicDamage)
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
+			}
 		}
 
 		health = newHealth;
@@ -81,6 +88,8 @@ void AZipZap::BeginPlay()
 {
 	Super::BeginPlay();
 
+	audComp->SetSound(flyingSFX);
+	audComp->Stop();
 	flipbook->SetFlipbook(idle);
 	flipbook->OnFinishedPlaying.AddDynamic(this, &AZipZap::EndAttack);
 	rotation = FRotator::ZeroRotator;
@@ -123,7 +132,7 @@ void AZipZap::Tick(float DeltaTime)
 	{
 		setMeter(refillTime);
 
-		if (meter >= 99.8f && meter <= 99.9f)
+		if (meter >= (99.9f - refillTime) && meter <= 99.9f)
 		{
 			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
 		}
@@ -202,8 +211,8 @@ void AZipZap::Landed(const FHitResult& Hit)
 	{
 		charMove->GravityScale = 1.f;
 		isElectrified = false;
+		audComp->Stop();
 	}
-
 	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
 	characterState = State2::Idle;
 	flipbook->SetLooping(true);
@@ -324,6 +333,8 @@ void AZipZap::InitiateComboAttack_Projectile(float directionRotation)
 	rotation.Yaw = directionRotation;
 	flipbook->SetWorldRotation(rotation);
 	flipbook->SetFlipbook(projectileFly);
+
+	audComp->Play();
 	//characterSpeed = 450.f;
 	charMove->GravityScale = 0.7f;
 	characterState = State2::Combo_Projectile;

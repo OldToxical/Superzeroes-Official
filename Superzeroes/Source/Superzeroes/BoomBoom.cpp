@@ -166,7 +166,7 @@ void ABoomBoom::Tick(float DeltaTime)
 	{
 		setMeter(refillTime);
 
-		if (meter >= 99.8f && meter <= 99.9f)
+		if (meter >= (99.9f-refillTime) && meter <= 99.9f)
 		{
 			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
 		}

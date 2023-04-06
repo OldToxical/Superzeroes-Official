@@ -133,4 +133,6 @@ protected:
 		USoundBase* attack4SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		USoundBase* attack5SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* attack6SFX;
 };
