@@ -2,6 +2,7 @@
 #include "Enemy_Mouse.h"
 #include "Components/BoxComponent.h"
 #include "ComicFX.h"
+#include "LevelManager.h"
 #include <chrono>
 #include <thread>
 
@@ -61,6 +62,12 @@ void AEnemy_Mouse::BeginPlay()
 
 void AEnemy_Mouse::Tick(float DeltaTime)
 {
+	if (zipZap == nullptr || boomBoom == nullptr)
+	{
+		boomBoom = Cast<ABoomBoom>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass()));
+		zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
+	}
+
 	AI();
 }
 
@@ -162,7 +169,7 @@ void AEnemy_Mouse::UpdateState()
 	switch (currentState)
 	{
 	    case State4::Idle:
-			if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
+			if (flipbookComponent->GetFlipbook() != hurtAnim)
 			{
 				flipbookComponent->SetFlipbook(idle);
 				flipbookComponent->SetLooping(true);
@@ -377,6 +384,7 @@ void AEnemy_Mouse::EndAttack()
 
 	if (currentState == State4::Dead)
 	{
+		Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
 		Destroy();
 	}
 }
@@ -386,6 +394,7 @@ void AEnemy_Mouse::Landed(const FHitResult& Hit)
 	Super::Landed(Hit);
 
 	currentState = State4::Idle;
+	flipbookComponent->SetFlipbook(idle);
 	flipbookComponent->SetLooping(true);
 	flipbookComponent->Play();
 }

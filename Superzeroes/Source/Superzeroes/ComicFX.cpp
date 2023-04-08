@@ -29,6 +29,11 @@ void AComicFX::Tick(float DeltaTime)
 	FLinearColor color = GetRenderComponent()->GetSpriteColor();
 	color.A -= 0.01;
 	GetRenderComponent()->SetSpriteColor(color);
+
+	if (color.A <= 0.f)
+	{
+		Destroy();
+	}
 }
 
 void AComicFX::spriteChanger(int i)

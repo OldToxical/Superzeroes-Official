@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "Projectile.h"
 #include "ComicFX.h"
+#include "LevelManager.h"
 #include <chrono>
 #include <thread>
 
@@ -96,6 +97,12 @@ void AEnemy_Pigeon::BeginPlay()
 
 void AEnemy_Pigeon::Tick(float DeltaTime)
 {
+	if (zipZap == nullptr || boomBoom == nullptr)
+	{
+		boomBoom = Cast<ABoomBoom>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass()));
+		zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
+	}
+
 	AI();
 }
 
@@ -1145,7 +1152,7 @@ void AEnemy_Pigeon::Attack()
 	{
 		FaceNearestPlayer();
 
-		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 94.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
+		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 85.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
 		FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
 
 		if (rotation.Yaw > 0.f) // Right
@@ -1153,7 +1160,10 @@ void AEnemy_Pigeon::Attack()
 			muzzleFlashLocation.X += 188.68f;
 		}
 
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
+		//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
+		FRotator muzzleFlashSpawnRotator = FRotator(rotation.Pitch, rotation.Yaw - 180.f, rotation.Roll);
+		UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, muzzleFlashSpawnRotator, FVector(.6f, .6f, .6f));
+		muzzleFlash->CustomTimeDilation = 1.4f;
 
 		// Spawn bullet
 		UGameplayStatics::PlaySound2D(GetWorld(), shootSFX);
@@ -1224,6 +1234,7 @@ void AEnemy_Pigeon::EndAttack()
 			Qtable += FString(TEXT("\r\n"));
 		}
 		WriteStringToFile(path, Qtable);*/
+		Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
 		Destroy();
 	}
 }

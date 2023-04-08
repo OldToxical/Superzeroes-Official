@@ -1,15 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Enemy.h"
 
 AEnemy::AEnemy()
 {
 	characterMovementComponent = NULL;
 	flipbookComponent = NULL;
-
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -23,6 +17,8 @@ void AEnemy::Tick(float DeltaTime)
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	characterMovementComponent = GetCharacterMovement();
 
@@ -33,7 +29,7 @@ void AEnemy::BeginPlay()
 		flipbookComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
 		flipbookComponent->SetupAttachment(GetCapsuleComponent());
 		//flipbookComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-		static FName CollisionProfileName(TEXT("CharacterMesh"));
+		static FName CollisionProfileName(TEXT("MainCharacter"));
 		flipbookComponent->SetCollisionProfileName(CollisionProfileName);
 		flipbookComponent->SetGenerateOverlapEvents(false);
 	}

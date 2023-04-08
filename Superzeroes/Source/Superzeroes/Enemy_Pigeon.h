@@ -104,7 +104,7 @@ private:
 
 	// Particles
 	UPROPERTY(EditAnywhere)
-		UNiagaraSystem* muzzleFlashParticle;
+		UParticleSystem* muzzleFlashParticle;
 
 protected:
 	UFUNCTION(BlueprintCallable)

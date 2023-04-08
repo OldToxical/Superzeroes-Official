@@ -368,14 +368,14 @@ void AZipZap::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("ElectrifyZipZap", IE_Pressed, this, &AZipZap::Electrify);
 	PlayerInputComponent->BindAction("ShootZipZap", IE_Pressed, this, &AZipZap::Shoot);
 
-	FActorSpawnParameters a;
-	ESpawnActorCollisionHandlingMethod b = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	a.SpawnCollisionHandlingOverride = b;
-	ASiege* siege = GetWorld()->SpawnActor<ASiege>(siegeBPClass, FVector(0.f, 0.5f, 0.f), FRotator(0.f, 0.f, 0.f), a);
+	FActorSpawnParameters spawnParameters;
+	ESpawnActorCollisionHandlingMethod collisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	spawnParameters.SpawnCollisionHandlingOverride = collisionHandlingMethod;
+	ASiege* siege = GetWorld()->SpawnActor<ASiege>(siegeBPClass, FVector(0.f, 0.5f, 0.f), FRotator(0.f, 0.f, 0.f), spawnParameters);
 	if (siege)
 	{
-		//SetActorScale3D(FVector(2.f, 2.f, 2.f));
 		siege->SetupZipZapInputComponent(InputComponent);
+		siege->SpawnDefaultController();
 	}
 }
 
@@ -553,16 +553,14 @@ void AZipZap::ProcessShoot(float damage_)
 		muzzleFlashLocation.X -= 276.f;
 	}
 
-	UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.2f, .2f, .2f));
+	UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));
 	muzzleFlash->CustomTimeDilation = 3.f;
 
 	// Spawn electric charge
 	AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
 
 	// Spawn Comic VFX
-	FVector location = GetActorLocation();
-	location.Z += 30.f;
-	location.Y -= 0.1f;
+	FVector location = FVector(muzzleFlashLocation.X, muzzleFlashLocation.Y - 0.1f, GetActorLocation().Z + 70.f);
 	AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap, location, GetActorRotation());
 	cfx->spriteChanger(0);
 
@@ -571,7 +569,7 @@ void AZipZap::ProcessShoot(float damage_)
 	TArray<AActor*> actorsToIgnore;
 	actorsToIgnore.Add(boomBoom);
 	actorsToIgnore.Add(UGameplayStatics::GetActorOfClass(GetWorld(), ASiege::StaticClass()));
-	bool hit = UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), muzzleFlashLocation, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::Persistent, OutHit, true);
+	bool hit = UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), muzzleFlashLocation, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::None, OutHit, true);
 	if (hit)
 	{
 		AActor* HitActor = OutHit.GetActor();
@@ -579,10 +577,17 @@ void AZipZap::ProcessShoot(float damage_)
 
 		if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
 		{
-			Enemy->TakeEnemyDamage(damage_);
-			AComicFX* cfx2 = GetWorld()->SpawnActor<AComicFX>(zap, Enemy->GetActorLocation(), GetActorRotation());
+			// Spawn Comic VFX
+			FVector location_ = FVector(Enemy->GetActorLocation().X, Enemy->GetActorLocation().Y - 0.1f, Enemy->GetActorLocation().Z + 90.f);
+			FVector impactForce = FVector(250.f, 0.f, 180.f);
+			if (rotation.Yaw > 0) // Looking left
+			{
+				impactForce.X *= -1.f;
+			}
+			AComicFX* cfx2 = GetWorld()->SpawnActor<AComicFX>(zap, location_, GetActorRotation());
 			cfx2->spriteChanger(3);
 			Enemy->TakeEnemyDamage(damage_);
+			Enemy->LaunchCharacter(impactForce, false, false);
 		}
 
 		if (AButton_But_Awesome* button = Cast<AButton_But_Awesome>(HitActor))
