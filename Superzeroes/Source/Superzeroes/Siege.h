@@ -58,8 +58,10 @@ protected:
 	void ExecuteSiegeMode();
 	void UpdateAnimation();
 	void HandleBoomBoomInput(float scaleVal);
+	UFUNCTION(BlueprintCallable)
 	void HandleZipZapInput(float scaleVal);
 	void Move(float scaleVal);
+	UFUNCTION(BlueprintCallable)
 	void Shoot();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
