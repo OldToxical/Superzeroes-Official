@@ -374,8 +374,8 @@ void AZipZap::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	ASiege* siege = GetWorld()->SpawnActor<ASiege>(siegeBPClass, FVector(0.f, 0.5f, 0.f), FRotator(0.f, 0.f, 0.f), a);
 	if (siege)
 	{
-		//SetActorScale3D(FVector(2.f, 2.f, 2.f));
 		siege->SetupZipZapInputComponent(InputComponent);
+		siege->SpawnDefaultController();
 	}
 }
 

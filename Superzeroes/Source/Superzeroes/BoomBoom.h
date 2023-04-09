@@ -148,10 +148,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AZipZap* zipZap;
 
-	// Reference to Siege's object
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		ASiege* siegeMode;
-
 	// Variable for the character's speed
 	UPROPERTY(EditAnywhere)
 		float characterSpeed;

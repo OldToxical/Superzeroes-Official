@@ -96,6 +96,12 @@ void AEnemy_Pigeon::BeginPlay()
 
 void AEnemy_Pigeon::Tick(float DeltaTime)
 {
+	if (zipZap == nullptr || boomBoom == nullptr)
+	{
+		boomBoom = Cast<ABoomBoom>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass()));
+		zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
+	}
+
 	AI();
 }
 

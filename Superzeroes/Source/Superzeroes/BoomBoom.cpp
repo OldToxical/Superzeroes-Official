@@ -36,7 +36,6 @@ ABoomBoom::ABoomBoom()
 	strongAttack = nullptr;
 	strongAttackCharge = nullptr;
 	zipZap = nullptr;
-	siegeMode = nullptr;
 	isSimpleAttackSequenced = false;
 	canClimb = false;
 	launchZipZap = false;

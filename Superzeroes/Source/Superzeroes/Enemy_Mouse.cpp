@@ -61,6 +61,12 @@ void AEnemy_Mouse::BeginPlay()
 
 void AEnemy_Mouse::Tick(float DeltaTime)
 {
+	if (zipZap == nullptr || boomBoom == nullptr)
+	{
+		boomBoom = Cast<ABoomBoom>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass()));
+		zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
+	}
+
 	AI();
 }
 
