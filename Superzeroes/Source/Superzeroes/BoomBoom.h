@@ -112,7 +112,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetZipZapReference(AZipZap* zipZap_) { zipZap = zipZap_; };
 	UFUNCTION(BlueprintCallable)
-		void WriteFile(FString text);
+		void WriteFile(float scaleVal);
+	UFUNCTION(BlueprintCallable)
+		void Respawn() { SetActorLocation(spawnLoc[currentLevel]); }
 
 	// Setters and getters
 	UFUNCTION(BlueprintCallable)
@@ -198,7 +200,7 @@ protected:
 
 	// Particles' variables
 	UPROPERTY(BlueprintReadWrite)
-		UParticleSystemComponent* smokeParticle;
+		UNiagaraComponent* smokeParticle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
@@ -221,7 +223,7 @@ protected:
 
 	int currentLevel;
 	bool canClimb;
-
+	bool stepMade;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool canSpawnZipZap;

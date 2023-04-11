@@ -250,10 +250,11 @@ void AEnemy_Mouse::UpdateState()
 		FVector location = GetActorLocation();
 		location.Z += 30.f;
 		location.Y -= 0.1f;
-		//AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
-		//cfx->spriteChanger(2);
-		//UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
+		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+		cfx->spriteChanger(2);
+		UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
 		currentState = State4::Dead;
+		healthPoints = 0.01f;
 	}
 }
 

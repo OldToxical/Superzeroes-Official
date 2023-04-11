@@ -27,11 +27,11 @@ void AEnemy::BeginPlay()
 		flipbookComponent->bOwnerNoSee = false;
 		flipbookComponent->bAffectDynamicIndirectLighting = true;
 		flipbookComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
-		flipbookComponent->SetupAttachment(GetCapsuleComponent());
-		//flipbookComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+		//flipbookComponent->SetupAttachment(GetCapsuleComponent());
 		static FName CollisionProfileName(TEXT("MainCharacter"));
 		flipbookComponent->SetCollisionProfileName(CollisionProfileName);
 		flipbookComponent->SetGenerateOverlapEvents(false);
+		flipbookComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 }
 

@@ -18,6 +18,7 @@
 #include "Button_But_Awesome.h"
 #include "Siege.h"
 #include "Projectile.h"
+#include "Kismet/KismetStringLibrary.h"
 
 // Sets default values
 AZipZap::AZipZap()
@@ -107,11 +108,12 @@ void AZipZap::BeginPlay()
 	}
 
 	spawnLoc.Empty();
-	spawnLoc.Add(FVector(-2740.f, .5f, -35.f));
-	spawnLoc.Add(FVector(-1050.f, .5f, -35.f));
-	spawnLoc.Add(FVector(600.f, .5f, 300.f));
-	spawnLoc.Add(FVector(2160.f, .5f, -35.f));
-	spawnLoc.Add(FVector(3760.f, .5f, -35.f));
+	spawnLoc.Add(FVector(100.f, .5f, -420.f));
+	spawnLoc.Add(FVector(1158.f, .5f, -720.f));
+	spawnLoc.Add(FVector(3143.f, .5f, -84.f));
+	spawnLoc.Add(FVector(5128.f, .5f, -420.f));
+	spawnLoc.Add(FVector(7150.f, .5f, 21.f));
+	spawnLoc.Add(FVector(8210.f, .5f, 781.f)); // From here and below the X should decrease
 }
 
 // Called every frame
@@ -240,12 +242,11 @@ void AZipZap::move(float scaleVal)
 		{
 			characterSpeed = 500.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
-			walkSoundTimer += 0.1f;
 
 			// Handle rotation
 			if (scaleVal > 0.f)
 			{
-				if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
+				if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 2 || flipbook->GetPlaybackPositionInFrames() == 8) && !charMove->IsFalling())
 				{
 					if (toxicDamage)
 					{
@@ -259,8 +260,14 @@ void AZipZap::move(float scaleVal)
 					else
 					{
 						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+						smokeParticle->ActivateSystem();
 					}
-					walkSoundTimer = 0.0f;
+					stepMade = true;
+				}
+
+				if (flipbook->GetFlipbook() == run && (flipbook->GetPlaybackPositionInFrames() == 3 || flipbook->GetPlaybackPositionInFrames() == 9))
+				{
+					stepMade = false;
 				}
 
 				rotation.Yaw = 0.f;
@@ -268,7 +275,7 @@ void AZipZap::move(float scaleVal)
 			}
 			else if (scaleVal < 0.f)
 			{
-				if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
+				if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 2 || flipbook->GetPlaybackPositionInFrames() == 8) && !charMove->IsFalling())
 				{
 					if (toxicDamage)
 					{
@@ -282,8 +289,14 @@ void AZipZap::move(float scaleVal)
 					else
 					{
 						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+						smokeParticle->ActivateSystem();
 					}
-					walkSoundTimer = 0.0f;
+					stepMade = true;
+				}
+
+				if (flipbook->GetFlipbook() == run && (flipbook->GetPlaybackPositionInFrames() == 3 || flipbook->GetPlaybackPositionInFrames() == 9))
+				{
+					stepMade = false;
 				}
 
 				rotation.Yaw = 180.0f;
@@ -498,6 +511,16 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		if (otherActor->IsA(ALAdder::StaticClass()))
 		{
 			canClimb = true;
+		}
+		if (otherActor->ActorHasTag("LevelRespawnTrigger"))
+		{
+			// Get trigger index
+			int triggerNum = UKismetStringLibrary::Conv_StringToInt(otherActor->Tags[1].ToString());
+
+			if (triggerNum == currentLevel)
+			{
+				Respawn();
+			}
 		}
 	}
 }

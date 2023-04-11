@@ -65,6 +65,7 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	Q_LearningRate = 0.9f;
 	difficulty = 1;
 	inCombat = false;
+	shootAvailable = true;
 }
 
 void AEnemy_Pigeon::AI()
@@ -77,6 +78,7 @@ void AEnemy_Pigeon::BeginPlay()
 {
 	Super::BeginPlay();
 	healthPoints = 50.f;
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy_Pigeon::OverlapBegin);
 
 	/*FString Qtable;
 	FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/start.txt"));
@@ -156,6 +158,12 @@ void AEnemy_Pigeon::CalculateReward()
 {
 	//float reward = rand() % 10 + 5;
 	float reward = 0.f;
+
+	if (isColliding)
+	{
+		isColliding = false;
+		return;
+	}
 
 	if (!inCombat)
 	{
@@ -1006,8 +1014,9 @@ void AEnemy_Pigeon::ExecuteAction()
 	else if (currentAction == Action::Attack)
 	{
 		currentState = State3::Attacking;
-		stateUpdateTimer = ShootingAnimationLength;
+		stateUpdateTimer = 1.f;
 		chooseActionTimeoutTimer = stateUpdateTimer;
+		shootAvailable = true;
 	}
 }
 
@@ -1026,7 +1035,7 @@ void AEnemy_Pigeon::UpdateState()
 		break;
 
 	case State3::Jumping:
-		if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
+		if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim && !characterMovementComponent->IsFalling())
 		{
 			flipbookComponent->SetFlipbook(jumpAnim);
 			flipbookComponent->SetLooping(false);
@@ -1115,6 +1124,7 @@ void AEnemy_Pigeon::UpdateState()
 		cfx->spriteChanger(2);
 		UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
 		currentState = State3::Dead;
+		healthPoints = 0.01f;
 	}
 }
 
@@ -1142,6 +1152,7 @@ void AEnemy_Pigeon::WalkRight()
 
 void AEnemy_Pigeon::Attack()
 {
+	/*
 	// Wait until the needed frame is executed
 	if (stateUpdateTimer > 0.f)
 	{
@@ -1152,7 +1163,7 @@ void AEnemy_Pigeon::Attack()
 	{
 		FaceNearestPlayer();
 
-		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 85.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
+		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 81.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
 		FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
 
 		if (rotation.Yaw > 0.f) // Right
@@ -1168,6 +1179,31 @@ void AEnemy_Pigeon::Attack()
 		// Spawn bullet
 		UGameplayStatics::PlaySound2D(GetWorld(), shootSFX);
 		AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
+	}*/
+	// GET FLIPBOOK FRAMES !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	FaceNearestPlayer();
+
+	if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && shootAvailable)
+	{
+		FaceNearestPlayer();
+
+		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 81.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
+		FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
+
+		if (rotation.Yaw > 0.f) // Right
+		{
+			muzzleFlashLocation.X += 162.68f;
+		}
+
+		//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
+		FRotator muzzleFlashSpawnRotator = FRotator(rotation.Pitch, rotation.Yaw - 180.f, rotation.Roll);
+		UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, muzzleFlashSpawnRotator, FVector(.6f, .6f, .6f));
+		muzzleFlash->CustomTimeDilation = 1.4f;
+
+		// Spawn bullet
+		UGameplayStatics::PlaySound2D(GetWorld(), shootSFX);
+		AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
+		shootAvailable = false;
 	}
 }
 
@@ -1205,6 +1241,33 @@ void AEnemy_Pigeon::FaceNearestPlayer()
 		flipbookComponent->SetWorldRotation(rotation);
 	}
 	
+}
+
+void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
+{
+	isColliding = true;
+	chooseActionTimeoutTimer = 5.f;
+
+	if (currentState == State3::WalkingLeft)
+	{
+		currentAction = Action::WalkRight;
+	}
+	else if (currentState == State3::WalkingRight)
+	{
+		currentAction = Action::WalkLeft;
+	}
+
+	if (otherActor->IsA(ABoomBoom::StaticClass()) || otherActor->IsA(AZipZap::StaticClass()))
+	{
+		currentAction = Action::Attack;
+	}
+
+	ExecuteAction();
+}
+
+void AEnemy_Pigeon::OverlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
+{
+	isColliding = false;
 }
 
 void AEnemy_Pigeon::EndAttack()

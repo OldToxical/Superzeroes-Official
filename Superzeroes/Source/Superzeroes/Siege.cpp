@@ -56,7 +56,7 @@ void ASiege::BeginPlay()
 	boomBoom = Cast<ABoomBoom>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass()));
 	zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
 	SetupBoomBoomInputComponent(boomBoom->InputComponent);
-	SetupZipZapInputComponent(zipZap->InputComponent);
+	//SetupZipZapInputComponent(zipZap->InputComponent);
 }
 
 void ASiege::Tick(float DeltaTime)
