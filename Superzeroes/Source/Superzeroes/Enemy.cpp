@@ -8,7 +8,10 @@ AEnemy::AEnemy()
 
 void AEnemy::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime); 
+	
+	TimeBetweenWalkSounds = 5.0f;
+	walkSoundTimer = TimeBetweenWalkSounds;
 
 	//UpdateActorState();
 	//UpdateRotation();

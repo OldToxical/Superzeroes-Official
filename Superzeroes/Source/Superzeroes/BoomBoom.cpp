@@ -443,14 +443,20 @@ void ABoomBoom::climb(float scaleVal)
 	{
 		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && characterState != State::Hurt && inputAvailable)
 		{
-			if (canClimb == true)
+			if (canClimb == true && characterState != State::Jumping)
 			{
-				charMove->GravityScale = 0.0f;
-				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + scaleVal));
 				if (scaleVal != 0)
 				{
 					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
+					charMove->Velocity = FVector(charMove->Velocity.X, 0, scaleVal * 200);
+					charMove->GravityScale = 0.0f;
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)5;
 					charMove->Velocity.X = 0;
+				}
+				else
+				{
+					charMove->GravityScale = 1.0f;
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
 				}
 			}
 		}

@@ -4,6 +4,7 @@
 #include "ZipZap.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/AudioComponent.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "BoomBoom.h"
@@ -38,7 +39,8 @@ AZipZap::AZipZap()
 	savageInitiated = false;
 	inputAvailable = true;
 	canClimb = false;
-	healing = false;
+	healing = false; 
+	audComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	if (flipbook)
@@ -66,6 +68,11 @@ void AZipZap::setHealth(float newHealth)
 			characterState = State2::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
+			//hurt clip will play over and over without this
+			if (!toxicDamage)
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
+			}
 		}
 
 		health = newHealth;
@@ -81,7 +88,8 @@ void AZipZap::setHealth(float newHealth)
 void AZipZap::BeginPlay()
 {
 	Super::BeginPlay();
-
+	audComp->SetSound(flyingSFX);
+	audComp->Stop();
 	flipbook->SetFlipbook(idle);
 	flipbook->OnFinishedPlaying.AddDynamic(this, &AZipZap::EndAttack);
 	rotation = FRotator::ZeroRotator;
@@ -125,7 +133,7 @@ void AZipZap::Tick(float DeltaTime)
 	{
 		setMeter(refillTime);
 
-		if (meter >= 99.8f && meter <= 99.9f)
+		if (meter >= (99.9f - refillTime) && meter <= 99.9f)
 		{
 			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
 		}
@@ -203,7 +211,8 @@ void AZipZap::Landed(const FHitResult& Hit)
 	if (characterState == State2::Combo_Projectile)
 	{
 		charMove->GravityScale = 1.f;
-		isElectrified = false;
+		isElectrified = false; 
+		audComp->Stop();
 	}
 
 	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
@@ -336,7 +345,8 @@ void AZipZap::InitiateComboAttack_Projectile(float directionRotation)
 	// Boom Boom hit Zip Zap and strong force should be applied to him so that he can fly away like a projectile
 	rotation.Yaw = directionRotation;
 	flipbook->SetWorldRotation(rotation);
-	flipbook->SetFlipbook(projectileFly);
+	flipbook->SetFlipbook(projectileFly); 
+	audComp->Play();
 	//characterSpeed = 450.f;
 	charMove->GravityScale = 0.7f;
 	characterState = State2::Combo_Projectile;
@@ -455,14 +465,20 @@ void AZipZap::climb(float scaleVal)
 	{
 		if (characterState != State2::Attacking && characterState != State2::Hurt)
 		{
-			if (canClimb == true)
+			if (canClimb == true && characterState != State2::Jumping)
 			{
-				charMove->GravityScale = 0.0f;
-				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + (scaleVal * 2)));
 				if (scaleVal != 0)
 				{
 					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
+					charMove->Velocity = FVector(charMove->Velocity.X, 0, scaleVal * 200);
+					charMove->GravityScale = 0.0f;
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)5;
 					charMove->Velocity.X = 0;
+				}
+				else
+				{
+					charMove->GravityScale = 1.0f;
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
 				}
 			}
 		}
