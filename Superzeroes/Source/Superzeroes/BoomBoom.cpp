@@ -14,7 +14,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "BoxTrigger.h"
 #include "Button_But_Awesome.h"
+#include "Enemy_Pigeon.h"
 #include "ComicFX.h"
+#include "Kismet/KismetStringLibrary.h"
 
 // Sets default values
 ABoomBoom::ABoomBoom()
@@ -41,6 +43,7 @@ ABoomBoom::ABoomBoom()
 	launchZipZap = false;
 	inputAvailable = true;
 	canSpawnZipZap = false;
+	stepMade = false;
 	health = 200.f;
 	timeToHeal = 10.f;
 	healing = false;
@@ -80,14 +83,16 @@ ABoomBoom::~ABoomBoom()
 	Destroy();
 }
 
-void ABoomBoom::WriteFile(FString text)
+void ABoomBoom::WriteFile(float scaleVal)
 {
-	FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/start.txt"));
+	/*FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/start.txt"));
 	if (!FFileHelper::SaveStringToFile(text, *path))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "Failed To save");
 		return;
-	}
+	}*/
+
+	//Cast<AEnemy_Pigeon>(UGameplayStatics::GetActorOfClass(GetWorld(), AEnemy_Pigeon::StaticClass()))->Attack();
 }
 
 void ABoomBoom::setHealth(float newHealth)
@@ -149,11 +154,12 @@ void ABoomBoom::BeginPlay()
 	}
 
 	spawnLoc.Empty();
-	spawnLoc.Add(FVector(-2940.f, .5f, -50.f));
-	spawnLoc.Add(FVector(-1250.f, .5f, -50.f));
-	spawnLoc.Add(FVector(400.f, .5f, 300.f));
-	spawnLoc.Add(FVector(2160.f, .5f, -50.f));
-	spawnLoc.Add(FVector(3760.f, .5f, -50.f));
+	spawnLoc.Add(FVector(0.f, .5f, -378.f));
+	spawnLoc.Add(FVector(1058.f, .5f, -378.f));
+	spawnLoc.Add(FVector(3043.f, .5f, -58.f));
+	spawnLoc.Add(FVector(5028.f, .5f, -378.f));
+	spawnLoc.Add(FVector(7050.f, .5f, 42.f));
+	spawnLoc.Add(FVector(8310.f, .5f, 812.f));
 }
 
 // Called every frame
@@ -232,7 +238,7 @@ void ABoomBoom::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
-	//smokeParticle->ActivateSystem();
+	smokeParticle->ActivateSystem();
 	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
 	characterState = State::Idle;
 	flipbook->SetLooping(true);
@@ -353,13 +359,12 @@ void ABoomBoom::move(float scaleVal)
 		{
 			characterSpeed = 200.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
-			walkSoundTimer += 0.1f;
 		}
 
 		// Determine the character's facing direction, regardless of the state
 		if (scaleVal > 0.f)
 		{
-			if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
+			if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 7) && !charMove->IsFalling())
 			{
 				if (toxicDamage)
 				{
@@ -373,8 +378,14 @@ void ABoomBoom::move(float scaleVal)
 				else
 				{
 					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					smokeParticle->ActivateSystem();
 				}
-				walkSoundTimer = 0.0f;
+				stepMade = true;
+			}
+
+			if (flipbook->GetFlipbook() == run && (flipbook->GetPlaybackPositionInFrames() == 2 || flipbook->GetPlaybackPositionInFrames() == 8))
+			{
+				stepMade = false;
 			}
 
 			rotation.Yaw = 0.f;
@@ -382,22 +393,28 @@ void ABoomBoom::move(float scaleVal)
 		}
 		else if (scaleVal < 0.f)
 		{
-			if (walkSoundTimer >= TimeBetweenWalkSounds && !charMove->IsFalling())
+			if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 7) && !charMove->IsFalling())
 			{
 				if (toxicDamage)
 				{
 					switch (toxicWalkSoundBool)
 					{
-					case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
-					case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
+						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
 					}
 					toxicWalkSoundBool = !toxicWalkSoundBool;
 				}
 				else
 				{
 					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					smokeParticle->ActivateSystem();
 				}
-				walkSoundTimer = 0.0f;
+				stepMade = true;
+			}
+
+			if (flipbook->GetFlipbook() == run && (flipbook->GetPlaybackPositionInFrames() == 2 || flipbook->GetPlaybackPositionInFrames() == 8))
+			{
+				stepMade = false;
 			}
 
 			rotation.Yaw = 180.0f;
@@ -635,6 +652,16 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		if (otherActor->IsA(ALAdder::StaticClass()))
 		{
 			canClimb = true;
+		}
+		if (otherActor->ActorHasTag("LevelRespawnTrigger"))
+		{
+			// Get trigger index
+			int triggerNum = UKismetStringLibrary::Conv_StringToInt(otherActor->Tags[1].ToString());
+
+			if (triggerNum == currentLevel)
+			{
+				Respawn();
+			}
 		}
 	}
 }

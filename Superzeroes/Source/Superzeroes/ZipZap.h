@@ -90,6 +90,8 @@ public:
 		void SetState(State2 state_) { characterState = state_; }
 	UFUNCTION(BlueprintCallable)
 		void SetInputAvailability(bool isAvailable) { inputAvailable = isAvailable; }
+	UFUNCTION(BlueprintCallable)
+		void Respawn() { SetActorLocation(spawnLoc[currentLevel]); }
 
 	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
@@ -181,6 +183,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
 		float skillCost;
 
+	// Particles' variables
+	UPROPERTY(BlueprintReadWrite)
+		UNiagaraComponent* smokeParticle;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
 	//used for changing between the two toxic walk sound sfx
@@ -201,7 +207,7 @@ protected:
 
 	int currentLevel;
 	bool canClimb;
-
+	bool stepMade;
 	bool healing;
 
 	//Audio variables

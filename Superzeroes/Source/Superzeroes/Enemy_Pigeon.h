@@ -66,6 +66,14 @@ private:
 	void Attack();
 	void FaceNearestPlayer();
 
+	UFUNCTION()
+		void OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+
+	UFUNCTION()
+		void OverlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+
 	float chooseActionTimeoutTimer;
 	float stateUpdateTimer;
 	float speed;
@@ -73,6 +81,8 @@ private:
 	float Q_EstimatedOptimalFutureValue;
 	float Q_DiscountFactor;
 	float Q_LearningRate;
+	bool shootAvailable;
+	bool isColliding;
 	State3 currentState;
 	Action currentAction;
 	TArray<TArray<float, TFixedAllocator<5>>, TFixedAllocator<5>> AI_Q;

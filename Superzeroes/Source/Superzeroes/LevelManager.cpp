@@ -112,19 +112,21 @@ void ALevelManager::GetCameraComponent()
 void ALevelManager::InitializeLevelStartLocations()
 {
 	// Initialize level start locations
-	levelStartLocations.Add(FVector(-1250.f, .5f, -50.f));
-	levelStartLocations.Add(FVector(400.f, .5f, 300.f));
-	levelStartLocations.Add(FVector(2160.f, .5f, -50.f));
-	levelStartLocations.Add(FVector(3760.f, .5f, -50.f));
+	levelStartLocations.Add(FVector(1058.f, .5f, -378.f));
+	levelStartLocations.Add(FVector(3043.f, .5f, -58.f));
+	levelStartLocations.Add(FVector(5028.f, .5f, -378.f));
+	levelStartLocations.Add(FVector(7050.f, .5f, 42.f));
+	levelStartLocations.Add(FVector(8310.f, .5f, 812.f));
 }
 
 void ALevelManager::InitializeCameraLocations()
 {
 	// Initialize camera positions
-	cameraLocations.Add(FVector(-532.f, 1125.f, 277.f)); // Where will the correponsing trigger take the camera (from level 0 to level 1 in this case; trigger 0 will take it to the position that is intended for level 1) 
-	cameraLocations.Add(FVector(1158.f, 1125.f, 277.f));
-	cameraLocations.Add(FVector(2848.f, 1125.f, 277.f));
-	cameraLocations.Add(FVector(4538.f, 1125.f, 277.f));
+	cameraLocations.Add(FVector(1990.f, 1000.f, 0.f)); // Where will the correponsing trigger take the camera (from level 0 to level 1 in this case; trigger 0 will take it to the position that is intended for level 1) 
+	cameraLocations.Add(FVector(3980.f, 1000.f, 0.f));
+	cameraLocations.Add(FVector(5970.f, 1000.f, 0.f));
+	cameraLocations.Add(FVector(7960.f, 1000.f, 350.f));
+	cameraLocations.Add(FVector(7960.f, 1000.f, 970.f));
 }
 
 void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
