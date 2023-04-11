@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "Projectile.h"
 #include "ComicFX.h"
+#include "LevelManager.h"
 #include <chrono>
 #include <thread>
 
@@ -96,6 +97,12 @@ void AEnemy_Pigeon::BeginPlay()
 
 void AEnemy_Pigeon::Tick(float DeltaTime)
 {
+	if (zipZap == nullptr || boomBoom == nullptr)
+	{
+		boomBoom = Cast<ABoomBoom>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass()));
+		zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
+	}
+
 	AI();
 }
 
@@ -103,7 +110,6 @@ void AEnemy_Pigeon::TakeEnemyDamage(float damage_)
 {
 	healthPoints -= damage_;
 	flipbookComponent->SetFlipbook(hurtAnim);
-	UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
 	flipbookComponent->SetLooping(false);
 }
 
@@ -1120,13 +1126,6 @@ void AEnemy_Pigeon::WalkLeft()
 		AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.3f, false);
 		rotation.Yaw = 0.f;
 		flipbookComponent->SetWorldRotation(rotation);
-		walkSoundTimer += 0.1f;
-		if (walkSoundTimer >= TimeBetweenWalkSounds)
-		{
-			UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
-			walkSoundTimer = 0.0f;
-
-		}
 	}
 }
 
@@ -1138,13 +1137,6 @@ void AEnemy_Pigeon::WalkRight()
 		AddMovementInput(FVector(1.f, 0.f, 0.f), 0.3f, false);
 		rotation.Yaw = 180.f;
 		flipbookComponent->SetWorldRotation(rotation);
-		walkSoundTimer += 0.1f;
-		if (walkSoundTimer >= TimeBetweenWalkSounds)
-		{
-			UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
-			walkSoundTimer = 0.0f;
-
-		}
 	}
 }
 
@@ -1160,7 +1152,7 @@ void AEnemy_Pigeon::Attack()
 	{
 		FaceNearestPlayer();
 
-		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 94.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
+		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 85.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
 		FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
 
 		if (rotation.Yaw > 0.f) // Right
@@ -1168,7 +1160,10 @@ void AEnemy_Pigeon::Attack()
 			muzzleFlashLocation.X += 188.68f;
 		}
 
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
+		//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
+		FRotator muzzleFlashSpawnRotator = FRotator(rotation.Pitch, rotation.Yaw - 180.f, rotation.Roll);
+		UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, muzzleFlashSpawnRotator, FVector(.6f, .6f, .6f));
+		muzzleFlash->CustomTimeDilation = 1.4f;
 
 		// Spawn bullet
 		UGameplayStatics::PlaySound2D(GetWorld(), shootSFX);
@@ -1239,6 +1234,7 @@ void AEnemy_Pigeon::EndAttack()
 			Qtable += FString(TEXT("\r\n"));
 		}
 		WriteStringToFile(path, Qtable);*/
+		Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
 		Destroy();
 	}
 }

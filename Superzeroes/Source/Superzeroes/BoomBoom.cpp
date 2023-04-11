@@ -36,7 +36,6 @@ ABoomBoom::ABoomBoom()
 	strongAttack = nullptr;
 	strongAttackCharge = nullptr;
 	zipZap = nullptr;
-	siegeMode = nullptr;
 	isSimpleAttackSequenced = false;
 	canClimb = false;
 	launchZipZap = false;
@@ -166,7 +165,7 @@ void ABoomBoom::Tick(float DeltaTime)
 	{
 		setMeter(refillTime);
 
-		if (meter >= (99.9f-refillTime) && meter <= 99.9f)
+		if (meter >= 99.8f && meter <= 99.9f)
 		{
 			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
 		}
@@ -297,6 +296,13 @@ void ABoomBoom::UpdateState()
 		{
 			// Apply damage (will be implemented at a later stage)
 			punchPreludeTimer = 0.f;
+			UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
+			float damage = 25.f;
+			if (flipbook->GetFlipbook() == strongAttack)
+			{
+				damage = 50.f;
+			}
+			ProcessHit(damage);
 		}
 
 	}
@@ -471,16 +477,13 @@ void ABoomBoom::Attack(float scaleVal)
 						punchPreludeTimer = AcutalPunchDelay;
 						simpleAttack_sequenceTimeoutTimer = SimpleAttackSequenceTimeout;
 						launchZipZap = false;
-						UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
-						ProcessHit(25.f);
 					}
 					else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
 					{
 						flipbook->SetLooping(false);
 						flipbook->SetFlipbook(simpleAttackSequence);
 						isSimpleAttackSequenced = false;
-						UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
-						ProcessHit(25.f);
+						punchPreludeTimer = AcutalPunchDelay / 2.5f;
 					}
 				}
 				else if (attackInputTimer >= StrongAttackMinimumInputTime) // Strong attack
@@ -488,12 +491,7 @@ void ABoomBoom::Attack(float scaleVal)
 					// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(strongAttack);
-					UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
-					ProcessHit(50.f);
-				}
-				else if (simpleAttack_sequenceTimeoutTimer <= 0.f && characterState == State::Attacking)
-				{
-					//EndAttack(); <----- for later to be fixed
+					punchPreludeTimer = AcutalPunchDelay / 2.8f;
 				}
 
 				// Reset the timer, doesn't matter if the button was released or wasn't pressed at all during this iteration, it's currently not pressed.
@@ -608,9 +606,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		}
 		if (otherActor->IsA(ATrash::StaticClass()))
 		{
-			FVector loc = GetActorLocation();
-			loc.Y -= 0.1;
-			loc.Z += 30;
+			FVector loc = FVector(GetActorLocation().X, GetActorLocation().Y - 0.1f, GetActorLocation().Z + 40.f);
 			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, loc, GetActorRotation());
 			cfx->spriteChanger(4);
 			setHealth(health - 5.f);
@@ -679,7 +675,7 @@ void ABoomBoom::ProcessHit(float damage_)
 		endPoint.X += 150.f;
 	}
 
-	bool hit = UKismetSystemLibrary::LineTraceSingle(this, startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::Persistent, OutHit, true);
+	bool hit = UKismetSystemLibrary::LineTraceSingle(this, startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::None, OutHit, true);
 	if (hit)
 	{
 		FRotator rot = OutHit.GetActor()->GetActorRotation();
@@ -687,8 +683,18 @@ void ABoomBoom::ProcessHit(float damage_)
 
 		if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
 		{
-			Enemy->TakeEnemyDamage(damage_);
-			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, endPoint, GetActorRotation());
+			FVector impactForce = FVector(500.f, 0.f, 180.f);
+			if (rotation.Yaw > 0) // Looking left
+			{
+				impactForce.X *= -1.f;
+			}
+			
+			if (flipbook->GetFlipbook() == simpleAttackSequence || flipbook->GetFlipbook() == strongAttack)
+			{
+				Enemy->LaunchCharacter(impactForce, false, false);
+			}
+
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, FVector(endPoint.X, endPoint.Y - 0.1f, endPoint.Z + 100.f), GetActorRotation());
 			cfx->spriteChanger(3);
 			Enemy->TakeEnemyDamage(damage_);
 		}
