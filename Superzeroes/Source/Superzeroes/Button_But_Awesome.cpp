@@ -7,6 +7,7 @@
 #include "BoomBoom.h"
 #include "ZipZap.h"
 #include "LAdder.h"
+#include "FallingStairs.h"
 #include "Kismet/GameplayStatics.h"
 
 AButton_But_Awesome::AButton_But_Awesome()
@@ -44,7 +45,9 @@ void AButton_But_Awesome::ButtPress()
 {
 	GetRenderComponent()->Play();
 	TArray<AActor*> ladders;
+	TArray<AActor*> stairs;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALAdder::StaticClass(), ladders);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFallingStairs::StaticClass(), stairs);
 	
 	for (int i = 0; i < ladders.Num(); i++)
 	{
@@ -52,6 +55,14 @@ void AButton_But_Awesome::ButtPress()
 		if (oneLadder->ladderNumber == buttonNumber)
 		{
 			oneLadder->Activation();
+		}
+	}
+	for (int i = 0; i < stairs.Num(); i++)
+	{
+		AFallingStairs* oneStairs = (AFallingStairs*)stairs[i];
+		if (oneStairs->stairsNumber == buttonNumber)
+		{
+			oneStairs->Activation();
 		}
 	}
 

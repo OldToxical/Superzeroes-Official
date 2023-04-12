@@ -44,6 +44,7 @@ AEnemy_Mouse::AEnemy_Mouse()
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
 	damage = 30.f;
+	TimeBetweenWalkSounds = 5.0f;
 	healthPoints = 100.f;
 	hitAvailable = true;
 	inCombat = false;

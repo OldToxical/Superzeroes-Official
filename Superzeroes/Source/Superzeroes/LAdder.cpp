@@ -46,6 +46,5 @@ void ALAdder::Tick(float DeltaTime)
 void ALAdder::Activation()
 {
 	isActivated = true;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Yippee!"));
 }
 

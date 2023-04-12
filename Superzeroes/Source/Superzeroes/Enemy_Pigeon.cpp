@@ -59,6 +59,7 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
 	damage = 20.f;
+	TimeBetweenWalkSounds = 5.0f;
 
 	Q_EstimatedOptimalFutureValue = 12.f;
 	Q_DiscountFactor = 0.17f;
