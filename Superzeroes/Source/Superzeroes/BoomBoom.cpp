@@ -27,6 +27,7 @@ ABoomBoom::ABoomBoom()
 	ComboAttack_Savage_ExecutionTimer = SavageComboExecutionTime;
 	attackInputTimer = 0.f;
 	simpleAttack_sequenceTimeoutTimer = 0.f;
+	MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack = 150.f;
 	jumpPreludeTimer = 0.f;
 	punchPreludeTimer = 0.f;
 	charMove = nullptr;

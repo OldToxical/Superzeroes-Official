@@ -14,8 +14,7 @@
 #define SavageComboExecutionTime 3
 #define StrongAttackMinimumInputTime 0.5
 #define SimpleAttackSequenceTimeout 0.6
-#define SimpleAttackAnimationLength 0.27
-#define MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack 120
+#define SimpleAttackAnimationLength 0.2
 #define AcutalPunchDelay 0.2
 
 UENUM()
@@ -153,6 +152,9 @@ protected:
 	// Variable for the character's speed
 	UPROPERTY(EditAnywhere)
 		float characterSpeed;
+
+	UPROPERTY(EditAnywhere)
+		float MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack;
 
 	// Variable to keep track of how long the "Attack" buton is being held down
 	UPROPERTY(EditAnywhere)
