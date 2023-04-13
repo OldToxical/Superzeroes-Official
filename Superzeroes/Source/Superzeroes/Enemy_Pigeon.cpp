@@ -59,6 +59,7 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
 	damage = 20.f;
+	TimeBetweenWalkSounds = 5.0f;
 
 	Q_EstimatedOptimalFutureValue = 12.f;
 	Q_DiscountFactor = 0.17f;
@@ -111,7 +112,8 @@ void AEnemy_Pigeon::Tick(float DeltaTime)
 void AEnemy_Pigeon::TakeEnemyDamage(float damage_)
 {
 	healthPoints -= damage_;
-	flipbookComponent->SetFlipbook(hurtAnim);
+	flipbookComponent->SetFlipbook(hurtAnim);	
+	UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
 	flipbookComponent->SetLooping(false);
 }
 
@@ -1136,6 +1138,13 @@ void AEnemy_Pigeon::WalkLeft()
 		AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.3f, false);
 		rotation.Yaw = 0.f;
 		flipbookComponent->SetWorldRotation(rotation);
+		walkSoundTimer += 0.1f;
+		if (walkSoundTimer >= TimeBetweenWalkSounds)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+			walkSoundTimer = 0.0f;
+
+		}
 	}
 }
 
@@ -1147,6 +1156,13 @@ void AEnemy_Pigeon::WalkRight()
 		AddMovementInput(FVector(1.f, 0.f, 0.f), 0.3f, false);
 		rotation.Yaw = 180.f;
 		flipbookComponent->SetWorldRotation(rotation);
+		walkSoundTimer += 0.1f;
+		if (walkSoundTimer >= TimeBetweenWalkSounds)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+			walkSoundTimer = 0.0f;
+
+		}
 	}
 }
 

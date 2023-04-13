@@ -44,6 +44,7 @@ AEnemy_Mouse::AEnemy_Mouse()
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
 	damage = 30.f;
+	TimeBetweenWalkSounds = 5.0f;
 	healthPoints = 100.f;
 	hitAvailable = true;
 	inCombat = false;
@@ -74,7 +75,8 @@ void AEnemy_Mouse::Tick(float DeltaTime)
 void AEnemy_Mouse::TakeEnemyDamage(float damage_)
 {
 	healthPoints -= damage_;
-	flipbookComponent->SetFlipbook(hurtAnim);
+	flipbookComponent->SetFlipbook(hurtAnim); 
+	UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
 	flipbookComponent->SetLooping(false);
 }
 
@@ -266,6 +268,13 @@ void AEnemy_Mouse::WalkLeft()
 		AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.3f, false);
 		rotation.Yaw = 180.f;
 		flipbookComponent->SetWorldRotation(rotation);
+		walkSoundTimer += 0.1f;
+		if (walkSoundTimer >= TimeBetweenWalkSounds)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+			walkSoundTimer = 0.0f;
+
+		}
 	}
 }
 
@@ -277,6 +286,13 @@ void AEnemy_Mouse::WalkRight()
 		AddMovementInput(FVector(1.f, 0.f, 0.f), 0.3f, false);
 		rotation.Yaw = 0.f;
 		flipbookComponent->SetWorldRotation(rotation);
+		walkSoundTimer += 0.1f;
+		if (walkSoundTimer >= TimeBetweenWalkSounds)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+			walkSoundTimer = 0.0f;
+
+		}
 	}
 }
 
@@ -301,7 +317,7 @@ void AEnemy_Mouse::Attack()
 		if (flipbookComponent->GetPlaybackPositionInFrames() == 5 && hitAvailable)
 		{
 			hitAvailable = false;
-			int attackSFX = rand() % 4 + 1;
+			int attackSFX = rand() % 5 + 1;
 			switch (attackSFX)
 			{
 				case 1: UGameplayStatics::PlaySound2D(GetWorld(), attack1SFX);
@@ -309,6 +325,7 @@ void AEnemy_Mouse::Attack()
 				case 3:	UGameplayStatics::PlaySound2D(GetWorld(), attack3SFX);
 				case 4:	UGameplayStatics::PlaySound2D(GetWorld(), attack4SFX);
 				case 5:	UGameplayStatics::PlaySound2D(GetWorld(), attack5SFX);
+				case 6:	UGameplayStatics::PlaySound2D(GetWorld(), attack6SFX);
 			}
 			DealDamage();
 		}
@@ -321,7 +338,7 @@ void AEnemy_Mouse::Attack()
 		if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && hitAvailable)
 		{
 			hitAvailable = false;
-			int attackSFX = rand() % 4 + 1;
+			int attackSFX = rand() % 5 + 1;
 			switch (attackSFX)
 			{
 				case 1: UGameplayStatics::PlaySound2D(GetWorld(), attack1SFX);
@@ -329,6 +346,7 @@ void AEnemy_Mouse::Attack()
 				case 3:	UGameplayStatics::PlaySound2D(GetWorld(), attack3SFX);
 				case 4:	UGameplayStatics::PlaySound2D(GetWorld(), attack4SFX);
 				case 5:	UGameplayStatics::PlaySound2D(GetWorld(), attack5SFX);
+				case 6:	UGameplayStatics::PlaySound2D(GetWorld(), attack6SFX);
 			}
 			DealDamage();
 		}
