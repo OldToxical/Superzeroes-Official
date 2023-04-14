@@ -9,7 +9,7 @@ ALAdder::ALAdder()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
-	hitbox->SetRelativeLocation(FVector(6.516138,0.000000, 137.831809));
+	hitbox->SetRelativeLocation(FVector(6.516138, 0.000000, 137.831809));
 	hitbox->SetRelativeScale3D(FVector(0.840833, 0.25, 12.050000));
 	hitbox->SetupAttachment(RootComponent);
 	isActivated = false; 

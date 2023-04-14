@@ -27,7 +27,6 @@ ABoomBoom::ABoomBoom()
 	ComboAttack_Savage_ExecutionTimer = SavageComboExecutionTime;
 	attackInputTimer = 0.f;
 	simpleAttack_sequenceTimeoutTimer = 0.f;
-	MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack = 150.f;
 	jumpPreludeTimer = 0.f;
 	punchPreludeTimer = 0.f;
 	charMove = nullptr;
@@ -172,7 +171,7 @@ void ABoomBoom::Tick(float DeltaTime)
 	{
 		setMeter(refillTime);
 
-		if (meter >= 99.8f && meter <= 99.9f)
+		if (meter >= (99.9f - refillTime) && meter <= 99.9f)
 		{
 			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
 		}
@@ -356,7 +355,7 @@ void ABoomBoom::move(float scaleVal)
 	// Add movement force only if the character is not in a state of attacking
 	if (characterState != State::Dead && inputAvailable)
 	{
-		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && (characterState != State::Siege))
+		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && (characterState != State::Siege) && (attackInputTimer < StrongAttackMinimumInputTime))
 		{
 			characterSpeed = 200.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
@@ -428,7 +427,7 @@ void ABoomBoom::ExecuteJump()
 {
 	if (characterState != State::Dead && inputAvailable)
 	{
-		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && (characterState != State::Hurt) && (characterState != State::Siege) && (characterState != State::Jumping))
+		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && (characterState != State::Hurt) && (characterState != State::Siege) && (characterState != State::Jumping) && (!canClimb))
 		{
 			jumpPreludeTimer = 0.3f;
 			characterState = State::Jumping;
@@ -444,14 +443,23 @@ void ABoomBoom::climb(float scaleVal)
 	{
 		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && characterState != State::Hurt && inputAvailable)
 		{
-			if (canClimb == true)
+			if (canClimb == true && characterState != State::Jumping)
 			{
 				charMove->GravityScale = 0.0f;
 				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + scaleVal));
+				
 				if (scaleVal != 0)
 				{
 					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
+					charMove->Velocity = FVector(charMove->Velocity.X, 0, scaleVal * 200);
+					charMove->GravityScale = 0.0f;
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)5;
 					charMove->Velocity.X = 0;
+				}
+				else
+				{
+					charMove->GravityScale = 1.0f;
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
 				}
 			}
 		}
@@ -468,9 +476,6 @@ void ABoomBoom::Attack(float scaleVal)
 			// If the attack button is pressed (or held), keep track of how long the user is holding the button down
 			if (scaleVal > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength))
 			{
-				// Whatever the length is, change the state to "attacking"
-				characterState = State::Attacking;
-
 				// Increase the time the button has been held down
 				attackInputTimer += GetWorld()->GetDeltaSeconds();
 
@@ -478,6 +483,9 @@ void ABoomBoom::Attack(float scaleVal)
 				if (attackInputTimer > StrongAttackMinimumInputTime)
 				{
 					flipbook->SetFlipbook(strongAttackCharge);
+
+					// Change the state to "attacking"
+					characterState = State::Attacking;
 				}
 			}
 			else // The button is not pressed. If the value of "attackInputTimer" is bigger than 0.f, this means the button was released during the current iteration, so let's determine what attack to execute
@@ -495,6 +503,9 @@ void ABoomBoom::Attack(float scaleVal)
 						punchPreludeTimer = AcutalPunchDelay;
 						simpleAttack_sequenceTimeoutTimer = SimpleAttackSequenceTimeout;
 						launchZipZap = false;
+
+						// Change the state to "attacking"
+						characterState = State::Attacking;
 					}
 					else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
 					{
@@ -502,6 +513,9 @@ void ABoomBoom::Attack(float scaleVal)
 						flipbook->SetFlipbook(simpleAttackSequence);
 						isSimpleAttackSequenced = false;
 						punchPreludeTimer = AcutalPunchDelay / 2.5f;
+
+						// Change the state to "attacking"
+						characterState = State::Attacking;
 					}
 				}
 				else if (attackInputTimer >= StrongAttackMinimumInputTime) // Strong attack
@@ -510,6 +524,9 @@ void ABoomBoom::Attack(float scaleVal)
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(strongAttack);
 					punchPreludeTimer = AcutalPunchDelay / 2.8f;
+
+					// Change the state to "attacking"
+					characterState = State::Attacking;
 				}
 
 				// Reset the timer, doesn't matter if the button was released or wasn't pressed at all during this iteration, it's currently not pressed.

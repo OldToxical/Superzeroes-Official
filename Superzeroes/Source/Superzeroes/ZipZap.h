@@ -238,7 +238,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class UAudioComponent* audComp;
 
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<FVector> spawnLoc;
 

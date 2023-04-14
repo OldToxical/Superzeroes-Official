@@ -61,7 +61,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		USoundBase* hurtSFX;
 
-
 	float walkSoundTimer;
 	//This is so that the walk sound effect doesn't play every single frame
 	//there may be a better way of doing this?

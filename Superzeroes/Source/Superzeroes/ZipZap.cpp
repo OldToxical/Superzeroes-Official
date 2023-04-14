@@ -39,10 +39,10 @@ AZipZap::AZipZap()
 	savageInitiated = false;
 	inputAvailable = true;
 	canClimb = false;
-	healing = false; 
+	healing = false;
 	audComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
-
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
+	
 	if (flipbook)
 	{
 		flipbook->bOwnerNoSee = false;
@@ -68,6 +68,7 @@ void AZipZap::setHealth(float newHealth)
 			characterState = State2::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
+
 			//hurt clip will play over and over without this
 			if (!toxicDamage)
 			{
@@ -88,6 +89,7 @@ void AZipZap::setHealth(float newHealth)
 void AZipZap::BeginPlay()
 {
 	Super::BeginPlay();
+
 	audComp->SetSound(flyingSFX);
 	audComp->Stop();
 	flipbook->SetFlipbook(idle);
@@ -211,7 +213,7 @@ void AZipZap::Landed(const FHitResult& Hit)
 	if (characterState == State2::Combo_Projectile)
 	{
 		charMove->GravityScale = 1.f;
-		isElectrified = false; 
+		isElectrified = false;
 		audComp->Stop();
 	}
 
@@ -345,14 +347,12 @@ void AZipZap::InitiateComboAttack_Projectile(float directionRotation)
 	// Boom Boom hit Zip Zap and strong force should be applied to him so that he can fly away like a projectile
 	rotation.Yaw = directionRotation;
 	flipbook->SetWorldRotation(rotation);
-	flipbook->SetFlipbook(projectileFly); 
+	flipbook->SetFlipbook(projectileFly);
 	audComp->Play();
-	//characterSpeed = 450.f;
 	charMove->GravityScale = 0.7f;
 	characterState = State2::Combo_Projectile;
 
 	// Calculate impulse vector
-
 	float X_ImpulseDirection = 800.f;
 
 	if (rotation.Yaw > 0) // Looking left
@@ -442,13 +442,13 @@ void AZipZap::ExecuteJump()
 {
 	if (characterState != State2::Dead)
 	{
-		if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling() && characterState != State2::Hurt && characterState != State2::Siege && inputAvailable)
+		if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling() && characterState != State2::Hurt && characterState != State2::Siege && inputAvailable && !canClimb)
 		{
-			if (canClimb)
+			/*if (canClimb)
 			{
 				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 10.f));
 				return;
-			}
+			}*/
 
 			Jump();
 			characterState = State2::Jumping;

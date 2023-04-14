@@ -52,6 +52,8 @@ void AButton_But_Awesome::ButtPress()
 	for (int i = 0; i < ladders.Num(); i++)
 	{
 		ALAdder* oneLadder = (ALAdder*)ladders[i];
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFallingStairs::StaticClass(), stairs);
+
 		if (oneLadder->ladderNumber == buttonNumber)
 		{
 			oneLadder->Activation();
@@ -66,4 +68,12 @@ void AButton_But_Awesome::ButtPress()
 		}
 	}
 
+	for (int i = 0; i < stairs.Num(); i++)
+	{
+		AFallingStairs* oneStairs = (AFallingStairs*)stairs[i];
+		if (oneStairs->stairsNumber == buttonNumber)
+		{
+			oneStairs->Activation();
+		}
+	}
 }

@@ -4,6 +4,8 @@ AEnemy::AEnemy()
 {
 	characterMovementComponent = NULL;
 	flipbookComponent = NULL;
+	TimeBetweenWalkSounds = 5.0f;
+	walkSoundTimer = TimeBetweenWalkSounds;
 }
 
 void AEnemy::Tick(float DeltaTime)
