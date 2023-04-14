@@ -4,6 +4,7 @@
 #include "ZipZap.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/AudioComponent.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "BoomBoom.h"
@@ -39,8 +40,9 @@ AZipZap::AZipZap()
 	inputAvailable = true;
 	canClimb = false;
 	healing = false;
-
+	audComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
+	
 	if (flipbook)
 	{
 		flipbook->bOwnerNoSee = false;
@@ -66,6 +68,12 @@ void AZipZap::setHealth(float newHealth)
 			characterState = State2::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
+
+			//hurt clip will play over and over without this
+			if (!toxicDamage)
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
+			}
 		}
 
 		health = newHealth;
@@ -82,6 +90,8 @@ void AZipZap::BeginPlay()
 {
 	Super::BeginPlay();
 
+	audComp->SetSound(flyingSFX);
+	audComp->Stop();
 	flipbook->SetFlipbook(idle);
 	flipbook->OnFinishedPlaying.AddDynamic(this, &AZipZap::EndAttack);
 	rotation = FRotator::ZeroRotator;
@@ -125,7 +135,7 @@ void AZipZap::Tick(float DeltaTime)
 	{
 		setMeter(refillTime);
 
-		if (meter >= 99.8f && meter <= 99.9f)
+		if (meter >= (99.9f - refillTime) && meter <= 99.9f)
 		{
 			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
 		}
@@ -204,6 +214,7 @@ void AZipZap::Landed(const FHitResult& Hit)
 	{
 		charMove->GravityScale = 1.f;
 		isElectrified = false;
+		audComp->Stop();
 	}
 
 	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
@@ -337,12 +348,11 @@ void AZipZap::InitiateComboAttack_Projectile(float directionRotation)
 	rotation.Yaw = directionRotation;
 	flipbook->SetWorldRotation(rotation);
 	flipbook->SetFlipbook(projectileFly);
-	//characterSpeed = 450.f;
+	audComp->Play();
 	charMove->GravityScale = 0.7f;
 	characterState = State2::Combo_Projectile;
 
 	// Calculate impulse vector
-
 	float X_ImpulseDirection = 800.f;
 
 	if (rotation.Yaw > 0) // Looking left
@@ -432,13 +442,13 @@ void AZipZap::ExecuteJump()
 {
 	if (characterState != State2::Dead)
 	{
-		if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling() && characterState != State2::Hurt && characterState != State2::Siege && inputAvailable)
+		if ((characterState != State2::Combo_Projectile) && (characterState != State2::Attacking) && !charMove->IsFalling() && characterState != State2::Hurt && characterState != State2::Siege && inputAvailable && !canClimb)
 		{
-			if (canClimb)
+			/*if (canClimb)
 			{
 				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 10.f));
 				return;
-			}
+			}*/
 
 			Jump();
 			characterState = State2::Jumping;
@@ -455,14 +465,20 @@ void AZipZap::climb(float scaleVal)
 	{
 		if (characterState != State2::Attacking && characterState != State2::Hurt)
 		{
-			if (canClimb == true)
+			if (canClimb == true && characterState != State2::Jumping)
 			{
-				charMove->GravityScale = 0.0f;
-				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + (scaleVal * 2)));
 				if (scaleVal != 0)
 				{
 					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
+					charMove->Velocity = FVector(charMove->Velocity.X, 0, scaleVal * 200);
+					charMove->GravityScale = 0.0f;
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)5;
 					charMove->Velocity.X = 0;
+				}
+				else
+				{
+					charMove->GravityScale = 1.0f;
+					charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
 				}
 			}
 		}
