@@ -445,9 +445,6 @@ void ABoomBoom::climb(float scaleVal)
 		{
 			if (canClimb == true && characterState != State::Jumping)
 			{
-				charMove->GravityScale = 0.0f;
-				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + scaleVal));
-				
 				if (scaleVal != 0)
 				{
 					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;

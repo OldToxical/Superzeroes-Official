@@ -12,8 +12,6 @@
 #include "NiagaraComponent.h"
 #include "Enemy_Pigeon.generated.h"
 
-#define MinimumDistanceToGetIntoCombatX 500
-#define MinimumDistanceToGetIntoCombatZ 40
 #define ShootingAnimationLength 0.6
 
 class ABoomBoom;
@@ -92,6 +90,12 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		int difficulty;
+
+	UPROPERTY(EditAnywhere)
+		float MinimumDistanceToGetIntoCombatX;
+
+	UPROPERTY(EditAnywhere)
+		float MinimumDistanceToGetIntoCombatZ;
 
 	// Animations
 	UPROPERTY(EditAnywhere)

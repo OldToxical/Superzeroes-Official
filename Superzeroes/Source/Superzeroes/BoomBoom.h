@@ -153,6 +153,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 		float characterSpeed;
 
+	// Variable for the maximum distance (for X and Z) that the two characters should be from each other so that projectile combo can be activated
 	UPROPERTY(EditAnywhere)
 		float MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack;
 

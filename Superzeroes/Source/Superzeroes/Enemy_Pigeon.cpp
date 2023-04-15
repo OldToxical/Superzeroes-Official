@@ -60,6 +60,8 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	speed = 0.f;
 	damage = 20.f;
 	TimeBetweenWalkSounds = 5.0f;
+	MinimumDistanceToGetIntoCombatX = 500.f;
+	MinimumDistanceToGetIntoCombatZ = 40.f;
 
 	Q_EstimatedOptimalFutureValue = 12.f;
 	Q_DiscountFactor = 0.17f;
