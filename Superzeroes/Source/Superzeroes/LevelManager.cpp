@@ -116,7 +116,9 @@ void ALevelManager::InitializeLevelStartLocations()
 	levelStartLocations.Add(FVector(3043.f, .5f, -58.f));
 	levelStartLocations.Add(FVector(5028.f, .5f, -378.f));
 	levelStartLocations.Add(FVector(7050.f, .5f, 42.f));
-	levelStartLocations.Add(FVector(7155.f, .5f, 1005.f));
+	levelStartLocations.Add(FVector(7120.f, .5f, 1005.f));
+	levelStartLocations.Add(FVector(7420.f, .5f, 1592.f));
+	levelStartLocations.Add(FVector(9410.f, .5f, 2092.f));
 }
 
 void ALevelManager::InitializeCameraLocations()
@@ -127,6 +129,8 @@ void ALevelManager::InitializeCameraLocations()
 	cameraLocations.Add(FVector(5970.f, 1000.f, 0.f));
 	cameraLocations.Add(FVector(7960.f, 1000.f, 500.f));
 	cameraLocations.Add(FVector(6370.f, 1000.f, 1430.f));
+	cameraLocations.Add(FVector(8360.f, 1000.f, 1950.f));
+	cameraLocations.Add(FVector(10340.f, 1000.f, 1950.f));
 }
 
 void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)

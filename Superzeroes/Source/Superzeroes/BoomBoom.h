@@ -154,7 +154,7 @@ protected:
 		float characterSpeed;
 
 	UPROPERTY(EditAnywhere)
-		float MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack;
+		float MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack = 150.f;
 
 	// Variable to keep track of how long the "Attack" buton is being held down
 	UPROPERTY(EditAnywhere)
