@@ -145,6 +145,11 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 	LatentInfo.Linkage = 0;
 	LatentInfo.UUID = 0;
 
+	if (currentLevel == 8)
+	{
+		//UGameplayStatics::LoadStreamLevel(this, "MainMenu", true, true, LatentInfo);
+	}
+
 	UKismetSystemLibrary::MoveComponentTo(cameraComp, cameraLocations[triggerNum], cameraComp->GetComponentRotation(), true, true, 0.2f, false, EMoveComponentAction::Move, LatentInfo);
 	LatentInfo.UUID = 1;
 	UKismetSystemLibrary::MoveComponentTo(boomBoom->GetRootComponent(), levelStartLocations[triggerNum], boomBoom->GetRootComponent()->GetComponentRotation(), true, true, 0.2f, false, EMoveComponentAction::Move, LatentInfo);

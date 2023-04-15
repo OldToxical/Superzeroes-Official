@@ -526,7 +526,11 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		}
 		if (otherActor->IsA(ALAdder::StaticClass()))
 		{
-			canClimb = true;
+			if (characterState == State2::Running || characterState == State2::Idle) 
+			{
+				canClimb = true;
+			}
+
 		}
 		if (otherActor->ActorHasTag("LevelRespawnTrigger"))
 		{

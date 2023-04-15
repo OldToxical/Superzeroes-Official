@@ -666,7 +666,10 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		}
 		if (otherActor->IsA(ALAdder::StaticClass()))
 		{
-			canClimb = true;
+			if (characterState == State::Running || characterState == State::Idle)
+			{
+				canClimb = true;
+			}
 		}
 		if (otherActor->ActorHasTag("LevelRespawnTrigger"))
 		{
