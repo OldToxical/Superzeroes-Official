@@ -445,7 +445,6 @@ void ABoomBoom::climb(float scaleVal)
 		{
 			if (canClimb == true && characterState != State::Jumping)
 			{
-				
 				if (scaleVal != 0)
 				{
 					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
