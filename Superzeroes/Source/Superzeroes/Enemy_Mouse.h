@@ -79,6 +79,7 @@ private:
 	    bool inCombat;
 
 	bool hitAvailable;
+	bool deathFXcompleted;
 
 	// Animations
 	UPROPERTY(EditAnywhere)

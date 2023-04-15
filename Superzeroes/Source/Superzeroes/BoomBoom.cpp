@@ -159,7 +159,9 @@ void ABoomBoom::BeginPlay()
 	spawnLoc.Add(FVector(3043.f, .5f, -58.f));
 	spawnLoc.Add(FVector(5028.f, .5f, -378.f));
 	spawnLoc.Add(FVector(7050.f, .5f, 42.f));
-	spawnLoc.Add(FVector(8310.f, .5f, 812.f));
+	spawnLoc.Add(FVector(7120.f, .5f, 1005.f));
+	spawnLoc.Add(FVector(7420.f, .5f, 1592.f));
+	spawnLoc.Add(FVector(9410.f, .5f, 2092.f));
 }
 
 // Called every frame

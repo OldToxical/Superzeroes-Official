@@ -169,7 +169,7 @@ void ASiege::ExecuteSiegeMode()
 
 			if (flipbook->GetPlaybackPositionInFrames() == 4 && shotFired)
 			{
-				FVector muzzleFlashLocation = FVector(GetActorLocation().X + 54.f, GetActorLocation().Y, GetActorLocation().Z - 5.f);
+				FVector muzzleFlashLocation = FVector(GetActorLocation().X + 83.473389f, GetActorLocation().Y, GetActorLocation().Z + 25.053223f);
 				FVector beamVelocity = FVector(60000.f, 0.f, 0.f);
 
 				if (rotation.Yaw > 0.f) // Left
@@ -178,8 +178,8 @@ void ASiege::ExecuteSiegeMode()
 					beamVelocity.X *= -1.f;
 				}
 
-				UNiagaraComponent* beam = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), electricBeam, FVector(muzzleFlashLocation.X, muzzleFlashLocation.Y + 1, muzzleFlashLocation.Z), rotation);
-				beam->SetVectorParameter("Velocity", beamVelocity);
+				//UNiagaraComponent* beam = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), electricBeam, FVector(muzzleFlashLocation.X, muzzleFlashLocation.Y + 1, muzzleFlashLocation.Z), rotation);
+				//beam->SetVectorParameter("Velocity", beamVelocity);
 				UParticleSystemComponent* muzzleFlashParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlash, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.2f, .2f, .2f));
 				muzzleFlashParticle->CustomTimeDilation = 3.f;
 				AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);

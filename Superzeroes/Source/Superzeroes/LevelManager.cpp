@@ -147,7 +147,7 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 
 	if (currentLevel == 8)
 	{
-		//UGameplayStatics::LoadStreamLevel(this, "MainMenu", true, true, LatentInfo);
+		UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"));
 	}
 
 	UKismetSystemLibrary::MoveComponentTo(cameraComp, cameraLocations[triggerNum], cameraComp->GetComponentRotation(), true, true, 0.2f, false, EMoveComponentAction::Move, LatentInfo);

@@ -48,6 +48,7 @@ AEnemy_Mouse::AEnemy_Mouse()
 	healthPoints = 100.f;
 	hitAvailable = true;
 	inCombat = false;
+	deathFXcompleted = false;
 }
 
 void AEnemy_Mouse::AI()
@@ -254,14 +255,17 @@ void AEnemy_Mouse::UpdateState()
 			spawner->RemoveEnemy(this);
 		}
 
-		FVector location = GetActorLocation();
-		location.Z += 30.f;
-		location.Y -= 0.1f;
-		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
-		cfx->spriteChanger(2);
-		UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
+		if (!deathFXcompleted)
+		{
+			FVector location = GetActorLocation();
+			location.Z += 30.f;
+			location.Y -= 0.1f;
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+			cfx->spriteChanger(2);
+			UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
+			deathFXcompleted = true;
+		}
 		currentState = State4::Dead;
-		healthPoints = 0.01f;
 	}
 }
 
