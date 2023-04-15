@@ -27,7 +27,8 @@ AZipZap::AZipZap()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	jumpPreludeTimer = 0.f;
-	health = 100.f;
+	health = 100.f; 
+	timeToHeal = 10.f;
 	meter = 0.0f;
 	refillTime = 0.1f;
 	skillCost = 50.f;
@@ -65,6 +66,7 @@ void AZipZap::setHealth(float newHealth)
 	{
 		if (characterState != State2::Hurt && characterState != State2::Attacking && characterState != State2::Combo_Projectile && newHealth < health)
 		{
+			healTimer = 0.f;
 			characterState = State2::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);

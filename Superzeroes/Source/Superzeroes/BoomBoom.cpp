@@ -101,6 +101,7 @@ void ABoomBoom::setHealth(float newHealth)
 	{
 		if (characterState != State::Hurt && characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Siege && newHealth < health)
 		{
+			healTimer = 0.f;
 			characterState = State::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);

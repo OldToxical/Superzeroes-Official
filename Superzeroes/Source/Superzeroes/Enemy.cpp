@@ -12,8 +12,6 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime); 
 	
-	TimeBetweenWalkSounds = 5.0f;
-	walkSoundTimer = TimeBetweenWalkSounds;
 
 	//UpdateActorState();
 	//UpdateRotation();
@@ -26,6 +24,8 @@ void AEnemy::BeginPlay()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	characterMovementComponent = GetCharacterMovement();
+	TimeBetweenWalkSounds = 5.0f;
+	walkSoundTimer = TimeBetweenWalkSounds;
 
 	if (flipbookComponent)
 	{
