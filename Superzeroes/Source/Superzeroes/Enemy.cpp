@@ -24,8 +24,6 @@ void AEnemy::BeginPlay()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	characterMovementComponent = GetCharacterMovement();
-	TimeBetweenWalkSounds = 5.0f;
-	walkSoundTimer = TimeBetweenWalkSounds;
 
 	if (flipbookComponent)
 	{

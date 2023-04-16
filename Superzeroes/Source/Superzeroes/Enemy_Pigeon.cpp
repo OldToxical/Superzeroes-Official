@@ -82,6 +82,8 @@ void AEnemy_Pigeon::BeginPlay()
 	Super::BeginPlay();
 	healthPoints = 50.f;
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy_Pigeon::OverlapBegin);
+	TimeBetweenWalkSounds = 5.0f;
+	walkSoundTimer = TimeBetweenWalkSounds;
 
 	/*FString Qtable;
 	FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/start.txt"));
@@ -108,8 +110,6 @@ void AEnemy_Pigeon::Tick(float DeltaTime)
 		zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
 	}
 
-	TimeBetweenWalkSounds = 5.0f;
-	walkSoundTimer = TimeBetweenWalkSounds;
 
 	AI();
 }
