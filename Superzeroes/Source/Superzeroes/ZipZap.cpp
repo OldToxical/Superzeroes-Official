@@ -67,6 +67,7 @@ void AZipZap::setHealth(float newHealth)
 		if (characterState != State2::Hurt && characterState != State2::Attacking && characterState != State2::Combo_Projectile && newHealth < health)
 		{
 			healTimer = 0.f;
+			healing = false;
 			characterState = State2::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
@@ -232,7 +233,7 @@ void AZipZap::UpdateAnimation()
 	// If character is moving, change to running animation
 	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping && characterState != State2::Hurt)
+		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping && characterState != State2::Hurt && characterState != State2::Siege)
 		{
 			characterState = State2::Running;
 			flipbook->SetFlipbook(run);
@@ -240,7 +241,7 @@ void AZipZap::UpdateAnimation()
 	}
 	else // Otherwise, change to idle animation
 	{
-		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping && characterState != State2::Hurt)
+		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping && characterState != State2::Hurt && characterState != State2::Siege)
 		{
 			characterState = State2::Idle;
 			flipbook->SetFlipbook(idle);
