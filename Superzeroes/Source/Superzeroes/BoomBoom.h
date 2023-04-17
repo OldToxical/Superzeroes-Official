@@ -210,8 +210,8 @@ protected:
 
 	//used for changing between the two toxic walk sound sfx
 	bool toxicWalkSoundBool;
-	float healTimer;
 	bool healing;
+	float healTimer;
 	float deathTimer;
 	float walkSoundTimer;
 	//Values for respawn timer and heal timer that can be changed in blueprint, so it can be tested without compiling
@@ -260,4 +260,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
 		TSubclassOf<class AComicFX> comicFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UCameraShakeBase> cameraShakeLandBP;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UCameraShakeBase> cameraShakeHitBP;
 };

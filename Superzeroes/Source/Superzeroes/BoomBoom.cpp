@@ -102,6 +102,7 @@ void ABoomBoom::setHealth(float newHealth)
 		if (characterState != State::Hurt && characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Siege && newHealth < health)
 		{
 			healTimer = 0.f;
+			healing = false;
 			characterState = State::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
@@ -243,6 +244,7 @@ void ABoomBoom::Landed(const FHitResult& Hit)
 
 	smokeParticle->ActivateSystem();
 	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
+	UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeLandBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
 	characterState = State::Idle;
 	flipbook->SetLooping(true);
 	flipbook->Play();
@@ -337,7 +339,7 @@ void ABoomBoom::UpdateAnimation()
 	// If character is moving, change to running animation
 	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != State::Combo_Savage && characterState != State::Attacking && characterState != State::Jumping && characterState != State::Hurt)
+		if (characterState != State::Combo_Savage && characterState != State::Attacking && characterState != State::Jumping && characterState != State::Hurt && characterState != State::Siege)
 		{
 			characterState = State::Running;
 			flipbook->SetFlipbook(run);
@@ -345,7 +347,7 @@ void ABoomBoom::UpdateAnimation()
 	}
 	else // Otherwise, change to idle animation
 	{
-		if (characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Jumping && characterState != State::Hurt)
+		if (characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Jumping && characterState != State::Hurt && characterState != State::Siege)
 		{
 			characterState = State::Idle;
 			flipbook->SetFlipbook(idle);
@@ -365,7 +367,7 @@ void ABoomBoom::move(float scaleVal)
 		}
 
 		// Determine the character's facing direction, regardless of the state
-		if (scaleVal > 0.f)
+		if (scaleVal > 0.f && characterState == State::Running)
 		{
 			if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 7) && !charMove->IsFalling())
 			{
@@ -394,7 +396,7 @@ void ABoomBoom::move(float scaleVal)
 			rotation.Yaw = 0.f;
 			flipbook->SetWorldRotation(rotation);
 		}
-		else if (scaleVal < 0.f)
+		else if (scaleVal < 0.f && characterState == State::Running)
 		{
 			if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 7) && !charMove->IsFalling())
 			{
@@ -745,6 +747,11 @@ void ABoomBoom::ProcessHit(float damage_)
 			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, FVector(endPoint.X, endPoint.Y - 0.1f, endPoint.Z + 100.f), GetActorRotation());
 			cfx->spriteChanger(3);
 			Enemy->TakeEnemyDamage(damage_);
+
+			if (damage_ >= 50.f)
+			{
+				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeHitBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
+			}
 		}
 
 		if (AButton_But_Awesome* button = Cast<AButton_But_Awesome>(HitActor))

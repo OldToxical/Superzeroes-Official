@@ -330,7 +330,7 @@ void AEnemy_Mouse::Attack()
 			}
 			GoToPlayer();
 		}
-		else if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) < MinimumDistanceToDealDamage)
+		else if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) < MinimumDistanceToDealDamage && abs(playerToAttack->GetActorLocation().Z - GetActorLocation().Z) < MinimumDistanceToDealDamage)
 		{
 			flipbookComponent->SetFlipbook(attack);
 			flipbookComponent->SetLooping(false);
@@ -341,12 +341,12 @@ void AEnemy_Mouse::Attack()
 				int attackSFX = rand() % 5 + 1;
 				switch (attackSFX)
 				{
-				case 1: UGameplayStatics::PlaySound2D(GetWorld(), attack1SFX);
-				case 2: UGameplayStatics::PlaySound2D(GetWorld(), attack2SFX);
-				case 3:	UGameplayStatics::PlaySound2D(GetWorld(), attack3SFX);
-				case 4:	UGameplayStatics::PlaySound2D(GetWorld(), attack4SFX);
-				case 5:	UGameplayStatics::PlaySound2D(GetWorld(), attack5SFX);
-				case 6:	UGameplayStatics::PlaySound2D(GetWorld(), attack6SFX);
+					case 1: UGameplayStatics::PlaySound2D(GetWorld(), attack1SFX);
+					case 2: UGameplayStatics::PlaySound2D(GetWorld(), attack2SFX);
+					case 3:	UGameplayStatics::PlaySound2D(GetWorld(), attack3SFX);
+					case 4:	UGameplayStatics::PlaySound2D(GetWorld(), attack4SFX);
+					case 5:	UGameplayStatics::PlaySound2D(GetWorld(), attack5SFX);
+					case 6:	UGameplayStatics::PlaySound2D(GetWorld(), attack6SFX);
 				}
 				DealDamage();
 			}
@@ -362,12 +362,12 @@ void AEnemy_Mouse::Attack()
 				int attackSFX = rand() % 5 + 1;
 				switch (attackSFX)
 				{
-				case 1: UGameplayStatics::PlaySound2D(GetWorld(), attack1SFX);
-				case 2: UGameplayStatics::PlaySound2D(GetWorld(), attack2SFX);
-				case 3:	UGameplayStatics::PlaySound2D(GetWorld(), attack3SFX);
-				case 4:	UGameplayStatics::PlaySound2D(GetWorld(), attack4SFX);
-				case 5:	UGameplayStatics::PlaySound2D(GetWorld(), attack5SFX);
-				case 6:	UGameplayStatics::PlaySound2D(GetWorld(), attack6SFX);
+					case 1: UGameplayStatics::PlaySound2D(GetWorld(), attack1SFX);
+					case 2: UGameplayStatics::PlaySound2D(GetWorld(), attack2SFX);
+					case 3:	UGameplayStatics::PlaySound2D(GetWorld(), attack3SFX);
+					case 4:	UGameplayStatics::PlaySound2D(GetWorld(), attack4SFX);
+					case 5:	UGameplayStatics::PlaySound2D(GetWorld(), attack5SFX);
+					case 6:	UGameplayStatics::PlaySound2D(GetWorld(), attack6SFX);
 				}
 				DealDamage();
 			}
@@ -404,11 +404,13 @@ void AEnemy_Mouse::DealDamage()
 	{
 		if (playerToAttack->ActorHasTag("BoomBoom") && distanceToBoomBoom < MinimumDistanceToDealDamage)
 		{
-			boomBoom->setHealth(boomBoom->getHealth() - damage);
+			boomBoom->setHealth(boomBoom->getHealth() - damage);			
+			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y + 30.f, boomBoom->GetActorLocation().Z), FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
 		}
 		else if (playerToAttack->ActorHasTag("ZipZap") && distanceToZipZap < MinimumDistanceToDealDamage)
 		{
 			zipZap->setHealth(zipZap->getHealth() - damage);
+			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, FVector(zipZap->GetActorLocation().X, zipZap->GetActorLocation().Y + 30.f, zipZap->GetActorLocation().Z), FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
 		}
 	}
 }

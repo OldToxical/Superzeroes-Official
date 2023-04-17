@@ -113,6 +113,9 @@ private:
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* boomBoomImpact;
 
+	UPROPERTY(EditAnywhere)
+		UParticleSystem* zipZapImpact;
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	    void EndAttack();

@@ -55,6 +55,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 		void EndAttackAnimation();
+
 	void ExecuteSiegeMode();
 	void UpdateAnimation();
 	void HandleBoomBoomInput(float scaleVal);
@@ -95,10 +96,10 @@ protected:
 		TSubclassOf<AProjectile> electricChargeClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UNiagaraSystem* electricBeam;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UParticleSystem* muzzleFlash;
+
+	UPROPERTY(BlueprintReadWrite)
+		UNiagaraComponent* smokeParticle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UUserWidget* initiationAnimationUserWidget;
@@ -111,6 +112,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool shotFired;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		bool stepMade;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool inputAvailable;
@@ -133,4 +137,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* siegeShoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* siegeWalk;
+
+	// Blueprint references
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UCameraShakeBase> cameraShakeLandBP;
 };
