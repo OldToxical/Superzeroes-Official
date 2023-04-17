@@ -436,6 +436,17 @@ void AZipZap::UpdateState()
 		{
 			boomBoom->InitiateComboAttack_Savage(rotation.Yaw);
 			savageInitiated = true;
+			FVector muzzleFlashLocation = FVector(GetActorLocation().X + 138.f, GetActorLocation().Y, GetActorLocation().Z - 22.f);
+
+			if (rotation.Yaw > 0.f) // Left
+			{
+				muzzleFlashLocation.X -= 276.f;
+			}
+
+			UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));
+			muzzleFlash->CustomTimeDilation = 3.f;
+
+			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y + 30.f, boomBoom->GetActorLocation().Z), FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
 		}
 	}
 }
@@ -471,6 +482,7 @@ void AZipZap::climb(float scaleVal)
 			{
 				if (scaleVal != 0)
 				{
+					//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::SanitizeFloat(scaleVal));
 					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
 					charMove->Velocity = FVector(charMove->Velocity.X, 0, scaleVal * 200);
 					charMove->GravityScale = 0.0f;
@@ -618,7 +630,6 @@ void AZipZap::ProcessShoot(float damage_)
 	if (hit)
 	{
 		AActor* HitActor = OutHit.GetActor();
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, HitActor->GetName());
 
 		if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
 		{

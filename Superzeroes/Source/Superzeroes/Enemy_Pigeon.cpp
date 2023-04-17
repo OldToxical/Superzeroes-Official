@@ -1233,11 +1233,29 @@ void AEnemy_Pigeon::Attack()
 
 void AEnemy_Pigeon::FaceNearestPlayer()
 {
-	// Boom Boom is closer
-	if (playerToAttack->ActorHasTag("BoomBoom"))
+	if (playerToAttack != nullptr)
 	{
-		// Face him
-		if (boomBoom->GetActorLocation().X < GetActorLocation().X) // He's on the left
+		// Boom Boom is closer
+		if (playerToAttack->ActorHasTag("BoomBoom"))
+		{
+			// Face him
+			if (boomBoom->GetActorLocation().X < GetActorLocation().X) // He's on the left
+			{
+				rotation.Yaw = 0.f;
+				flipbookComponent->SetWorldRotation(rotation);
+
+			}
+			else // He's on the right
+			{
+				rotation.Yaw = 180.f;
+				flipbookComponent->SetWorldRotation(rotation);
+			}
+
+			return;
+		}
+
+		// // Zip Zap is closer, face him
+		if (zipZap->GetActorLocation().X < GetActorLocation().X) // He's on the left
 		{
 			rotation.Yaw = 0.f;
 			flipbookComponent->SetWorldRotation(rotation);
@@ -1248,45 +1266,38 @@ void AEnemy_Pigeon::FaceNearestPlayer()
 			rotation.Yaw = 180.f;
 			flipbookComponent->SetWorldRotation(rotation);
 		}
-
-		return;
 	}
-
-	// // Zip Zap is closer, face him
-	if (zipZap->GetActorLocation().X < GetActorLocation().X) // He's on the left
-	{
-		rotation.Yaw = 0.f;
-		flipbookComponent->SetWorldRotation(rotation);
-
-	}
-	else // He's on the right
-	{
-		rotation.Yaw = 180.f;
-		flipbookComponent->SetWorldRotation(rotation);
-	}
-	
 }
 
 void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
 {
-	isColliding = true;
-	chooseActionTimeoutTimer = 5.f;
-
-	if (currentState == State3::WalkingLeft)
+	if (otherActor->ActorHasTag("LevelRespawnTrigger"))
 	{
-		currentAction = Action::WalkRight;
-	}
-	else if (currentState == State3::WalkingRight)
-	{
-		currentAction = Action::WalkLeft;
+		Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
+		Destroy();
 	}
 
-	if (otherActor->IsA(ABoomBoom::StaticClass()) || otherActor->IsA(AZipZap::StaticClass()))
+	if (currentState != State3::Dead)
 	{
-		currentAction = Action::Attack;
-	}
+		isColliding = true;
+		chooseActionTimeoutTimer = 5.f;
 
-	ExecuteAction();
+		if (currentState == State3::WalkingLeft)
+		{
+			currentAction = Action::WalkRight;
+		}
+		else if (currentState == State3::WalkingRight)
+		{
+			currentAction = Action::WalkLeft;
+		}
+
+		if (otherActor->IsA(ABoomBoom::StaticClass()) || otherActor->IsA(AZipZap::StaticClass()))
+		{
+			currentAction = Action::Attack;
+		}
+
+		ExecuteAction();
+	}
 }
 
 void AEnemy_Pigeon::OverlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
@@ -1330,9 +1341,12 @@ void AEnemy_Pigeon::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 	
-	flipbookComponent->SetFlipbook(idle);
-	flipbookComponent->SetLooping(true);
-	flipbookComponent->Play();
+	if (currentState != State3::Dead && flipbookComponent->GetFlipbook() != hurtAnim)
+	{
+		flipbookComponent->SetFlipbook(idle);
+		flipbookComponent->SetLooping(true);
+		flipbookComponent->Play();
+	}
 }
 
 void AEnemy_Pigeon::WriteStringToFile(FString FilePath, FString String)
