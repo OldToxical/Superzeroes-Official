@@ -64,6 +64,8 @@ void AEnemy_Mouse::BeginPlay()
 	Super::BeginPlay();
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy_Mouse::OverlapBegin);
+	TimeBetweenWalkSounds = 5.0f;
+	walkSoundTimer = TimeBetweenWalkSounds;
 }
 
 void AEnemy_Mouse::Tick(float DeltaTime)
@@ -73,9 +75,6 @@ void AEnemy_Mouse::Tick(float DeltaTime)
 		boomBoom = Cast<ABoomBoom>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass()));
 		zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
 	}
-
-	TimeBetweenWalkSounds = 5.0f;
-	walkSoundTimer = TimeBetweenWalkSounds;
 
 	AI();
 }
@@ -195,13 +194,13 @@ void AEnemy_Mouse::UpdateState()
 			}
 			break;
 		case State4::Jumping:
-			if (flipbookComponent->GetFlipbook() != hurtAnim)
+			if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim && !characterMovementComponent->IsFalling())
 			{
 				flipbookComponent->SetFlipbook(jumpAnim);
 				flipbookComponent->SetLooping(false);
+				UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
+				Jump();
 			}
-			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
-			Jump();
 			break;
 		case State4::WalkingLeft:
 			if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
