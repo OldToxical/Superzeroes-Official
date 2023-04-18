@@ -217,12 +217,12 @@ void AZipZap::Landed(const FHitResult& Hit)
 
 	if (characterState == State2::Combo_Projectile)
 	{
-		charMove->GravityScale = 1.f;
 		isElectrified = false;
 		audComp->Stop();
 	}
 
 	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
+	charMove->GravityScale = 1.f;
 	characterState = State2::Idle;
 	flipbook->SetLooping(true);
 	flipbook->Play();
