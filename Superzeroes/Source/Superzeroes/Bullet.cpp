@@ -26,7 +26,6 @@ void ABullet::CalculateDamage()
 	FVector collidingPoint = GetActorLocation();
 	FVector distanceTravelled = FVector(abs(startPos.X - collidingPoint.X), abs(startPos.Y - collidingPoint.Y), abs(startPos.Z - collidingPoint.Z));
 	float distance = sqrt(pow(distanceTravelled.X, 2) + pow(distanceTravelled.Z, 2));
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::SanitizeFloat(damage));
 
 	if (distance <= 200.f)
 	{
@@ -73,7 +72,7 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 					CalculateDamage();
 					zipZap->setHealth(zipZap->getHealth() - damage);
 					FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
-					UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
+					UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(.6f, .6f, .6f));
 					FVector location = zipZap->GetActorLocation();
 					location.Z += 30.f;
 					location.Y -= 0.1f;

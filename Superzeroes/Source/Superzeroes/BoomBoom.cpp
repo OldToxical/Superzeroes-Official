@@ -113,6 +113,8 @@ void ABoomBoom::setHealth(float newHealth)
 			{
 				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
 			}
+
+			UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(2.f, 0.3f, true, true, true, true);
 		}
 
 		health = newHealth;
@@ -246,6 +248,7 @@ void ABoomBoom::Landed(const FHitResult& Hit)
 	smokeParticle->ActivateSystem();
 	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
 	UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeLandBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, 0.3f, true, true, true, true);
 	characterState = State::Idle;
 	flipbook->SetLooping(true);
 	flipbook->Play();
@@ -298,6 +301,8 @@ void ABoomBoom::UpdateState()
 	}
 	else if (punchPreludeTimer < 0.f)
 	{
+		float feedbackIntensity = 1.f;
+
 		if (launchZipZap)
 		{
 			// Launch Zip Zap
@@ -315,12 +320,14 @@ void ABoomBoom::UpdateState()
 			if (flipbook->GetFlipbook() == strongAttack)
 			{
 				damage = 50.f;
+				feedbackIntensity = 1.7f;
 			}
 
 			ProcessHit(damage);
 		}
 
 		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
+		UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(feedbackIntensity, .2f, true, true, true, true);
 	}
 
 	// Always decrease the jump prelude timer
@@ -388,6 +395,7 @@ void ABoomBoom::move(float scaleVal)
 				else
 				{
 					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(.4f, .15f, true, true, true, true);
 					smokeParticle->ActivateSystem();
 				}
 				stepMade = true;
@@ -417,6 +425,7 @@ void ABoomBoom::move(float scaleVal)
 				else
 				{
 					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(.4f, .15f, true, true, true, true);
 					smokeParticle->ActivateSystem();
 				}
 				stepMade = true;
@@ -562,6 +571,7 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 	flipbook->SetWorldRotation(rotation);
 	characterSpeed = 300.f;
 	characterState = State::Combo_Savage;
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, SavageComboExecutionTime, true, true, true, true);
 }
 
 void ABoomBoom::InitiateZipZapComboAttack_Projectile()
