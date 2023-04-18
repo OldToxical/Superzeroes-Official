@@ -328,7 +328,7 @@ void AZipZap::InitiateComboAttack_Savage()
 	{
 		if (characterState != State2::Dead)
 		{
-			if (characterState != State2::Siege && characterState != State2::Attacking && characterState != State2::Combo_Projectile && boomBoom->GetState() != State::Combo_Savage && boomBoom->GetState() != State::Dead && inputAvailable)
+			if (characterState != State2::Siege && characterState != State2::Attacking && characterState != State2::Combo_Projectile && boomBoom->GetState() != State::Combo_Savage && boomBoom->GetState() != State::Dead && !boomBoom->charMove->IsFalling() && inputAvailable)
 			{
 				float proximityToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
 
@@ -526,18 +526,27 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 			{
 				if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 				{
+					FVector impactForce = FVector(400.f, 0.f, 180.f);
+
 					if (isElectrified)
 					{
-						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(2.f, 2.f, 2.f));
+						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(1.f, 1.f, 1.f));
 						impact->CustomTimeDilation = 3.f;
 						Enemy->TakeEnemyDamage(90.f);
+						impactForce.X += 100.f;
 					}
 					else
 					{
+						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyImpact, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(.9f, .9f, .9f));
 						Enemy->TakeEnemyDamage(60.f);
 					}
 
-					Enemy->LaunchCharacter(FVector(charMove->Velocity.X / 3.f, charMove->Velocity.Y, charMove->Velocity.Z), false, false);
+					if (rotation.Yaw > 0.f) // Looking left
+					{
+						impactForce.X *= -1.f;
+					}
+
+					Enemy->LaunchCharacter(impactForce, false, false);
 				}
 			}
 		}
@@ -643,6 +652,7 @@ void AZipZap::ProcessShoot(float damage_)
 			{
 				impactForce.X *= -1.f;
 			}
+			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyImpact, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(.9f, .9f, .9f));
 			AComicFX* cfx2 = GetWorld()->SpawnActor<AComicFX>(zap, location_, GetActorRotation());
 			cfx2->spriteChanger(3);
 			Enemy->TakeEnemyDamage(damage_);

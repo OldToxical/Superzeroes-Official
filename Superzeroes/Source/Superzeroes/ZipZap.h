@@ -190,6 +190,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UParticleSystem* boomBoomImpact;
 
+	UPROPERTY(EditAnywhere)
+		UParticleSystem* enemyImpact;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
 	//used for changing between the two toxic walk sound sfx

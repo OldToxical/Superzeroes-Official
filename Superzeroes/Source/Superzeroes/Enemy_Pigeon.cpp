@@ -1175,35 +1175,6 @@ void AEnemy_Pigeon::WalkRight()
 
 void AEnemy_Pigeon::Attack()
 {
-	/*
-	// Wait until the needed frame is executed
-	if (stateUpdateTimer > 0.f)
-	{
-		stateUpdateTimer -= GetWorld()->GetDeltaSeconds();
-		FaceNearestPlayer();
-	}
-	else // The frame is on the screen, execute the actual attacking functionality once
-	{
-		FaceNearestPlayer();
-
-		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 81.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
-		FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
-
-		if (rotation.Yaw > 0.f) // Right
-		{
-			muzzleFlashLocation.X += 188.68f;
-		}
-
-		//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
-		FRotator muzzleFlashSpawnRotator = FRotator(rotation.Pitch, rotation.Yaw - 180.f, rotation.Roll);
-		UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, muzzleFlashSpawnRotator, FVector(.6f, .6f, .6f));
-		muzzleFlash->CustomTimeDilation = 1.4f;
-
-		// Spawn bullet
-		UGameplayStatics::PlaySound2D(GetWorld(), shootSFX);
-		AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
-	}*/
-	// GET FLIPBOOK FRAMES !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	FaceNearestPlayer();
 
 	if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && shootAvailable)
@@ -1218,7 +1189,7 @@ void AEnemy_Pigeon::Attack()
 			muzzleFlashLocation.X += 162.68f;
 		}
 
-		//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
+		// Spawn particle
 		FRotator muzzleFlashSpawnRotator = FRotator(rotation.Pitch, rotation.Yaw - 180.f, rotation.Roll);
 		UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, muzzleFlashSpawnRotator, FVector(.6f, .6f, .6f));
 		muzzleFlash->CustomTimeDilation = 1.4f;

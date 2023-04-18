@@ -205,6 +205,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 		UNiagaraComponent* smokeParticle;
 
+	UPROPERTY(EditAnywhere)
+		UParticleSystem* zipZapImpact;
+
+	UPROPERTY(EditAnywhere)
+		UParticleSystem* enemyImpact;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
 
