@@ -210,6 +210,8 @@ protected:
 	//there may be a better way of doing this?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
 		float TimeBetweenWalkSounds;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float healRate;
 
 	int currentLevel;
 	bool canClimb;

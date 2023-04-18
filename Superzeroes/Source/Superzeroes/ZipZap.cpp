@@ -28,7 +28,8 @@ AZipZap::AZipZap()
 	PrimaryActorTick.bCanEverTick = true;
 	jumpPreludeTimer = 0.f;
 	health = 100.f;
-	timeToHeal = 10.f;
+	timeToHeal = 5.f;
+	healRate = 0.5f;
 	meter = 0.0f;
 	refillTime = 0.1f;
 	skillCost = 50.f;
@@ -156,7 +157,7 @@ void AZipZap::Tick(float DeltaTime)
 			setHealth(health - 0.5f); // This damages Zip Zap far more than Boom Boom
 		}
 
-		if (characterState == State2::Idle)
+		if (characterState != State2::Hurt)
 		{
 			healTimer += DeltaTime;
 
@@ -175,7 +176,7 @@ void AZipZap::Tick(float DeltaTime)
 
 		if (healing)
 		{
-			setHealth(health + 0.5f);
+			setHealth(health + healRate);
 		}
 
 		if (health <= 0.f)
@@ -552,11 +553,12 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		}
 		if (otherActor->IsA(ALAdder::StaticClass()))
 		{
-			if (characterState == State2::Running || characterState == State2::Idle) 
+			//commenting out in case this is needed again
+			/*if (characterState == State::Running || characterState == State::Idle)
 			{
 				canClimb = true;
-			}
-
+			}*/
+			canClimb = true;
 		}
 		if (otherActor->ActorHasTag("LevelRespawnTrigger"))
 		{

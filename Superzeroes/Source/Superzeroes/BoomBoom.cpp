@@ -45,7 +45,8 @@ ABoomBoom::ABoomBoom()
 	canSpawnZipZap = false;
 	stepMade = false;
 	health = 200.f;
-	timeToHeal = 10.f;
+	timeToHeal = 5.f;
+	healRate = 0.5f;
 	healing = false;
 	respawnTime = 15.0f;
 	meter = 0.0f;
@@ -191,7 +192,7 @@ void ABoomBoom::Tick(float DeltaTime)
 			setHealth(health - 0.03f); // This damages Boom Boom, but not as much as Zip Zap
 		}
 	
-		if (characterState == State::Idle)
+		if (characterState != State::Hurt)
 		{
 			healTimer += DeltaTime;
 
@@ -210,7 +211,7 @@ void ABoomBoom::Tick(float DeltaTime)
 
 		if (healing)
 		{
-			setHealth(health + 0.5f);
+			setHealth(health + healRate);
 		}
 
 		if (health <= 0.f)
@@ -675,10 +676,12 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		}
 		if (otherActor->IsA(ALAdder::StaticClass()))
 		{
-			if (characterState == State::Running || characterState == State::Idle)
+			//commenting out in case this is needed again
+			/*if (characterState == State::Running || characterState == State::Idle)
 			{
-				canClimb = true;
-			}
+				canClimb = true;				
+			}*/
+			canClimb = true;
 		}
 		if (otherActor->ActorHasTag("LevelRespawnTrigger"))
 		{
