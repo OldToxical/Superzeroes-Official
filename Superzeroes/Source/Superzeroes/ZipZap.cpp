@@ -28,7 +28,8 @@ AZipZap::AZipZap()
 	PrimaryActorTick.bCanEverTick = true;
 	jumpPreludeTimer = 0.f;
 	health = 100.f;
-	timeToHeal = 10.f;
+	timeToHeal = 5.f;
+	healRate = 0.5f;
 	meter = 0.0f;
 	refillTime = 0.1f;
 	skillCost = 50.f;
@@ -156,7 +157,7 @@ void AZipZap::Tick(float DeltaTime)
 			setHealth(health - 0.5f); // This damages Zip Zap far more than Boom Boom
 		}
 
-		if (characterState == State2::Idle)
+		if (characterState != State2::Hurt)
 		{
 			healTimer += DeltaTime;
 
@@ -175,7 +176,7 @@ void AZipZap::Tick(float DeltaTime)
 
 		if (healing)
 		{
-			setHealth(health + 0.5f);
+			setHealth(health + healRate);
 		}
 
 		if (health <= 0.f)
@@ -429,7 +430,7 @@ void AZipZap::UpdateState()
 	{
 		if (flipbook->GetPlaybackPositionInFrames() == 3 && !damageDealt)
 		{
-			ProcessShoot(25.f);
+			ProcessShoot(25.f, false);
 			damageDealt = true;
 		}
 	}
@@ -552,11 +553,7 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		}
 		if (otherActor->IsA(ALAdder::StaticClass()))
 		{
-			if (characterState == State2::Running || characterState == State2::Idle) 
-			{
-				canClimb = true;
-			}
-
+			canClimb = true;
 		}
 		if (otherActor->ActorHasTag("LevelRespawnTrigger"))
 		{
@@ -613,13 +610,27 @@ bool AZipZap::IsFacingBoomBoom()
 	return false;
 }
 
-void AZipZap::ProcessShoot(float damage_)
+void AZipZap::ProcessShoot(float damage_, bool inAir)
 {
-	FVector muzzleFlashLocation = FVector(GetActorLocation().X + 138.f, GetActorLocation().Y, GetActorLocation().Z - 22.f);
+	FVector muzzleFlashLocation;
 
-	if (rotation.Yaw > 0.f) // Left
+	if (!inAir)
 	{
-		muzzleFlashLocation.X -= 276.f;
+		muzzleFlashLocation = FVector(GetActorLocation().X + 138.f, GetActorLocation().Y, GetActorLocation().Z - 22.f);
+
+		if (rotation.Yaw > 0.f) // Left
+		{
+			muzzleFlashLocation.X -= 276.f;
+		}
+	}
+	else
+	{
+		muzzleFlashLocation = FVector(GetActorLocation().X + 65.f, GetActorLocation().Y, GetActorLocation().Z + 63.f);
+
+		if (rotation.Yaw > 0.f) // Left
+		{
+			muzzleFlashLocation.X -= 130.f;
+		}
 	}
 
 	UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));
@@ -676,6 +687,13 @@ void AZipZap::Shoot()
 			characterState = State2::Attacking;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(simpleAttack);
+		}
+		else if (characterState != State2::Combo_Projectile && characterState != State2::Siege && charMove->IsFalling())
+		{
+			flipbook->SetLooping(false);
+			flipbook->SetFlipbook(airAttack);
+			flipbook->Play();
+			ProcessShoot(25.f, true);
 		}
 	}
 }

@@ -58,6 +58,8 @@ public:
 		class UPaperFlipbook* hurt;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperFlipbook* dead;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperFlipbook* airAttack;
 
 	UFUNCTION(BlueprintCallable)
 		void UpdateAnimation();
@@ -81,7 +83,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool IsFacingBoomBoom();
 	UFUNCTION(BlueprintCallable)
-		void ProcessShoot(float damage_);
+		void ProcessShoot(float damage_, bool inAir);
 	UFUNCTION(BlueprintCallable)
 		void SetLevelIndex(int level) { currentLevel = level; }
 	UFUNCTION(BlueprintCallable)
@@ -210,6 +212,8 @@ protected:
 	//there may be a better way of doing this?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
 		float TimeBetweenWalkSounds;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float healRate;
 
 	int currentLevel;
 	bool canClimb;
