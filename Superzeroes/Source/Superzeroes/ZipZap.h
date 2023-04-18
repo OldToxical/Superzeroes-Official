@@ -7,7 +7,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "ZipZap.generated.h"
 
-#define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 120
+#define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 150
 
 UENUM(BlueprintType)
 enum class State2 : uint8
@@ -186,6 +186,12 @@ protected:
 	// Particles' variables
 	UPROPERTY(BlueprintReadWrite)
 		UNiagaraComponent* smokeParticle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UParticleSystem* boomBoomImpact;
+
+	UPROPERTY(EditAnywhere)
+		UParticleSystem* enemyImpact;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;

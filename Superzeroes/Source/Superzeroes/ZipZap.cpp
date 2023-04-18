@@ -27,7 +27,7 @@ AZipZap::AZipZap()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	jumpPreludeTimer = 0.f;
-	health = 100.f; 
+	health = 100.f;
 	timeToHeal = 10.f;
 	meter = 0.0f;
 	refillTime = 0.1f;
@@ -67,6 +67,7 @@ void AZipZap::setHealth(float newHealth)
 		if (characterState != State2::Hurt && characterState != State2::Attacking && characterState != State2::Combo_Projectile && newHealth < health)
 		{
 			healTimer = 0.f;
+			healing = false;
 			characterState = State2::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
@@ -232,7 +233,7 @@ void AZipZap::UpdateAnimation()
 	// If character is moving, change to running animation
 	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping && characterState != State2::Hurt)
+		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping && characterState != State2::Hurt && characterState != State2::Siege)
 		{
 			characterState = State2::Running;
 			flipbook->SetFlipbook(run);
@@ -240,7 +241,7 @@ void AZipZap::UpdateAnimation()
 	}
 	else // Otherwise, change to idle animation
 	{
-		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping && characterState != State2::Hurt)
+		if (characterState != State2::Attacking && characterState != State2::Combo_Projectile && characterState != State2::Jumping && characterState != State2::Hurt && characterState != State2::Siege)
 		{
 			characterState = State2::Idle;
 			flipbook->SetFlipbook(idle);
@@ -327,7 +328,7 @@ void AZipZap::InitiateComboAttack_Savage()
 	{
 		if (characterState != State2::Dead)
 		{
-			if (characterState != State2::Siege && characterState != State2::Attacking && characterState != State2::Combo_Projectile && boomBoom->GetState() != State::Combo_Savage && boomBoom->GetState() != State::Dead && inputAvailable)
+			if (characterState != State2::Siege && characterState != State2::Attacking && characterState != State2::Combo_Projectile && boomBoom->GetState() != State::Combo_Savage && boomBoom->GetState() != State::Dead && !boomBoom->charMove->IsFalling() && inputAvailable)
 			{
 				float proximityToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
 
@@ -438,6 +439,17 @@ void AZipZap::UpdateState()
 		{
 			boomBoom->InitiateComboAttack_Savage(rotation.Yaw);
 			savageInitiated = true;
+			FVector muzzleFlashLocation = FVector(GetActorLocation().X + 138.f, GetActorLocation().Y, GetActorLocation().Z - 22.f);
+
+			if (rotation.Yaw > 0.f) // Left
+			{
+				muzzleFlashLocation.X -= 276.f;
+			}
+
+			UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));
+			muzzleFlash->CustomTimeDilation = 3.f;
+
+			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y + 30.f, boomBoom->GetActorLocation().Z), FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
 		}
 	}
 }
@@ -473,6 +485,7 @@ void AZipZap::climb(float scaleVal)
 			{
 				if (scaleVal != 0)
 				{
+					//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::SanitizeFloat(scaleVal));
 					charMove->MovementMode = (TEnumAsByte<EMovementMode>)3;
 					charMove->Velocity = FVector(charMove->Velocity.X, 0, scaleVal * 200);
 					charMove->GravityScale = 0.0f;
@@ -513,18 +526,27 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 			{
 				if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 				{
+					FVector impactForce = FVector(400.f, 0.f, 180.f);
+
 					if (isElectrified)
 					{
-						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(2.f, 2.f, 2.f));
+						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(1.f, 1.f, 1.f));
 						impact->CustomTimeDilation = 3.f;
 						Enemy->TakeEnemyDamage(90.f);
+						impactForce.X += 100.f;
 					}
 					else
 					{
+						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyImpact, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(.9f, .9f, .9f));
 						Enemy->TakeEnemyDamage(60.f);
 					}
 
-					Enemy->LaunchCharacter(FVector(charMove->Velocity.X / 3.f, charMove->Velocity.Y, charMove->Velocity.Z), false, false);
+					if (rotation.Yaw > 0.f) // Looking left
+					{
+						impactForce.X *= -1.f;
+					}
+
+					Enemy->LaunchCharacter(impactForce, false, false);
 				}
 			}
 		}
@@ -620,7 +642,6 @@ void AZipZap::ProcessShoot(float damage_)
 	if (hit)
 	{
 		AActor* HitActor = OutHit.GetActor();
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, HitActor->GetName());
 
 		if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
 		{
@@ -631,6 +652,7 @@ void AZipZap::ProcessShoot(float damage_)
 			{
 				impactForce.X *= -1.f;
 			}
+			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyImpact, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(.9f, .9f, .9f));
 			AComicFX* cfx2 = GetWorld()->SpawnActor<AComicFX>(zap, location_, GetActorRotation());
 			cfx2->spriteChanger(3);
 			Enemy->TakeEnemyDamage(damage_);

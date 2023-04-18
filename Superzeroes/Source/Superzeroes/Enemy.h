@@ -71,4 +71,5 @@ public:
 	virtual void TakeEnemyDamage(float damage_);
 	void AddToGetActorsToIgnore(AActor* actor) { actorsToIgnore.Add(actor); }
 	void SetSpawner(AEnemySpawner* spawner_) { spawner = spawner_; }
+	float GetHealth() { return healthPoints; }
 };

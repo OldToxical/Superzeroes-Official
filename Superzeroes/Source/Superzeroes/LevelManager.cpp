@@ -190,21 +190,27 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 {
 	if (otherActor->IsA(ABoomBoom::StaticClass()))
 	{
-		boomBoomEnd = true;
-
-		if (zipZapEnd)
+		if (Cast<ABoomBoom>(otherActor)->GetState() != State::Siege)
 		{
-			SwitchToNextLevel(overlappedActor);
+			boomBoomEnd = true;
+
+			if (zipZapEnd)
+			{
+				SwitchToNextLevel(overlappedActor);
+			}
 		}
 	}
 
 	if (otherActor->IsA(AZipZap::StaticClass()))
 	{
-		zipZapEnd = true;
-
-		if (boomBoomEnd)
+		if (Cast<AZipZap>(otherActor)->GetState() != State2::Siege)
 		{
-			SwitchToNextLevel(overlappedActor);
+			zipZapEnd = true;
+
+			if (boomBoomEnd)
+			{
+				SwitchToNextLevel(overlappedActor);
+			}
 		}
 	}
 }

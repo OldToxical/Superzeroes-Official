@@ -67,6 +67,14 @@ private:
 	void GoToPlayer();
 	void DealDamage();
 
+	UFUNCTION()
+		void OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+
+	UFUNCTION()
+		void OverlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+
 	float chooseActionTimeoutTimer;
 	float stateUpdateTimer;
 	float speed;
@@ -80,6 +88,7 @@ private:
 
 	bool hitAvailable;
 	bool deathFXcompleted;
+	bool isColliding;
 
 	// Animations
 	UPROPERTY(EditAnywhere)
@@ -103,6 +112,9 @@ private:
 	// Particles
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* boomBoomImpact;
+
+	UPROPERTY(EditAnywhere)
+		UParticleSystem* zipZapImpact;
 
 protected:
 	UFUNCTION(BlueprintCallable)

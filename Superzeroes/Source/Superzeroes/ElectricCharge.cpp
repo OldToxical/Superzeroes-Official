@@ -29,15 +29,22 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 		{
 			if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 			{
-				FVector impactForce = FVector(330.f, 0.f, 180.f);
-				if (GetActorLocation().X > Enemy->GetActorLocation().X) // Looking left
+				if (Enemy->GetHealth() > 0.f)
 				{
-					impactForce.X *= -1.f;
+					FVector impactForce = FVector(330.f, 0.f, 180.f);
+					if (GetActorLocation().X > Enemy->GetActorLocation().X) // Looking left
+					{
+						impactForce.X *= -1.f;
+					}
+					Enemy->LaunchCharacter(impactForce, false, false);
+					Enemy->TakeEnemyDamage(damage);
+					AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, FVector(Enemy->GetActorLocation().X, Enemy->GetActorLocation().Y, Enemy->GetActorLocation().Z + 80.f), GetActorRotation());
+					cfx->spriteChanger(0);
 				}
-				Enemy->LaunchCharacter(impactForce, false, false);
-				Enemy->TakeEnemyDamage(damage);
-				AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, FVector(Enemy->GetActorLocation().X, Enemy->GetActorLocation().Y, Enemy->GetActorLocation().Z + 80.f), GetActorRotation());
-				cfx->spriteChanger(0);
+				else
+				{
+					return;
+				}
 			}
 		}
 				

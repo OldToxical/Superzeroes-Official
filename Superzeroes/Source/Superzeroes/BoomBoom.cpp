@@ -102,6 +102,7 @@ void ABoomBoom::setHealth(float newHealth)
 		if (characterState != State::Hurt && characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Siege && newHealth < health)
 		{
 			healTimer = 0.f;
+			healing = false;
 			characterState = State::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
@@ -243,6 +244,7 @@ void ABoomBoom::Landed(const FHitResult& Hit)
 
 	smokeParticle->ActivateSystem();
 	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
+	UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeLandBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
 	characterState = State::Idle;
 	flipbook->SetLooping(true);
 	flipbook->Play();
@@ -297,23 +299,27 @@ void ABoomBoom::UpdateState()
 	{
 		if (launchZipZap)
 		{
+			// Launch Zip Zap
 			zipZap->InitiateComboAttack_Projectile(rotation.Yaw);
 			launchZipZap = false;
 			punchPreludeTimer = 0.f;
+			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, FVector(zipZap->GetActorLocation().X, zipZap->GetActorLocation().Y + 30.f, zipZap->GetActorLocation().Z), FRotator(0, 0, 0), FVector(.8f, .8f, .8f));
 		}
 		else
 		{
-			// Apply damage (will be implemented at a later stage)
+			// Apply damage
 			punchPreludeTimer = 0.f;
-			UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 			float damage = 25.f;
+
 			if (flipbook->GetFlipbook() == strongAttack)
 			{
 				damage = 50.f;
 			}
+
 			ProcessHit(damage);
 		}
 
+		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 	}
 
 	// Always decrease the jump prelude timer
@@ -337,7 +343,7 @@ void ABoomBoom::UpdateAnimation()
 	// If character is moving, change to running animation
 	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != State::Combo_Savage && characterState != State::Attacking && characterState != State::Jumping && characterState != State::Hurt)
+		if (characterState != State::Combo_Savage && characterState != State::Attacking && characterState != State::Jumping && characterState != State::Hurt && characterState != State::Siege)
 		{
 			characterState = State::Running;
 			flipbook->SetFlipbook(run);
@@ -345,7 +351,7 @@ void ABoomBoom::UpdateAnimation()
 	}
 	else // Otherwise, change to idle animation
 	{
-		if (characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Jumping && characterState != State::Hurt)
+		if (characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Jumping && characterState != State::Hurt && characterState != State::Siege)
 		{
 			characterState = State::Idle;
 			flipbook->SetFlipbook(idle);
@@ -365,7 +371,7 @@ void ABoomBoom::move(float scaleVal)
 		}
 
 		// Determine the character's facing direction, regardless of the state
-		if (scaleVal > 0.f)
+		if (scaleVal > 0.f && (characterState == State::Running || characterState == State::Combo_Savage))
 		{
 			if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 7) && !charMove->IsFalling())
 			{
@@ -394,7 +400,7 @@ void ABoomBoom::move(float scaleVal)
 			rotation.Yaw = 0.f;
 			flipbook->SetWorldRotation(rotation);
 		}
-		else if (scaleVal < 0.f)
+		else if (scaleVal < 0.f && (characterState == State::Running || characterState == State::Combo_Savage))
 		{
 			if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 7) && !charMove->IsFalling())
 			{
@@ -745,6 +751,12 @@ void ABoomBoom::ProcessHit(float damage_)
 			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, FVector(endPoint.X, endPoint.Y - 0.1f, endPoint.Z + 100.f), GetActorRotation());
 			cfx->spriteChanger(3);
 			Enemy->TakeEnemyDamage(damage_);
+			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyImpact, FVector(Enemy->GetActorLocation().X, Enemy->GetActorLocation().Y + 30.f, Enemy->GetActorLocation().Z), FRotator(0, 0, 0), FVector(.7f, .7f, .7f));
+
+			if (damage_ >= 50.f)
+			{
+				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeHitBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
+			}
 		}
 
 		if (AButton_But_Awesome* button = Cast<AButton_But_Awesome>(HitActor))

@@ -110,7 +110,6 @@ void AEnemy_Pigeon::Tick(float DeltaTime)
 		zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
 	}
 
-
 	AI();
 }
 
@@ -1176,35 +1175,6 @@ void AEnemy_Pigeon::WalkRight()
 
 void AEnemy_Pigeon::Attack()
 {
-	/*
-	// Wait until the needed frame is executed
-	if (stateUpdateTimer > 0.f)
-	{
-		stateUpdateTimer -= GetWorld()->GetDeltaSeconds();
-		FaceNearestPlayer();
-	}
-	else // The frame is on the screen, execute the actual attacking functionality once
-	{
-		FaceNearestPlayer();
-
-		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 81.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
-		FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
-
-		if (rotation.Yaw > 0.f) // Right
-		{
-			muzzleFlashLocation.X += 188.68f;
-		}
-
-		//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
-		FRotator muzzleFlashSpawnRotator = FRotator(rotation.Pitch, rotation.Yaw - 180.f, rotation.Roll);
-		UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, muzzleFlashSpawnRotator, FVector(.6f, .6f, .6f));
-		muzzleFlash->CustomTimeDilation = 1.4f;
-
-		// Spawn bullet
-		UGameplayStatics::PlaySound2D(GetWorld(), shootSFX);
-		AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
-	}*/
-	// GET FLIPBOOK FRAMES !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	FaceNearestPlayer();
 
 	if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && shootAvailable)
@@ -1219,7 +1189,7 @@ void AEnemy_Pigeon::Attack()
 			muzzleFlashLocation.X += 162.68f;
 		}
 
-		//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
+		// Spawn particle
 		FRotator muzzleFlashSpawnRotator = FRotator(rotation.Pitch, rotation.Yaw - 180.f, rotation.Roll);
 		UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, muzzleFlashSpawnRotator, FVector(.6f, .6f, .6f));
 		muzzleFlash->CustomTimeDilation = 1.4f;
@@ -1233,11 +1203,29 @@ void AEnemy_Pigeon::Attack()
 
 void AEnemy_Pigeon::FaceNearestPlayer()
 {
-	// Boom Boom is closer
-	if (playerToAttack->ActorHasTag("BoomBoom"))
+	if (playerToAttack != nullptr)
 	{
-		// Face him
-		if (boomBoom->GetActorLocation().X < GetActorLocation().X) // He's on the left
+		// Boom Boom is closer
+		if (playerToAttack->ActorHasTag("BoomBoom"))
+		{
+			// Face him
+			if (boomBoom->GetActorLocation().X < GetActorLocation().X) // He's on the left
+			{
+				rotation.Yaw = 0.f;
+				flipbookComponent->SetWorldRotation(rotation);
+
+			}
+			else // He's on the right
+			{
+				rotation.Yaw = 180.f;
+				flipbookComponent->SetWorldRotation(rotation);
+			}
+
+			return;
+		}
+
+		// // Zip Zap is closer, face him
+		if (zipZap->GetActorLocation().X < GetActorLocation().X) // He's on the left
 		{
 			rotation.Yaw = 0.f;
 			flipbookComponent->SetWorldRotation(rotation);
@@ -1248,45 +1236,38 @@ void AEnemy_Pigeon::FaceNearestPlayer()
 			rotation.Yaw = 180.f;
 			flipbookComponent->SetWorldRotation(rotation);
 		}
-
-		return;
 	}
-
-	// // Zip Zap is closer, face him
-	if (zipZap->GetActorLocation().X < GetActorLocation().X) // He's on the left
-	{
-		rotation.Yaw = 0.f;
-		flipbookComponent->SetWorldRotation(rotation);
-
-	}
-	else // He's on the right
-	{
-		rotation.Yaw = 180.f;
-		flipbookComponent->SetWorldRotation(rotation);
-	}
-	
 }
 
 void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
 {
-	isColliding = true;
-	chooseActionTimeoutTimer = 5.f;
-
-	if (currentState == State3::WalkingLeft)
+	if (otherActor->ActorHasTag("LevelRespawnTrigger"))
 	{
-		currentAction = Action::WalkRight;
-	}
-	else if (currentState == State3::WalkingRight)
-	{
-		currentAction = Action::WalkLeft;
+		Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
+		Destroy();
 	}
 
-	if (otherActor->IsA(ABoomBoom::StaticClass()) || otherActor->IsA(AZipZap::StaticClass()))
+	if (currentState != State3::Dead)
 	{
-		currentAction = Action::Attack;
-	}
+		isColliding = true;
+		chooseActionTimeoutTimer = 5.f;
 
-	ExecuteAction();
+		if (currentState == State3::WalkingLeft)
+		{
+			currentAction = Action::WalkRight;
+		}
+		else if (currentState == State3::WalkingRight)
+		{
+			currentAction = Action::WalkLeft;
+		}
+
+		if (otherActor->IsA(ABoomBoom::StaticClass()) || otherActor->IsA(AZipZap::StaticClass()))
+		{
+			currentAction = Action::Attack;
+		}
+
+		ExecuteAction();
+	}
 }
 
 void AEnemy_Pigeon::OverlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
@@ -1330,9 +1311,12 @@ void AEnemy_Pigeon::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 	
-	flipbookComponent->SetFlipbook(idle);
-	flipbookComponent->SetLooping(true);
-	flipbookComponent->Play();
+	if (currentState != State3::Dead && flipbookComponent->GetFlipbook() != hurtAnim)
+	{
+		flipbookComponent->SetFlipbook(idle);
+		flipbookComponent->SetLooping(true);
+		flipbookComponent->Play();
+	}
 }
 
 void AEnemy_Pigeon::WriteStringToFile(FString FilePath, FString String)
