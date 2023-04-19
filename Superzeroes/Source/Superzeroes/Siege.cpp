@@ -73,6 +73,8 @@ void ASiege::Tick(float DeltaTime)
 		boomBoom->setMeter(-100.f);
 		zipZap->setMeter(-100.f);
 		UGameplayStatics::PlaySound2D(GetWorld(), siegeActivate);
+		UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(2.f, 2.f, true, true, true, true);
+		UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(2.f, 2.f, true, true, true, true);
 		flipbook->Play();
 	}
 
@@ -198,6 +200,8 @@ void ASiege::ExecuteSiegeMode()
 				muzzleFlashParticle->CustomTimeDilation = 3.f;
 				AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
 				UGameplayStatics::PlaySound2D(GetWorld(), siegeShoot);
+				UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, .2f, true, true, true, true);
+				UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(1.f, .2f, true, true, true, true);
 				shotFired = false;
 				bullets--;
 			}
@@ -229,10 +233,12 @@ void ASiege::Move(float scaleVal)
 
 			if (flipbook->GetFlipbook() == walk && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 9) && !charMove->IsFalling())
 			{
-				UGameplayStatics::PlaySound2D(GetWorld(), siegeWalk);
-				smokeParticle->ActivateSystem();
 				stepMade = true;
+				smokeParticle->ActivateSystem();
+				UGameplayStatics::PlaySound2D(GetWorld(), siegeWalk);
 				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeLandBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
+				UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, .15f, true, true, true, true);
+				UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(1.f, .15f, true, true, true, true);
 			}
 
 			if (flipbook->GetFlipbook() == walk && (flipbook->GetPlaybackPositionInFrames() == 2 || flipbook->GetPlaybackPositionInFrames() == 10))
@@ -252,10 +258,12 @@ void ASiege::Move(float scaleVal)
 
 			if (flipbook->GetFlipbook() == walk && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 9) && !charMove->IsFalling())
 			{
-				UGameplayStatics::PlaySound2D(GetWorld(), siegeWalk);
-				smokeParticle->ActivateSystem();
 				stepMade = true;
+				smokeParticle->ActivateSystem();
+				UGameplayStatics::PlaySound2D(GetWorld(), siegeWalk);
 				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeLandBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
+				UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, .2f, true, true, true, true);
+				UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(1.f, .2f, true, true, true, true);
 			}
 
 			if (flipbook->GetFlipbook() == walk && (flipbook->GetPlaybackPositionInFrames() == 2 || flipbook->GetPlaybackPositionInFrames() == 10))
