@@ -48,7 +48,7 @@ ABoomBoom::ABoomBoom()
 	timeToHeal = 5.f;
 	healRate = 0.5f;
 	healing = false;
-	respawnTime = 15.0f;
+	respawnTime = 10.0f;
 	meter = 0.0f;
 	refillTime = 0.1f;
 	skillCost = 50.f;
@@ -670,6 +670,8 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 				if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 				{
 					Enemy->TakeEnemyDamage(100.f);
+					UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyImpact, FVector(Enemy->GetActorLocation().X, Enemy->GetActorLocation().Y + 30.f, Enemy->GetActorLocation().Z), FRotator(0, 0, 0), FVector(.9f, .9f, .9f));
+					UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, 0.2f, true, true, true, true);
 				}
 			}
 		}

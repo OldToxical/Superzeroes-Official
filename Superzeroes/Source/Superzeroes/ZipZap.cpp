@@ -31,7 +31,7 @@ AZipZap::AZipZap()
 	timeToHeal = 5.f;
 	healRate = 0.5f;
 	meter = 0.0f;
-	respawnTime = 15.0f;
+	respawnTime = 10.0f;
 	refillTime = 0.1f;
 	skillCost = 50.f;
 	currentLevel = 0;
