@@ -31,6 +31,7 @@ AZipZap::AZipZap()
 	timeToHeal = 5.f;
 	healRate = 0.5f;
 	meter = 0.0f;
+	respawnTime = 15.0f;
 	refillTime = 0.1f;
 	skillCost = 50.f;
 	currentLevel = 0;
@@ -78,6 +79,8 @@ void AZipZap::setHealth(float newHealth)
 			{
 				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
 			}
+
+			UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(2.f, 0.3f, true, true, true, true);
 		}
 
 		health = newHealth;
@@ -223,10 +226,12 @@ void AZipZap::Landed(const FHitResult& Hit)
 	}
 
 	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
+	UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.5f, 0.25f, true, true, true, true);
 	charMove->GravityScale = 1.f;
 	characterState = State2::Idle;
 	flipbook->SetLooping(true);
 	flipbook->Play();
+	isShooting = false;
 }
 
 void AZipZap::UpdateAnimation()
@@ -277,6 +282,7 @@ void AZipZap::move(float scaleVal)
 					else
 					{
 						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+						UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.05f, 0.15f, true, true, true, true);
 						smokeParticle->ActivateSystem();
 					}
 					stepMade = true;
@@ -306,6 +312,7 @@ void AZipZap::move(float scaleVal)
 					else
 					{
 						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+						UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.05f, 0.15f, true, true, true, true);
 						smokeParticle->ActivateSystem();
 					}
 					stepMade = true;
@@ -357,6 +364,7 @@ void AZipZap::InitiateComboAttack_Projectile(float directionRotation)
 	audComp->Play();
 	charMove->GravityScale = 0.7f;
 	characterState = State2::Combo_Projectile;
+	UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.5f, 0.2f, true, true, true, true);
 
 	// Calculate impulse vector
 	float X_ImpulseDirection = 800.f;
@@ -451,6 +459,7 @@ void AZipZap::UpdateState()
 			muzzleFlash->CustomTimeDilation = 3.f;
 
 			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y + 30.f, boomBoom->GetActorLocation().Z), FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
+			UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.5f, 0.2f, true, true, true, true);
 		}
 	}
 }
@@ -547,6 +556,7 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 						impactForce.X *= -1.f;
 					}
 
+					UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.5f, 0.2f, true, true, true, true);
 					Enemy->LaunchCharacter(impactForce, false, false);
 				}
 			}
@@ -633,6 +643,7 @@ void AZipZap::ProcessShoot(float damage_, bool inAir)
 		}
 	}
 
+	// Spawn particle
 	UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));
 	muzzleFlash->CustomTimeDilation = 3.f;
 
@@ -643,6 +654,9 @@ void AZipZap::ProcessShoot(float damage_, bool inAir)
 	FVector location = FVector(muzzleFlashLocation.X, muzzleFlashLocation.Y - 0.1f, GetActorLocation().Z + 70.f);
 	AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap, location, GetActorRotation());
 	cfx->spriteChanger(0);
+
+	// Spawn force feedback
+	UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.5f, 0.2f, true, true, true, true);
 
 	// Check for close range collision
 	FHitResult OutHit;
@@ -688,12 +702,13 @@ void AZipZap::Shoot()
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(simpleAttack);
 		}
-		else if (characterState != State2::Combo_Projectile && characterState != State2::Siege && charMove->IsFalling())
+		else if (characterState != State2::Combo_Projectile && characterState != State2::Siege && charMove->IsFalling() && !isShooting)
 		{
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(airAttack);
 			flipbook->Play();
 			ProcessShoot(25.f, true);
+			isShooting = true;
 		}
 	}
 }
