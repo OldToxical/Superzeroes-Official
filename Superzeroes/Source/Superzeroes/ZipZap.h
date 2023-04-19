@@ -246,6 +246,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* flyingSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* attackSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class UAudioComponent* audComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

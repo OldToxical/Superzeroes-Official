@@ -489,7 +489,7 @@ void AZipZap::climb(float scaleVal)
 {
 	if (characterState != State2::Dead)
 	{
-		if (characterState != State2::Attacking && characterState != State2::Hurt)
+		if (characterState != State2::Attacking && characterState != State2::Hurt && characterState != State2::Combo_Projectile)
 		{
 			if (canClimb == true && characterState != State2::Jumping)
 			{
@@ -642,7 +642,6 @@ void AZipZap::ProcessShoot(float damage_, bool inAir)
 			muzzleFlashLocation.X -= 130.f;
 		}
 	}
-
 	// Spawn particle
 	UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));
 	muzzleFlash->CustomTimeDilation = 3.f;
