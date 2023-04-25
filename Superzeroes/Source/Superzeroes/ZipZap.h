@@ -114,6 +114,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void setMeter(float newMeter) { meter += newMeter; if (meter > 100.f) { meter = 100.f; } if (meter < 0.0f) { meter = 0.0f; } };
 	UInputComponent* GetInputComponent() { return InputComponent; }
+	float GetVolume() { return volume; }
+	void SetVolume(float newVol) { volume = newVol; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -214,6 +216,10 @@ protected:
 		float TimeBetweenWalkSounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
 		float healRate;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		float volume;
 
 	int currentLevel;
 	bool canClimb;

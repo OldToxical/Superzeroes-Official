@@ -239,17 +239,46 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool canSpawnZipZap;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		float volume;
+
 	//Audio variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* jumpSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* jump2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* jump3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* jump4SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* landSFX;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* walkSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* walk2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* walk3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* walk4SFX;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* toxicWalk1SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* toxicWalk2SFX;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* growlSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* growl2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* growl3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* growl4SFX;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* deathSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)

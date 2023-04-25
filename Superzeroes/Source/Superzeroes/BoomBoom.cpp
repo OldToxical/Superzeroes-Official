@@ -53,6 +53,7 @@ ABoomBoom::ABoomBoom()
 	refillTime = 0.1f;
 	skillCost = 50.f;
 	currentLevel = 0;
+	volume = 1.0f;
 
 	if (flipbook)
 	{
@@ -111,7 +112,7 @@ void ABoomBoom::setHealth(float newHealth)
 			//hurt clip will play over and over without this
 			if (!toxicDamage)
 			{
-				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
+				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX, volume);
 			}
 
 			UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(2.f, 0.3f, true, true, true, true);
@@ -180,7 +181,7 @@ void ABoomBoom::Tick(float DeltaTime)
 
 		if (meter >= (99.9f - refillTime) && meter <= 99.9f)
 		{
-			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
+			UGameplayStatics::PlaySound2D(GetWorld(), meterFull, volume);
 		}
 	}
 
@@ -201,7 +202,7 @@ void ABoomBoom::Tick(float DeltaTime)
 			if (healTimer >= timeToHeal && health < 200.0f)
 			{
 				healing = true;
-				UGameplayStatics::PlaySound2D(GetWorld(), healthRecharge);
+				UGameplayStatics::PlaySound2D(GetWorld(), healthRecharge, volume);
 				healTimer = 0.0f;
 			}
 		}
@@ -218,7 +219,7 @@ void ABoomBoom::Tick(float DeltaTime)
 
 		if (health <= 0.f)
 		{
-			UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
+			UGameplayStatics::PlaySound2D(GetWorld(), deathSFX, volume);
 			characterState = State::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
@@ -246,7 +247,7 @@ void ABoomBoom::Landed(const FHitResult& Hit)
 	Super::Landed(Hit);
 
 	smokeParticle->ActivateSystem();
-	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
+	UGameplayStatics::PlaySound2D(GetWorld(), landSFX, volume);
 	UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeLandBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, 0.3f, true, true, true, true);
 	characterState = State::Idle;
@@ -326,7 +327,7 @@ void ABoomBoom::UpdateState()
 			ProcessHit(damage);
 		}
 
-		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
+		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX, volume);
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(feedbackIntensity, .2f, true, true, true, true);
 	}
 
@@ -339,7 +340,14 @@ void ABoomBoom::UpdateState()
 	{
 		if (characterState == State::Jumping && !charMove->IsFalling())
 		{
-			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
+			int jumpnum = rand() % 4 + 1;
+					switch(jumpnum)
+					{
+						case 1: UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX, volume);
+						case 2: UGameplayStatics::PlaySound2D(GetWorld(), jump2SFX, volume);
+						case 3: UGameplayStatics::PlaySound2D(GetWorld(), jump3SFX, volume);
+						case 4: UGameplayStatics::PlaySound2D(GetWorld(), jump4SFX, volume);
+					}
 			Jump();
 			jumpPreludeTimer = 1.5f;
 		}
@@ -387,14 +395,21 @@ void ABoomBoom::move(float scaleVal)
 				{
 					switch (toxicWalkSoundBool)
 					{
-						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
-						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX, volume);
+						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX, volume);
 					}
 					toxicWalkSoundBool = !toxicWalkSoundBool;
 				}
 				else
 				{
-					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					int walknum = rand() % 4 + 1;
+					switch(walknum)
+					{
+						case 1: UGameplayStatics::PlaySound2D(GetWorld(), walkSFX, volume);
+						case 2: UGameplayStatics::PlaySound2D(GetWorld(), walk2SFX, volume);
+						case 3: UGameplayStatics::PlaySound2D(GetWorld(), walk3SFX, volume);
+						case 4: UGameplayStatics::PlaySound2D(GetWorld(), walk4SFX, volume);
+					}
 					UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(.4f, .15f, true, true, true, true);
 					smokeParticle->ActivateSystem();
 				}
@@ -417,14 +432,21 @@ void ABoomBoom::move(float scaleVal)
 				{
 					switch (toxicWalkSoundBool)
 					{
-						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
-						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX, volume);
+						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX, volume);
 					}
 					toxicWalkSoundBool = !toxicWalkSoundBool;
 				}
 				else
 				{
-					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					int walknum = rand() % 4 + 1;
+					switch(walknum)
+					{
+						case 1: UGameplayStatics::PlaySound2D(GetWorld(), walkSFX, volume);
+						case 2: UGameplayStatics::PlaySound2D(GetWorld(), walk2SFX, volume);
+						case 3: UGameplayStatics::PlaySound2D(GetWorld(), walk3SFX, volume);
+						case 4: UGameplayStatics::PlaySound2D(GetWorld(), walk4SFX, volume);
+					}
 					UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(.4f, .15f, true, true, true, true);
 					smokeParticle->ActivateSystem();
 				}
@@ -570,6 +592,14 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 	rotation.Yaw = directionRotation;
 	flipbook->SetWorldRotation(rotation);
 	characterSpeed = 300.f;
+	int growlNum = rand() % 4 + 1;
+		switch(growlNum)
+		{
+			case 1: UGameplayStatics::PlaySound2D(GetWorld(), growlSFX, volume);
+			case 2: UGameplayStatics::PlaySound2D(GetWorld(), growl2SFX, volume);
+			case 3: UGameplayStatics::PlaySound2D(GetWorld(), growl3SFX, volume);
+			case 4: UGameplayStatics::PlaySound2D(GetWorld(), growl4SFX, volume);
+		}
 	characterState = State::Combo_Savage;
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, SavageComboExecutionTime, true, true, true, true);
 }
@@ -682,7 +712,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 				if (AWindowTrigger* window = Cast<AWindowTrigger>(otherActor))
 				{
 					window->BreakWindow();
-					UGameplayStatics::PlaySound2D(GetWorld(), glassBreak);
+					UGameplayStatics::PlaySound2D(GetWorld(), glassBreak, volume);
 				}
 			}
 		}
