@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
 #include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystemWidget.h"
 #include "ZipZap.generated.h"
 
 #define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 150
@@ -189,6 +190,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 		UNiagaraComponent* smokeParticle;
 
+	UPROPERTY(BlueprintReadWrite)
+		UNiagaraSystemWidget* UIParticle;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UParticleSystem* boomBoomImpact;
 
@@ -199,7 +203,7 @@ protected:
 		bool toxicDamage;
 	//used for changing between the two toxic walk sound sfx
 	bool toxicWalkSoundBool;
-
+	bool isUIparticleActive;
 	float healTimer;
 	float deathTimer;
 	float walkSoundTimer;

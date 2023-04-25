@@ -19,6 +19,7 @@
 #include "Button_But_Awesome.h"
 #include "Siege.h"
 #include "Projectile.h"
+#include "NiagaraSystemWidget.h"
 #include "Kismet/KismetStringLibrary.h"
 
 // Sets default values
@@ -426,6 +427,7 @@ void AZipZap::EndAttack()
 	    characterState = State2::Idle;
 	    flipbook->SetLooping(true);
 	    flipbook->Play();
+		isShooting = false;
 	}
 }
 
@@ -461,6 +463,23 @@ void AZipZap::UpdateState()
 			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y + 30.f, boomBoom->GetActorLocation().Z), FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
 			UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.5f, 0.2f, true, true, true, true);
 		}
+	}
+
+	// Handle UI Particle
+	float proximityToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
+
+	if (proximityToBoomBoom <= MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack && meter >= skillCost && !isUIparticleActive)
+	{
+		if (IsFacingBoomBoom())
+		{
+			UIParticle->ActivateSystem(false);
+			isUIparticleActive = true;
+		}
+	}
+	else if (proximityToBoomBoom <= MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack || meter >= skillCost)
+	{
+		UIParticle->DeactivateSystem();
+		isUIparticleActive = false;
 	}
 }
 
@@ -651,7 +670,9 @@ void AZipZap::ProcessShoot(float damage_, bool inAir)
 	AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
 
 	// Spawn Comic VFX
-	FVector location = FVector(muzzleFlashLocation.X, muzzleFlashLocation.Y - 0.1f, GetActorLocation().Z + 70.f);
+	float zOffset = 70.f;
+	if (inAir) { zOffset = 200.f; }
+	FVector location = FVector(muzzleFlashLocation.X, muzzleFlashLocation.Y - 0.1f, GetActorLocation().Z + zOffset);
 	AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap, location, GetActorRotation());
 	cfx->spriteChanger(0);
 

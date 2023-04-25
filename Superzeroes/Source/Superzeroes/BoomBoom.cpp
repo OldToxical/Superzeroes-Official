@@ -44,6 +44,7 @@ ABoomBoom::ABoomBoom()
 	inputAvailable = true;
 	canSpawnZipZap = false;
 	stepMade = false;
+	isUIparticleActive = false;
 	health = 200.f;
 	timeToHeal = 5.f;
 	healRate = 0.5f;
@@ -132,7 +133,6 @@ void ABoomBoom::BeginPlay()
 	Super::BeginPlay(); 
 
 	toxicDamage = false;
-	//AutoPossessPlayer = EAutoReceiveInput::Player0;
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
 	flipbook->SetFlipbook(idle);
@@ -141,11 +141,6 @@ void ABoomBoom::BeginPlay()
 	charMove = GetCharacterMovement();
 	healTimer = 0.0f;
 	deathTimer = 0.0f;
-
-	if (zipZap)
-	{
-		//zipZap->SetBoomBoomReference(this);
-	}
 
 	FName tag = FName(TEXT("ZZ_Platform"));
 	TSubclassOf<ABoxTrigger> subclass;
@@ -344,6 +339,21 @@ void ABoomBoom::UpdateState()
 			jumpPreludeTimer = 1.5f;
 		}
 	}
+
+	// Handle UI Particle
+	float proximityToZipZapX = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
+	float proximityToZipZapZ = abs(zipZap->GetActorLocation().Z - GetActorLocation().Z);
+
+	if (proximityToZipZapX <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack && proximityToZipZapZ <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack && meter >= skillCost && !isUIparticleActive)
+	{
+		UIParticle->ActivateSystem(false);
+		isUIparticleActive = true;
+	}
+	else if (proximityToZipZapX > MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack || proximityToZipZapZ > MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack || meter < skillCost)
+	{
+		UIParticle->DeactivateSystem();
+		isUIparticleActive = false;
+	}
 }
 
 void ABoomBoom::UpdateAnimation()
@@ -539,7 +549,7 @@ void ABoomBoom::Attack(float scaleVal)
 					// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(strongAttack);
-					punchPreludeTimer = AcutalPunchDelay / 2.8f;
+					punchPreludeTimer = AcutalPunchDelay + 0.264f;
 
 					// Change the state to "attacking"
 					characterState = State::Attacking;
@@ -727,16 +737,32 @@ void ABoomBoom::ProcessHit(float damage_)
 {
 	FHitResult OutHit;
 	TArray<AActor*> actorsToIgnore;
+	actorsToIgnore.Add(zipZap);
+	actorsToIgnore.Add(UGameplayStatics::GetActorOfClass(GetWorld(), ASiege::StaticClass()));
 	FVector startPoint = GetActorLocation();
 	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z - 2.5f);
 
 	if (rotation.Yaw > 0.f) // Looking left
 	{
-		endPoint.X -= 150.f;
+		if (damage_ >= 50.f)
+		{
+			endPoint.X -= 200.f;
+		}
+		else
+		{
+			endPoint.X -= 150.f;
+		}
 	}
 	else // Looking right
 	{
-		endPoint.X += 150.f;
+		if (damage_ >= 50.f)
+		{
+			endPoint.X += 200.f;
+		}
+		else
+		{
+			endPoint.X += 150.f;
+		}
 	}
 
 	bool hit = UKismetSystemLibrary::LineTraceSingle(this, startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::None, OutHit, true);
@@ -767,11 +793,15 @@ void ABoomBoom::ProcessHit(float damage_)
 			{
 				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeHitBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
 			}
+
+			return;
 		}
 
 		if (AButton_But_Awesome* button = Cast<AButton_But_Awesome>(HitActor))
 		{
 			button->ButtPress();
 		}
+
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), smokeParticle->GetAsset(), endPoint, FRotator(0.f, 0.f, 0.f), FVector(5.f, 5.f, 5.f));
 	}
 }

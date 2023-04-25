@@ -9,13 +9,14 @@
 #include "ZipZap.h"
 #include "Siege.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "NiagaraSystemWidget.h"
 #include "BoomBoom.generated.h"
 
 #define SavageComboExecutionTime 3
 #define StrongAttackMinimumInputTime 0.5
 #define SimpleAttackSequenceTimeout 0.6
 #define SimpleAttackAnimationLength 0.2
-#define AcutalPunchDelay 0.2
+#define AcutalPunchDelay 0.066
 
 UENUM()
 enum class State : uint8
@@ -205,6 +206,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 		UNiagaraComponent* smokeParticle;
 
+	UPROPERTY(BlueprintReadWrite)
+		UNiagaraSystemWidget* UIParticle;
+
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* zipZapImpact;
 
@@ -217,6 +221,7 @@ protected:
 	//used for changing between the two toxic walk sound sfx
 	bool toxicWalkSoundBool;
 	bool healing;
+	bool isUIparticleActive;
 	float healTimer;
 	float deathTimer;
 	float walkSoundTimer;
