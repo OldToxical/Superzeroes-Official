@@ -16,6 +16,8 @@ ATrashCan::ATrashCan()
 	hitbox->SetupAttachment(RootComponent); 
 	trashMovingLeft = false;
 	canSpawn = true;
+	health = 20.f;
+	hurtTime = 0.0f;
 }
 
 ATrashCan::~ATrashCan()
@@ -23,10 +25,27 @@ ATrashCan::~ATrashCan()
 
 }
 
+void ATrashCan::setHealth(float newHealth)
+{
+	if(GetRenderComponent()->GetSprite() != hurt)
+	{
+		health += newHealth;
+	}
+	if (newHealth < health)
+	{
+		RootComponent->SetMobility(EComponentMobility::Movable);
+		GetRenderComponent()->SetSprite(hurt);
+		RootComponent->SetMobility(EComponentMobility::Static);
+	}
+}
+
 void ATrashCan::BeginPlay()
 {
 	Super::BeginPlay();
 	timeBetweenShoots = 0.0f;
+	RootComponent->SetMobility(EComponentMobility::Movable);
+	GetRenderComponent()->SetSprite(idle);
+	RootComponent->SetMobility(EComponentMobility::Static);
 	hitbox->OnComponentBeginOverlap.AddDynamic(this, &ATrashCan::overlapBegin);
 	hitbox->OnComponentEndOverlap.AddDynamic(this, &ATrashCan::overlapEnd);
 }
@@ -35,6 +54,12 @@ void ATrashCan::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	timeBetweenShoots += DeltaTime;
+	//UE_LOG(LogTemp,Warning,TEXT("%f"),health);
+	if (health <= 0.0f)
+	{
+
+		Destroy();
+	}
 	if (timeBetweenShoots >= ShootTime && canSpawn == true)
 	{
 		FVector location (GetActorLocation().X, GetActorLocation().Y + 0.4f, GetActorLocation().Z + 150.0f);
@@ -47,6 +72,17 @@ void ATrashCan::Tick(float DeltaTime)
 			}
 		}
 		timeBetweenShoots = 0.0f;
+	}
+	if (GetRenderComponent()->GetSprite() == hurt)
+	{
+		hurtTime += DeltaTime;
+		if (hurtTime >= 1.0f)
+		{
+			RootComponent->SetMobility(EComponentMobility::Movable);
+			GetRenderComponent()->SetSprite(idle);
+			RootComponent->SetMobility(EComponentMobility::Static);
+			hurtTime = 0.0f;
+		}
 	}
 }
 

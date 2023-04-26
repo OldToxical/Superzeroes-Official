@@ -36,7 +36,6 @@ void ATrash::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	time += DeltaTime; //this is important so the trash doesnt destroy itself as soon as it is spawned
-	UE_LOG(LogTemp, Warning, TEXT("%f"),charMove->Velocity.X );
 	if (movingLeft)
 	{
 		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), -1.0, false);

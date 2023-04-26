@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Toxic.h"
 #include "Trash.h"
+#include "TrashCan.h"
 #include "Enemy.h"
 #include "WindowTrigger.h"
 #include "Button_But_Awesome.h"
@@ -801,6 +802,10 @@ void ABoomBoom::ProcessHit(float damage_)
 		if (AButton_But_Awesome* button = Cast<AButton_But_Awesome>(HitActor))
 		{
 			button->ButtPress();
+		}
+		if (ATrashCan* can = Cast<ATrashCan>(HitActor))
+		{
+			can->setHealth(-7.0f);
 		}
 	}
 }

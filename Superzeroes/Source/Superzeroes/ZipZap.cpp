@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Toxic.h"
 #include "Trash.h"
+#include "TrashCan.h"
 #include "Enemy.h"
 #include "LAdder.h"
 #include "ComicFX.h"
@@ -714,6 +715,10 @@ void AZipZap::ProcessShoot(float damage_, bool inAir)
 		if (AButton_But_Awesome* button = Cast<AButton_But_Awesome>(HitActor))
 		{
 			button->ButtPress();
+		}
+		if (ATrashCan* can = Cast<ATrashCan>(HitActor))
+		{
+			can->setHealth(-4.0f);
 		}
 	}
 }

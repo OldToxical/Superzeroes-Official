@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PaperSpriteActor.h"
+#include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Trash.h"
@@ -37,14 +38,24 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperSpriteComponent* sprite;
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UCapsuleComponent* capsule;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperSprite* idle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperSprite* hurt;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool trashMovingLeft;
+
+
+	UFUNCTION(BlueprintCallable)
+		float getHealth() { return health; };
+	UFUNCTION(BlueprintCallable)
+		void setHealth(float newHealth);
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -59,6 +70,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool canSpawn;
+
+	//Variable to keep track of trash can health
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float health;
+
+	float hurtTime;
 
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<ATrash> Trash_BP;
