@@ -44,6 +44,7 @@ AZipZap::AZipZap()
 	inputAvailable = true;
 	canClimb = false;
 	healing = false;
+	volume = 1.0f;
 	audComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	
@@ -78,7 +79,7 @@ void AZipZap::setHealth(float newHealth)
 			//hurt clip will play over and over without this
 			if (!toxicDamage)
 			{
-				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
+				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX, volume);
 			}
 
 			UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(2.f, 0.3f, true, true, true, true);
@@ -147,7 +148,7 @@ void AZipZap::Tick(float DeltaTime)
 
 		if (meter >= (99.9f - refillTime) && meter <= 99.9f)
 		{
-			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
+			UGameplayStatics::PlaySound2D(GetWorld(), meterFull, volume);
 		}
 	}
 
@@ -168,7 +169,7 @@ void AZipZap::Tick(float DeltaTime)
 			if (healTimer >= timeToHeal && health < 100.f)
 			{
 				healing = true;
-				UGameplayStatics::PlaySound2D(GetWorld(), healthRecharge);
+				UGameplayStatics::PlaySound2D(GetWorld(), healthRecharge, volume);
 				healTimer = 0.0f;
 			}
 		}
@@ -189,9 +190,9 @@ void AZipZap::Tick(float DeltaTime)
 
 			switch (randomSound)
 			{
-				case 1:	UGameplayStatics::PlaySound2D(GetWorld(), death1SFX);
-				case 2:	UGameplayStatics::PlaySound2D(GetWorld(), death2SFX);
-				case 3:	UGameplayStatics::PlaySound2D(GetWorld(), death3SFX);
+				case 1:	UGameplayStatics::PlaySound2D(GetWorld(), death1SFX, volume);
+				case 2:	UGameplayStatics::PlaySound2D(GetWorld(), death2SFX, volume);
+				case 3:	UGameplayStatics::PlaySound2D(GetWorld(), death3SFX, volume);
 			}
 
 			characterState = State2::Dead;
@@ -226,7 +227,7 @@ void AZipZap::Landed(const FHitResult& Hit)
 		audComp->Stop();
 	}
 
-	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
+	UGameplayStatics::PlaySound2D(GetWorld(), landSFX, volume);
 	UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.5f, 0.25f, true, true, true, true);
 	charMove->GravityScale = 1.f;
 	characterState = State2::Idle;
@@ -275,14 +276,14 @@ void AZipZap::move(float scaleVal)
 					{
 						switch (toxicWalkSoundBool)
 						{
-							case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
-							case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+							case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX, volume);
+							case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX, volume);
 						}
 						toxicWalkSoundBool = !toxicWalkSoundBool;
 					}
 					else
 					{
-						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX, volume);
 						UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.05f, 0.15f, true, true, true, true);
 						smokeParticle->ActivateSystem();
 					}
@@ -305,14 +306,14 @@ void AZipZap::move(float scaleVal)
 					{
 						switch (toxicWalkSoundBool)
 						{
-							case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
-							case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+							case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX, volume);
+							case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX, volume);
 						}
 						toxicWalkSoundBool = !toxicWalkSoundBool;
 					}
 					else
 					{
-						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX, volume);
 						UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.05f, 0.15f, true, true, true, true);
 						smokeParticle->ActivateSystem();
 					}
@@ -499,7 +500,7 @@ void AZipZap::ExecuteJump()
 			characterState = State2::Jumping;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(jumping);
-			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
+			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX, volume);
 		}
 	}
 }

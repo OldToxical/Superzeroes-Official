@@ -218,6 +218,8 @@ protected:
 		float TimeBetweenWalkSounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
 		float healRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		float volume;
 
 	int currentLevel;
 	bool canClimb;
