@@ -114,8 +114,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void setMeter(float newMeter) { meter += newMeter; if (meter > 100.f) { meter = 100.f; } if (meter < 0.0f) { meter = 0.0f; } };
 	UInputComponent* GetInputComponent() { return InputComponent; }
-	float GetVolume() { return volume; }
-	void SetVolume(float newVol) { volume = newVol; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -218,9 +216,6 @@ protected:
 		float healRate;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		float volume;
-
 	int currentLevel;
 	bool canClimb;
 	bool stepMade;
@@ -230,9 +225,27 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* jumpSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* jump2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* jump3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* landSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* land2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* land3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* land4SFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* walkSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* walk2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* walk3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* walk4SFX;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* toxicWalk1SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
