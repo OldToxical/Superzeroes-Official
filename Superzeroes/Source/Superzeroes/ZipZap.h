@@ -115,6 +115,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void setMeter(float newMeter) { meter += newMeter; if (meter > 100.f) { meter = 100.f; } if (meter < 0.0f) { meter = 0.0f; } };
 	UInputComponent* GetInputComponent() { return InputComponent; }
+	float GetVolume() { return volume; }
+	void SetVolume(float newVol) { volume = newVol; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -221,6 +223,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		float volume;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		float volume;
+
 	int currentLevel;
 	bool canClimb;
 	bool stepMade;
@@ -251,6 +257,8 @@ protected:
 		class USoundBase* meterFull;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* flyingSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* attackSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class UAudioComponent* audComp;
 
