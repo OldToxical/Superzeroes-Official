@@ -76,7 +76,7 @@ void ATrashCan::Tick(float DeltaTime)
 	if (GetRenderComponent()->GetSprite() == hurt)
 	{
 		hurtTime += DeltaTime;
-		if (hurtTime >= 1.0f)
+		if (hurtTime >= 0.5f)
 		{
 			RootComponent->SetMobility(EComponentMobility::Movable);
 			GetRenderComponent()->SetSprite(idle);
