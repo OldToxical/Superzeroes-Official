@@ -112,25 +112,26 @@ void ALevelManager::GetCameraComponent()
 void ALevelManager::InitializeLevelStartLocations()
 {
 	// Initialize level start locations
-	levelStartLocations.Add(FVector(1058.f, .5f, -378.f));
-	levelStartLocations.Add(FVector(3043.f, .5f, -58.f));
-	levelStartLocations.Add(FVector(5028.f, .5f, -378.f));
-	levelStartLocations.Add(FVector(7050.f, .5f, 42.f));
-	levelStartLocations.Add(FVector(7120.f, .5f, 1005.f));
-	levelStartLocations.Add(FVector(7420.f, .5f, 1592.f));
-	levelStartLocations.Add(FVector(9410.f, .5f, 2092.f));
+	levelStartLocations.Add(FVector(1058.f, .5f, -378.f)); //2
+	levelStartLocations.Add(FVector(3043.f, .5f, -58.f)); //3
+	levelStartLocations.Add(FVector(5028.f, .5f, -378.f)); //4
+	levelStartLocations.Add(FVector(7050.f, .5f, 42.f)); //5
+	levelStartLocations.Add(FVector(7120.f, .5f, 915.f)); //6
+	levelStartLocations.Add(FVector(7420.f, .5f, 1592.f)); //7
+	levelStartLocations.Add(FVector(9350.f, .5f, 2080.f)); //8
 }
 
 void ALevelManager::InitializeCameraLocations()
 {
 	// Initialize camera positions
-	cameraLocations.Add(FVector(1990.f, 1000.f, 0.f)); // Where will the correponsing trigger take the camera (from level 0 to level 1 in this case; trigger 0 will take it to the position that is intended for level 1) 
-	cameraLocations.Add(FVector(3980.f, 1000.f, 0.f));
-	cameraLocations.Add(FVector(5970.f, 1000.f, 0.f));
-	cameraLocations.Add(FVector(7960.f, 1000.f, 500.f));
-	cameraLocations.Add(FVector(6370.f, 1000.f, 1430.f));
-	cameraLocations.Add(FVector(8360.f, 1000.f, 1950.f));
-	cameraLocations.Add(FVector(10340.f, 1000.f, 1950.f));
+	cameraLocations.Add(FVector(1990.f, 1000.f, 0.f)); //2 // Where will the correponsing trigger take the camera (from level 0 to level 1 in this case; trigger 0 will take it to the position that is intended for level 1) 
+	cameraLocations.Add(FVector(3980.f, 1000.f, 0.f)); //3
+	cameraLocations.Add(FVector(5970.f, 1000.f, 0.f)); //4
+	cameraLocations.Add(FVector(7940.f, 1000.f, 0.f)); //5
+	cameraLocations.Add(FVector(9930.f, 1000.f, 0.f)); //6
+	cameraLocations.Add(FVector(6280.f, .5f, 1350.f)); //6
+	cameraLocations.Add(FVector(8360.f, 1000.f, 2020.f)); //7
+	//cameraLocations.Add(FVector(10250.f, 1000.f, 2020.f)); //8
 }
 
 void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
