@@ -115,6 +115,10 @@ public:
 		void WriteFile(float scaleVal);
 	UFUNCTION(BlueprintCallable)
 		void Respawn() { SetActorLocation(spawnLoc[currentLevel]); }
+	UFUNCTION(BlueprintCallable)
+		void EnableLevelFinishedParticle() { levelFinishedParticle->ActivateSystem(false); }
+	UFUNCTION(BlueprintCallable)
+		void DisableLevelFinishedParticle() { levelFinishedParticle->DeactivateSystem(); }
 
 	// Setters and getters
 	UFUNCTION(BlueprintCallable)
@@ -206,14 +210,17 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 		UNiagaraComponent* smokeParticle;
 
-	UPROPERTY(BlueprintReadWrite)
-		UNiagaraSystemWidget* UIParticle;
-
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* zipZapImpact;
 
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* enemyImpact;
+
+	UPROPERTY(BlueprintReadWrite)
+		UNiagaraSystemWidget* comboBarParticle;
+
+	UPROPERTY(BlueprintReadWrite)
+		UNiagaraSystemWidget* levelFinishedParticle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;

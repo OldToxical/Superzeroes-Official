@@ -95,6 +95,10 @@ public:
 		void SetInputAvailability(bool isAvailable) { inputAvailable = isAvailable; }
 	UFUNCTION(BlueprintCallable)
 		void Respawn() { SetActorLocation(spawnLoc[currentLevel]); }
+	UFUNCTION(BlueprintCallable)
+		void EnableLevelFinishedParticle() { levelFinishedParticle->ActivateSystem(false); }
+	UFUNCTION(BlueprintCallable)
+		void DisableLevelFinishedParticle() { levelFinishedParticle->DeactivateSystem(); }
 
 	UFUNCTION(BlueprintCallable)
 		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
@@ -192,20 +196,26 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 		UNiagaraComponent* smokeParticle;
 
-	UPROPERTY(BlueprintReadWrite)
-		UNiagaraSystemWidget* UIParticle;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UParticleSystem* boomBoomImpact;
 
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* enemyImpact;
 
+	UPROPERTY(EditAnywhere)
+		UParticleSystem* muzzleFlashParticle;
+
+	UPROPERTY(BlueprintReadWrite)
+		UNiagaraSystemWidget* comboBarParticle;
+
+	UPROPERTY(BlueprintReadWrite)
+		UNiagaraSystemWidget* levelFinishedParticle;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool toxicDamage;
 	//used for changing between the two toxic walk sound sfx
 	bool toxicWalkSoundBool;
-	bool isUIparticleActive;
+	bool isComboParticleActive;
 	float healTimer;
 	float deathTimer;
 	float walkSoundTimer;
@@ -220,10 +230,6 @@ protected:
 		float TimeBetweenWalkSounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
 		float healRate;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		float volume;
-
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		float volume;
 
@@ -273,8 +279,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
 		TSubclassOf<class AComicFX> zap;
-
-	// Particles
-	UPROPERTY(EditAnywhere)
-		UParticleSystem* muzzleFlashParticle;
 };

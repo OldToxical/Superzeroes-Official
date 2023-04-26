@@ -193,6 +193,7 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 		if (Cast<ABoomBoom>(otherActor)->GetState() != State::Siege)
 		{
 			boomBoomEnd = true;
+			boomBoom->EnableLevelFinishedParticle();
 
 			if (zipZapEnd)
 			{
@@ -206,6 +207,7 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 		if (Cast<AZipZap>(otherActor)->GetState() != State2::Siege)
 		{
 			zipZapEnd = true;
+			zipZap->EnableLevelFinishedParticle();
 
 			if (boomBoomEnd)
 			{
@@ -220,10 +222,12 @@ void ALevelManager::OverlapEnd(AActor* overlappedActor, AActor* otherActor)
 	if (otherActor->IsA(ABoomBoom::StaticClass()))
 	{
 		boomBoomEnd = false;
+		boomBoom->DisableLevelFinishedParticle();
 	}
 
 	if (otherActor->IsA(AZipZap::StaticClass()))
 	{
 		zipZapEnd = false;
+		zipZap->DisableLevelFinishedParticle();
 	}
 }

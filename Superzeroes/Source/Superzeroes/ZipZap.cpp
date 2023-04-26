@@ -44,6 +44,7 @@ AZipZap::AZipZap()
 	inputAvailable = true;
 	canClimb = false;
 	healing = false;
+	isComboParticleActive = false;
 	volume = 1.0f;
 	audComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
@@ -467,20 +468,34 @@ void AZipZap::UpdateState()
 	}
 
 	// Handle UI Particle
-	float proximityToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
-
-	if (proximityToBoomBoom <= MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack && meter >= skillCost && !isUIparticleActive)
+	if (characterState == State2::Idle || characterState == State2::Running)
 	{
-		if (IsFacingBoomBoom())
+		float proximityToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
+
+		if (proximityToBoomBoom <= MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack && meter >= skillCost && !isComboParticleActive)
 		{
-			UIParticle->ActivateSystem(false);
-			isUIparticleActive = true;
+			if (IsFacingBoomBoom())
+			{
+				comboBarParticle->ActivateSystem(false);
+				isComboParticleActive = true;
+			}
+		}
+		else if (proximityToBoomBoom > MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack || meter < skillCost)
+		{
+			comboBarParticle->DeactivateSystem();
+			isComboParticleActive = false;
+		}
+
+		if (!IsFacingBoomBoom())
+		{
+			comboBarParticle->DeactivateSystem();
+			isComboParticleActive = false;
 		}
 	}
-	else if (proximityToBoomBoom <= MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack || meter >= skillCost)
+	else
 	{
-		UIParticle->DeactivateSystem();
-		isUIparticleActive = false;
+		comboBarParticle->DeactivateSystem();
+		isComboParticleActive = false;
 	}
 }
 
