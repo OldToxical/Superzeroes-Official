@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
 #include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystemWidget.h"
 #include "ZipZap.generated.h"
 
 #define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 150
@@ -114,6 +115,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void setMeter(float newMeter) { meter += newMeter; if (meter > 100.f) { meter = 100.f; } if (meter < 0.0f) { meter = 0.0f; } };
 	UInputComponent* GetInputComponent() { return InputComponent; }
+	float GetVolume() { return volume; }
+	void SetVolume(float newVol) { volume = newVol; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -189,6 +192,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 		UNiagaraComponent* smokeParticle;
 
+	UPROPERTY(BlueprintReadWrite)
+		UNiagaraSystemWidget* UIParticle;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UParticleSystem* boomBoomImpact;
 
@@ -199,7 +205,7 @@ protected:
 		bool toxicDamage;
 	//used for changing between the two toxic walk sound sfx
 	bool toxicWalkSoundBool;
-
+	bool isUIparticleActive;
 	float healTimer;
 	float deathTimer;
 	float walkSoundTimer;
@@ -214,6 +220,12 @@ protected:
 		float TimeBetweenWalkSounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
 		float healRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		float volume;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		float volume;
 
 	int currentLevel;
 	bool canClimb;
@@ -245,6 +257,8 @@ protected:
 		class USoundBase* meterFull;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* flyingSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* attackSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class UAudioComponent* audComp;
 

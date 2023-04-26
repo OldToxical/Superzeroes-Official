@@ -9,13 +9,14 @@
 #include "ZipZap.h"
 #include "Siege.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "NiagaraSystemWidget.h"
 #include "BoomBoom.generated.h"
 
 #define SavageComboExecutionTime 3
 #define StrongAttackMinimumInputTime 0.5
 #define SimpleAttackSequenceTimeout 0.6
 #define SimpleAttackAnimationLength 0.2
-#define AcutalPunchDelay 0.2
+#define AcutalPunchDelay 0.066
 
 UENUM()
 enum class State : uint8
@@ -205,6 +206,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 		UNiagaraComponent* smokeParticle;
 
+	UPROPERTY(BlueprintReadWrite)
+		UNiagaraSystemWidget* UIParticle;
+
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* zipZapImpact;
 
@@ -217,6 +221,7 @@ protected:
 	//used for changing between the two toxic walk sound sfx
 	bool toxicWalkSoundBool;
 	bool healing;
+	bool isUIparticleActive;
 	float healTimer;
 	float deathTimer;
 	float walkSoundTimer;
@@ -239,17 +244,44 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool canSpawnZipZap;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		float volume;
+
 	//Audio variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* jumpSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* jump2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* jump3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* jump4SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* landSFX;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* walkSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* walk2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* walk3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* walk4SFX;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* toxicWalk1SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* toxicWalk2SFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* growlSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* growl2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* growl3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* growl4SFX;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* deathSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)

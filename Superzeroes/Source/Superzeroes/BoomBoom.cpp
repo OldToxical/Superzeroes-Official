@@ -44,6 +44,7 @@ ABoomBoom::ABoomBoom()
 	inputAvailable = true;
 	canSpawnZipZap = false;
 	stepMade = false;
+	isUIparticleActive = false;
 	health = 200.f;
 	timeToHeal = 5.f;
 	healRate = 0.5f;
@@ -53,6 +54,7 @@ ABoomBoom::ABoomBoom()
 	refillTime = 0.1f;
 	skillCost = 50.f;
 	currentLevel = 0;
+	volume = 1.0f;
 
 	if (flipbook)
 	{
@@ -111,7 +113,7 @@ void ABoomBoom::setHealth(float newHealth)
 			//hurt clip will play over and over without this
 			if (!toxicDamage)
 			{
-				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
+				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX, volume);
 			}
 
 			UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(2.f, 0.3f, true, true, true, true);
@@ -132,7 +134,6 @@ void ABoomBoom::BeginPlay()
 	Super::BeginPlay(); 
 
 	toxicDamage = false;
-	//AutoPossessPlayer = EAutoReceiveInput::Player0;
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABoomBoom::overlapBegin);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ABoomBoom::overlapEnd);
 	flipbook->SetFlipbook(idle);
@@ -141,11 +142,6 @@ void ABoomBoom::BeginPlay()
 	charMove = GetCharacterMovement();
 	healTimer = 0.0f;
 	deathTimer = 0.0f;
-
-	if (zipZap)
-	{
-		//zipZap->SetBoomBoomReference(this);
-	}
 
 	FName tag = FName(TEXT("ZZ_Platform"));
 	TSubclassOf<ABoxTrigger> subclass;
@@ -180,7 +176,7 @@ void ABoomBoom::Tick(float DeltaTime)
 
 		if (meter >= (99.9f - refillTime) && meter <= 99.9f)
 		{
-			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
+			UGameplayStatics::PlaySound2D(GetWorld(), meterFull, volume);
 		}
 	}
 
@@ -201,7 +197,7 @@ void ABoomBoom::Tick(float DeltaTime)
 			if (healTimer >= timeToHeal && health < 200.0f)
 			{
 				healing = true;
-				UGameplayStatics::PlaySound2D(GetWorld(), healthRecharge);
+				UGameplayStatics::PlaySound2D(GetWorld(), healthRecharge, volume);
 				healTimer = 0.0f;
 			}
 		}
@@ -218,7 +214,7 @@ void ABoomBoom::Tick(float DeltaTime)
 
 		if (health <= 0.f)
 		{
-			UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
+			UGameplayStatics::PlaySound2D(GetWorld(), deathSFX, volume);
 			characterState = State::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
@@ -246,7 +242,7 @@ void ABoomBoom::Landed(const FHitResult& Hit)
 	Super::Landed(Hit);
 
 	smokeParticle->ActivateSystem();
-	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
+	UGameplayStatics::PlaySound2D(GetWorld(), landSFX, volume);
 	UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeLandBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, 0.3f, true, true, true, true);
 	characterState = State::Idle;
@@ -326,7 +322,7 @@ void ABoomBoom::UpdateState()
 			ProcessHit(damage);
 		}
 
-		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
+		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX, volume);
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(feedbackIntensity, .2f, true, true, true, true);
 	}
 
@@ -339,10 +335,34 @@ void ABoomBoom::UpdateState()
 	{
 		if (characterState == State::Jumping && !charMove->IsFalling())
 		{
-			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
+			int jumpnum = rand() % 4 + 1;
+
+			switch (jumpnum)
+			{
+				case 1: UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX, volume);
+				case 2: UGameplayStatics::PlaySound2D(GetWorld(), jump2SFX, volume);
+				case 3: UGameplayStatics::PlaySound2D(GetWorld(), jump3SFX, volume);
+				case 4: UGameplayStatics::PlaySound2D(GetWorld(), jump4SFX, volume);
+			}
+
 			Jump();
 			jumpPreludeTimer = 1.5f;
 		}
+	}
+
+	// Handle UI Particle
+	float proximityToZipZapX = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
+	float proximityToZipZapZ = abs(zipZap->GetActorLocation().Z - GetActorLocation().Z);
+
+	if (proximityToZipZapX <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack && proximityToZipZapZ <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack && meter >= skillCost && !isUIparticleActive)
+	{
+		UIParticle->ActivateSystem(false);
+		isUIparticleActive = true;
+	}
+	else if (proximityToZipZapX > MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack || proximityToZipZapZ > MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack || meter < skillCost)
+	{
+		UIParticle->DeactivateSystem();
+		isUIparticleActive = false;
 	}
 }
 
@@ -387,14 +407,23 @@ void ABoomBoom::move(float scaleVal)
 				{
 					switch (toxicWalkSoundBool)
 					{
-						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
-						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX, volume);
+						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX, volume);
 					}
 					toxicWalkSoundBool = !toxicWalkSoundBool;
 				}
 				else
 				{
-					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					int walknum = rand() % 4 + 1;
+
+					switch (walknum)
+					{
+						case 1: UGameplayStatics::PlaySound2D(GetWorld(), walkSFX, volume);
+						case 2: UGameplayStatics::PlaySound2D(GetWorld(), walk2SFX, volume);
+						case 3: UGameplayStatics::PlaySound2D(GetWorld(), walk3SFX, volume);
+						case 4: UGameplayStatics::PlaySound2D(GetWorld(), walk4SFX, volume);
+					}
+
 					UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(.4f, .15f, true, true, true, true);
 					smokeParticle->ActivateSystem();
 				}
@@ -417,14 +446,23 @@ void ABoomBoom::move(float scaleVal)
 				{
 					switch (toxicWalkSoundBool)
 					{
-						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
-						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+						case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX, volume);
+						case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX, volume);
 					}
 					toxicWalkSoundBool = !toxicWalkSoundBool;
 				}
 				else
 				{
-					UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+					int walknum = rand() % 4 + 1;
+
+					switch (walknum)
+					{
+						case 1: UGameplayStatics::PlaySound2D(GetWorld(), walkSFX, volume);
+						case 2: UGameplayStatics::PlaySound2D(GetWorld(), walk2SFX, volume);
+						case 3: UGameplayStatics::PlaySound2D(GetWorld(), walk3SFX, volume);
+						case 4: UGameplayStatics::PlaySound2D(GetWorld(), walk4SFX, volume);
+					}
+
 					UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(.4f, .15f, true, true, true, true);
 					smokeParticle->ActivateSystem();
 				}
@@ -539,7 +577,7 @@ void ABoomBoom::Attack(float scaleVal)
 					// Set the corresponding animation to execute and set the flipbook's property of looping to false, since we want the animation to execute only once
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(strongAttack);
-					punchPreludeTimer = AcutalPunchDelay / 2.8f;
+					punchPreludeTimer = AcutalPunchDelay + 0.264f;
 
 					// Change the state to "attacking"
 					characterState = State::Attacking;
@@ -570,6 +608,16 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 	rotation.Yaw = directionRotation;
 	flipbook->SetWorldRotation(rotation);
 	characterSpeed = 300.f;
+	int growlNum = rand() % 4 + 1;
+
+	switch (growlNum)
+	{
+		case 1: UGameplayStatics::PlaySound2D(GetWorld(), growlSFX, volume);
+		case 2: UGameplayStatics::PlaySound2D(GetWorld(), growl2SFX, volume);
+		case 3: UGameplayStatics::PlaySound2D(GetWorld(), growl3SFX, volume);
+		case 4: UGameplayStatics::PlaySound2D(GetWorld(), growl4SFX, volume);
+	}
+
 	characterState = State::Combo_Savage;
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, SavageComboExecutionTime, true, true, true, true);
 }
@@ -682,7 +730,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 				if (AWindowTrigger* window = Cast<AWindowTrigger>(otherActor))
 				{
 					window->BreakWindow();
-					UGameplayStatics::PlaySound2D(GetWorld(), glassBreak);
+					UGameplayStatics::PlaySound2D(GetWorld(), glassBreak, volume);
 				}
 			}
 		}
@@ -727,16 +775,32 @@ void ABoomBoom::ProcessHit(float damage_)
 {
 	FHitResult OutHit;
 	TArray<AActor*> actorsToIgnore;
+	actorsToIgnore.Add(zipZap);
+	actorsToIgnore.Add(UGameplayStatics::GetActorOfClass(GetWorld(), ASiege::StaticClass()));
 	FVector startPoint = GetActorLocation();
 	FVector endPoint = FVector(startPoint.X, startPoint.Y, startPoint.Z - 2.5f);
 
 	if (rotation.Yaw > 0.f) // Looking left
 	{
-		endPoint.X -= 150.f;
+		if (damage_ >= 50.f)
+		{
+			endPoint.X -= 200.f;
+		}
+		else
+		{
+			endPoint.X -= 150.f;
+		}
 	}
 	else // Looking right
 	{
-		endPoint.X += 150.f;
+		if (damage_ >= 50.f)
+		{
+			endPoint.X += 200.f;
+		}
+		else
+		{
+			endPoint.X += 150.f;
+		}
 	}
 
 	bool hit = UKismetSystemLibrary::LineTraceSingle(this, startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::None, OutHit, true);
@@ -767,11 +831,15 @@ void ABoomBoom::ProcessHit(float damage_)
 			{
 				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeHitBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
 			}
+
+			return;
 		}
 
 		if (AButton_But_Awesome* button = Cast<AButton_But_Awesome>(HitActor))
 		{
 			button->ButtPress();
 		}
+
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), smokeParticle->GetAsset(), endPoint, FRotator(0.f, 0.f, 0.f), FVector(5.f, 5.f, 5.f));
 	}
 }

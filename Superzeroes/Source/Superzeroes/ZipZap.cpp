@@ -19,6 +19,7 @@
 #include "Button_But_Awesome.h"
 #include "Siege.h"
 #include "Projectile.h"
+#include "NiagaraSystemWidget.h"
 #include "Kismet/KismetStringLibrary.h"
 
 // Sets default values
@@ -43,6 +44,7 @@ AZipZap::AZipZap()
 	inputAvailable = true;
 	canClimb = false;
 	healing = false;
+	volume = 1.0f;
 	audComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
 	
@@ -77,7 +79,7 @@ void AZipZap::setHealth(float newHealth)
 			//hurt clip will play over and over without this
 			if (!toxicDamage)
 			{
-				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
+				UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX, volume);
 			}
 
 			UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(2.f, 0.3f, true, true, true, true);
@@ -146,7 +148,7 @@ void AZipZap::Tick(float DeltaTime)
 
 		if (meter >= (99.9f - refillTime) && meter <= 99.9f)
 		{
-			UGameplayStatics::PlaySound2D(GetWorld(), meterFull);
+			UGameplayStatics::PlaySound2D(GetWorld(), meterFull, volume);
 		}
 	}
 
@@ -167,7 +169,7 @@ void AZipZap::Tick(float DeltaTime)
 			if (healTimer >= timeToHeal && health < 100.f)
 			{
 				healing = true;
-				UGameplayStatics::PlaySound2D(GetWorld(), healthRecharge);
+				UGameplayStatics::PlaySound2D(GetWorld(), healthRecharge, volume);
 				healTimer = 0.0f;
 			}
 		}
@@ -188,9 +190,9 @@ void AZipZap::Tick(float DeltaTime)
 
 			switch (randomSound)
 			{
-				case 1:	UGameplayStatics::PlaySound2D(GetWorld(), death1SFX);
-				case 2:	UGameplayStatics::PlaySound2D(GetWorld(), death2SFX);
-				case 3:	UGameplayStatics::PlaySound2D(GetWorld(), death3SFX);
+				case 1:	UGameplayStatics::PlaySound2D(GetWorld(), death1SFX, volume);
+				case 2:	UGameplayStatics::PlaySound2D(GetWorld(), death2SFX, volume);
+				case 3:	UGameplayStatics::PlaySound2D(GetWorld(), death3SFX, volume);
 			}
 
 			characterState = State2::Dead;
@@ -225,7 +227,7 @@ void AZipZap::Landed(const FHitResult& Hit)
 		audComp->Stop();
 	}
 
-	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
+	UGameplayStatics::PlaySound2D(GetWorld(), landSFX, volume);
 	UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.5f, 0.25f, true, true, true, true);
 	charMove->GravityScale = 1.f;
 	characterState = State2::Idle;
@@ -274,14 +276,14 @@ void AZipZap::move(float scaleVal)
 					{
 						switch (toxicWalkSoundBool)
 						{
-							case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
-							case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+							case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX, volume);
+							case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX, volume);
 						}
 						toxicWalkSoundBool = !toxicWalkSoundBool;
 					}
 					else
 					{
-						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX, volume);
 						UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.05f, 0.15f, true, true, true, true);
 						smokeParticle->ActivateSystem();
 					}
@@ -304,14 +306,14 @@ void AZipZap::move(float scaleVal)
 					{
 						switch (toxicWalkSoundBool)
 						{
-							case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX);
-							case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX);
+							case 0:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk1SFX, volume);
+							case 1:	UGameplayStatics::PlaySound2D(GetWorld(), toxicWalk2SFX, volume);
 						}
 						toxicWalkSoundBool = !toxicWalkSoundBool;
 					}
 					else
 					{
-						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+						UGameplayStatics::PlaySound2D(GetWorld(), walkSFX, volume);
 						UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.05f, 0.15f, true, true, true, true);
 						smokeParticle->ActivateSystem();
 					}
@@ -426,6 +428,7 @@ void AZipZap::EndAttack()
 	    characterState = State2::Idle;
 	    flipbook->SetLooping(true);
 	    flipbook->Play();
+		isShooting = false;
 	}
 }
 
@@ -462,6 +465,23 @@ void AZipZap::UpdateState()
 			UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.5f, 0.2f, true, true, true, true);
 		}
 	}
+
+	// Handle UI Particle
+	float proximityToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
+
+	if (proximityToBoomBoom <= MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack && meter >= skillCost && !isUIparticleActive)
+	{
+		if (IsFacingBoomBoom())
+		{
+			UIParticle->ActivateSystem(false);
+			isUIparticleActive = true;
+		}
+	}
+	else if (proximityToBoomBoom <= MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack || meter >= skillCost)
+	{
+		UIParticle->DeactivateSystem();
+		isUIparticleActive = false;
+	}
 }
 
 void AZipZap::ExecuteJump()
@@ -480,7 +500,7 @@ void AZipZap::ExecuteJump()
 			characterState = State2::Jumping;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(jumping);
-			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
+			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX, volume);
 		}
 	}
 }
@@ -489,7 +509,7 @@ void AZipZap::climb(float scaleVal)
 {
 	if (characterState != State2::Dead)
 	{
-		if (characterState != State2::Attacking && characterState != State2::Hurt)
+		if (characterState != State2::Attacking && characterState != State2::Hurt && characterState != State2::Combo_Projectile)
 		{
 			if (canClimb == true && characterState != State2::Jumping)
 			{
@@ -642,7 +662,6 @@ void AZipZap::ProcessShoot(float damage_, bool inAir)
 			muzzleFlashLocation.X -= 130.f;
 		}
 	}
-
 	// Spawn particle
 	UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));
 	muzzleFlash->CustomTimeDilation = 3.f;
@@ -651,7 +670,9 @@ void AZipZap::ProcessShoot(float damage_, bool inAir)
 	AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
 
 	// Spawn Comic VFX
-	FVector location = FVector(muzzleFlashLocation.X, muzzleFlashLocation.Y - 0.1f, GetActorLocation().Z + 70.f);
+	float zOffset = 70.f;
+	if (inAir) { zOffset = 200.f; }
+	FVector location = FVector(muzzleFlashLocation.X, muzzleFlashLocation.Y - 0.1f, GetActorLocation().Z + zOffset);
 	AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap, location, GetActorRotation());
 	cfx->spriteChanger(0);
 

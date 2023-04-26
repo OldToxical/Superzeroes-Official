@@ -2,6 +2,7 @@
 
 
 #include "Trash.h"
+#include "PaperSpriteActor.h"
 #include "Components/BoxComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "BoomBoom.h"
@@ -12,8 +13,9 @@ ATrash::ATrash()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
-	hitbox->SetRelativeScale3D(FVector(0.75, 0.75, 0.75));
+	hitbox->SetRelativeScale3D(FVector(0.5, 0.5, 0.5));
 	hitbox->SetupAttachment(RootComponent); 
+	movingLeft = false;
 }
 
 ATrash::~ATrash()
@@ -27,13 +29,18 @@ void ATrash::BeginPlay()
 	charMove = GetCharacterMovement();
 	hitbox->OnComponentBeginOverlap.AddDynamic(this, &ATrash::overlapBegin);
 	hitbox->OnComponentEndOverlap.AddDynamic(this, &ATrash::overlapEnd);
-	Jump();
 }
 
 void ATrash::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	AddMovementInput(FVector(0.3f, 0.0f, 0.0f), 1.0, false);
+	if (movingLeft)
+	{
+		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), -1.0, false);
+	}
+	else {
+		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), 1.0, false);
+	}
 }
 
 
@@ -42,7 +49,7 @@ void ATrash::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 {
 	if (otherActor && (otherActor != this) && otherComp)
 	{
-		if (!otherActor->ActorHasTag(TEXT("Floor")))
+		if (!otherActor->IsA(APaperSpriteActor::StaticClass()))
 		{
 			Destroy();
 		}
@@ -72,6 +79,6 @@ void ATrash::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
 {
 	if (otherActor && (otherActor != this) && otherComp)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("i am gaming!"));
+		
 	}
 }

@@ -27,6 +27,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+	UFUNCTION(BlueprintCallable)
+		void overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperSpriteComponent* sprite;
 
@@ -36,14 +43,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperSprite* idle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool trashMovingLeft;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UBoxComponent* hitbox;
+
 	// time between shots fired by trash can
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float timeBetweenShoots;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		bool canSpawn;
 
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<ATrash> Trash_BP;
