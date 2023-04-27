@@ -155,14 +155,16 @@ void ABoomBoom::BeginPlay()
 	}
 
 	spawnLoc.Empty();
-	spawnLoc.Add(FVector(0.f, .5f, -378.f));
-	spawnLoc.Add(FVector(1058.f, .5f, -378.f));
-	spawnLoc.Add(FVector(3043.f, .5f, -58.f));
-	spawnLoc.Add(FVector(5028.f, .5f, -378.f));
-	spawnLoc.Add(FVector(7050.f, .5f, 42.f));
-	spawnLoc.Add(FVector(7120.f, .5f, 1005.f));
-	spawnLoc.Add(FVector(7420.f, .5f, 1592.f));
-	spawnLoc.Add(FVector(9410.f, .5f, 2092.f));
+	spawnLoc.Add(FVector(0.f, .5f, -400.f)); //1
+	spawnLoc.Add(FVector(1058.f, .5f, -400.f)); //2
+	spawnLoc.Add(FVector(3043.f, .5f, -58.f)); //3
+	spawnLoc.Add(FVector(5028.f, .5f, -400.f)); //4
+	spawnLoc.Add(FVector(7008.f, .5f, -400.f)); //5
+	spawnLoc.Add(FVector(8998.f, .5f, -400.f)); //6
+	spawnLoc.Add(FVector(10978.f, .5f, 50.f)); //7
+	spawnLoc.Add(FVector(10948.f, .5f, 880.f)); //8
+	spawnLoc.Add(FVector(11178.f, .5f, 1580.f)); //9
+	spawnLoc.Add(FVector(13168.f, .5f, 2080.f)); //10
 }
 
 // Called every frame
@@ -346,22 +348,30 @@ void ABoomBoom::UpdateState()
 			}
 
 			Jump();
-			jumpPreludeTimer = 1.5f;
+			jumpPreludeTimer = 1.4f;
 		}
 	}
 
 	// Handle UI Particle
-	float proximityToZipZapX = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
-	float proximityToZipZapZ = abs(zipZap->GetActorLocation().Z - GetActorLocation().Z);
+	if (characterState == State::Idle || characterState == State::Running)
+	{
+		float proximityToZipZapX = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
+		float proximityToZipZapZ = abs(zipZap->GetActorLocation().Z - GetActorLocation().Z);
 
-	if (proximityToZipZapX <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack && proximityToZipZapZ <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack && meter >= skillCost && !isUIparticleActive)
-	{
-		UIParticle->ActivateSystem(false);
-		isUIparticleActive = true;
+		if (proximityToZipZapX <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack && proximityToZipZapZ <= MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack && meter >= skillCost && !isUIparticleActive)
+		{
+			comboBarParticle->ActivateSystem(false);
+			isUIparticleActive = true;
+		}
+		else if (proximityToZipZapX > MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack || proximityToZipZapZ > MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack || meter < skillCost)
+		{
+			comboBarParticle->DeactivateSystem();
+			isUIparticleActive = false;
+		}
 	}
-	else if (proximityToZipZapX > MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack || proximityToZipZapZ > MaximumDistanceBetweenPlayersForInitiatingProjectileComboAttack || meter < skillCost)
+	else
 	{
-		UIParticle->DeactivateSystem();
+		comboBarParticle->DeactivateSystem();
 		isUIparticleActive = false;
 	}
 }
@@ -394,7 +404,7 @@ void ABoomBoom::move(float scaleVal)
 	{
 		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && (characterState != State::Siege) && (attackInputTimer < StrongAttackMinimumInputTime))
 		{
-			characterSpeed = 200.f;
+			characterSpeed = 300.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
 		}
 
@@ -486,7 +496,7 @@ void ABoomBoom::ExecuteJump()
 	{
 		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && (characterState != State::Hurt) && (characterState != State::Siege) && (characterState != State::Jumping) && (!canClimb))
 		{
-			jumpPreludeTimer = 0.3f;
+			jumpPreludeTimer = 0.2f;
 			characterState = State::Jumping;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(jumping);
@@ -607,7 +617,7 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 	// Zip Zap has tased Boom Boom and he must start running like crazy in the direction Zip Zap was facing when he tased him
 	rotation.Yaw = directionRotation;
 	flipbook->SetWorldRotation(rotation);
-	characterSpeed = 300.f;
+	characterSpeed = 350.f;
 	int growlNum = rand() % 4 + 1;
 
 	switch (growlNum)

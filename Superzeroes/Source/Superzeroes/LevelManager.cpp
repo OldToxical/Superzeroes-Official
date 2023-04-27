@@ -112,13 +112,15 @@ void ALevelManager::GetCameraComponent()
 void ALevelManager::InitializeLevelStartLocations()
 {
 	// Initialize level start locations
-	levelStartLocations.Add(FVector(1058.f, .5f, -378.f)); //2
+	levelStartLocations.Add(FVector(1058.f, .5f, -400.f)); //2
 	levelStartLocations.Add(FVector(3043.f, .5f, -58.f)); //3
-	levelStartLocations.Add(FVector(5028.f, .5f, -378.f)); //4
-	levelStartLocations.Add(FVector(7050.f, .5f, 42.f)); //5
-	levelStartLocations.Add(FVector(7120.f, .5f, 915.f)); //6
-	levelStartLocations.Add(FVector(7420.f, .5f, 1592.f)); //7
-	levelStartLocations.Add(FVector(9350.f, .5f, 2080.f)); //8
+	levelStartLocations.Add(FVector(5028.f, .5f, -400.f)); //4
+	levelStartLocations.Add(FVector(7008.f, .5f, -400.f)); //5
+	levelStartLocations.Add(FVector(8998.f, .5f, -400.f)); //6
+	levelStartLocations.Add(FVector(10978.f, .5f, 50.f)); //7
+	levelStartLocations.Add(FVector(10948.f, .5f, 880.f)); //8
+	levelStartLocations.Add(FVector(11178.f, .5f, 1580.f)); //9
+	levelStartLocations.Add(FVector(13168.f, .5f, 2080.f)); //10
 }
 
 void ALevelManager::InitializeCameraLocations()
@@ -129,9 +131,10 @@ void ALevelManager::InitializeCameraLocations()
 	cameraLocations.Add(FVector(5970.f, 1000.f, 0.f)); //4
 	cameraLocations.Add(FVector(7940.f, 1000.f, 0.f)); //5
 	cameraLocations.Add(FVector(9930.f, 1000.f, 0.f)); //6
-	cameraLocations.Add(FVector(6280.f, .5f, 1350.f)); //6
-	cameraLocations.Add(FVector(8360.f, 1000.f, 2020.f)); //7
-	//cameraLocations.Add(FVector(10250.f, 1000.f, 2020.f)); //8
+	cameraLocations.Add(FVector(11920.f, 1000.f, 500.f)); //7
+	cameraLocations.Add(FVector(10120.f, 1000.f, 1300.f)); //8
+	cameraLocations.Add(FVector(12110.f, 1000.f, 2000.f)); //9
+	cameraLocations.Add(FVector(14100.f, 1000.f, 2000.f)); //10
 }
 
 void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
@@ -146,7 +149,7 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 	LatentInfo.Linkage = 0;
 	LatentInfo.UUID = 0;
 
-	if (currentLevel == 8)
+	if (currentLevel == 10)
 	{
 		UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"));
 	}
@@ -194,6 +197,7 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 		if (Cast<ABoomBoom>(otherActor)->GetState() != State::Siege)
 		{
 			boomBoomEnd = true;
+			boomBoom->EnableLevelFinishedParticle();
 
 			if (zipZapEnd)
 			{
@@ -207,6 +211,7 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 		if (Cast<AZipZap>(otherActor)->GetState() != State2::Siege)
 		{
 			zipZapEnd = true;
+			zipZap->EnableLevelFinishedParticle();
 
 			if (boomBoomEnd)
 			{
@@ -221,10 +226,12 @@ void ALevelManager::OverlapEnd(AActor* overlappedActor, AActor* otherActor)
 	if (otherActor->IsA(ABoomBoom::StaticClass()))
 	{
 		boomBoomEnd = false;
+		boomBoom->DisableLevelFinishedParticle();
 	}
 
 	if (otherActor->IsA(AZipZap::StaticClass()))
 	{
 		zipZapEnd = false;
+		zipZap->DisableLevelFinishedParticle();
 	}
 }
