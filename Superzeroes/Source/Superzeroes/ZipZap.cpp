@@ -128,14 +128,16 @@ void AZipZap::BeginPlay()
 	}
 
 	spawnLoc.Empty();
-	spawnLoc.Add(FVector(0.f, .5f, -378.f));
-	spawnLoc.Add(FVector(1058.f, .5f, -378.f));
-	spawnLoc.Add(FVector(3043.f, .5f, -58.f));
-	spawnLoc.Add(FVector(5028.f, .5f, -378.f));
-	spawnLoc.Add(FVector(7050.f, .5f, 42.f));
-	spawnLoc.Add(FVector(7120.f, .5f, 1005.f));
-	spawnLoc.Add(FVector(7420.f, .5f, 1592.f));
-	spawnLoc.Add(FVector(9410.f, .5f, 2092.f)); // From here and below the X should decrease
+	spawnLoc.Add(FVector(0.f, .5f, -400.f)); //1
+	spawnLoc.Add(FVector(1058.f, .5f, -400.f)); //2
+	spawnLoc.Add(FVector(3043.f, .5f, -58.f)); //3
+	spawnLoc.Add(FVector(5028.f, .5f, -400.f)); //4
+	spawnLoc.Add(FVector(7008.f, .5f, -400.f)); //5
+	spawnLoc.Add(FVector(8998.f, .5f, -400.f)); //6
+	spawnLoc.Add(FVector(10978.f, .5f, 50.f)); //7
+	spawnLoc.Add(FVector(10948.f, .5f, 880.f)); //8
+	spawnLoc.Add(FVector(11178.f, .5f, 1580.f)); //9
+	spawnLoc.Add(FVector(13168.f, .5f, 2080.f)); //10
 }
 
 // Called every frame
