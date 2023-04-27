@@ -5,8 +5,9 @@
 // Sets default values
 AEnemySpawner::AEnemySpawner()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 	EnemyClass = NULL;
 	spawnTimer = SpawnTimeout;
 }
@@ -22,7 +23,7 @@ void AEnemySpawner::BeginPlay()
 void AEnemySpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("KUR"));
 	if (spawnTimer > 0.f)
 	{
 		spawnTimer -= GetWorld()->GetDeltaSeconds();
@@ -48,6 +49,6 @@ void AEnemySpawner::SpawnEnemy()
 	for (AEnemy* enemy : enemies)
 	{
 		spawn->AddToGetActorsToIgnore(enemy->GetOwner());
-		spawn->SetSpawner(this);
+		//spawn->SetSpawner(this);
 	}
 }

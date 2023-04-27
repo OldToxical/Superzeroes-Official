@@ -7,7 +7,7 @@
 #include "PaperFlipbookComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "EnemySpawner.h"
+#include "EnemySpawner3.h"
 #include "Enemy.generated.h"
 
 /**
@@ -49,7 +49,7 @@ protected:
 		TArray<AActor*> actorsToIgnore;
 
 	UPROPERTY(VisibleAnywhere)
-		AEnemySpawner* spawner;
+		AEnemySpawner3* spawner;
 
 	// Audio ariables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
@@ -70,6 +70,6 @@ protected:
 public:
 	virtual void TakeEnemyDamage(float damage_);
 	void AddToGetActorsToIgnore(AActor* actor) { actorsToIgnore.Add(actor); }
-	void SetSpawner(AEnemySpawner* spawner_) { spawner = spawner_; }
+	void SetSpawner(AEnemySpawner3* spawner_) { spawner = spawner_; }
 	float GetHealth() { return healthPoints; }
 };

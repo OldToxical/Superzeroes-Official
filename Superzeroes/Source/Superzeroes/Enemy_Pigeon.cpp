@@ -1123,7 +1123,7 @@ void AEnemy_Pigeon::UpdateState()
 	{
 		if (spawner != nullptr)
 		{
-			spawner->RemoveEnemy(this);
+			//spawner->RemoveEnemy(this);
 		}
 
 		FVector location = GetActorLocation();

@@ -262,7 +262,7 @@ void AEnemy_Mouse::UpdateState()
 	{
 		if (spawner != nullptr)
 		{
-			spawner->RemoveEnemy(this);
+			//spawner->RemoveEnemy(this);
 		}
 
 		if (!deathFXcompleted)

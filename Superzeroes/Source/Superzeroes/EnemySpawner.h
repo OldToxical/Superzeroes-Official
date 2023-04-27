@@ -19,7 +19,6 @@ protected:
 	AEnemySpawner();
 
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
 	void SpawnEnemy();
 
 	UPROPERTY(EditDefaultsOnly)
@@ -33,4 +32,7 @@ protected:
 
 public:
 	void RemoveEnemy(AEnemy* enemy) { enemies.Remove(enemy); }
+
+	UFUNCTION()
+		virtual void Tick(float DeltaTime) override;
 };

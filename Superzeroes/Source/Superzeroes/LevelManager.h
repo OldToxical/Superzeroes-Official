@@ -7,7 +7,7 @@
 #include "BoomBoom.h"
 #include "ZipZap.h"
 #include "Enemy.h"
-#include "EnemySpawner.h"
+#include "EnemySpawner3.h"
 #include "LevelManager.generated.h"
 
 /**
@@ -62,7 +62,7 @@ protected:
 		TArray<AEnemy*> enemies;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		TArray<AEnemySpawner*> enemySpawners;
+		TArray<AEnemySpawner3*> enemySpawners;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int currentLevel;

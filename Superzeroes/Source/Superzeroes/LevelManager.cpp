@@ -90,12 +90,12 @@ void ALevelManager::GetEnemies()
 void ALevelManager::GetEnemySpawners()
 {
 	TArray<AActor*> enemySpawnerActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemySpawner::StaticClass(), enemySpawnerActors);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemySpawner3::StaticClass(), enemySpawnerActors);
 
 	for (AActor* spawner : enemySpawnerActors)
 	{
 		spawner->SetActorTickEnabled(false);
-		enemySpawners.Add(Cast<AEnemySpawner>(spawner));
+		enemySpawners.Add(Cast<AEnemySpawner3>(spawner));
 	}
 
 	enemySpawnerActors.Empty();
@@ -175,10 +175,9 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 	}
 
 	// Activate spawners
-	for (AEnemySpawner* spawner : enemySpawners)
+	for (AEnemySpawner3* spawner : enemySpawners)
 	{
 		int enemySpawnerLevelNum = UKismetStringLibrary::Conv_StringToInt(spawner->Tags[0].ToString());
-
 		if (enemySpawnerLevelNum == currentLevel)
 		{
 			spawner->SetActorTickEnabled(true);

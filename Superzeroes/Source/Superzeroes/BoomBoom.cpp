@@ -620,10 +620,10 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 
 	switch (growlNum)
 	{
-		case 1: UGameplayStatics::PlaySound2D(GetWorld(), growlSFX, volume);
-		case 2: UGameplayStatics::PlaySound2D(GetWorld(), growl2SFX, volume);
-		case 3: UGameplayStatics::PlaySound2D(GetWorld(), growl3SFX, volume);
-		case 4: UGameplayStatics::PlaySound2D(GetWorld(), growl4SFX, volume);
+		case 1: UGameplayStatics::PlaySound2D(GetWorld(), growlSFX, volume); break;
+		case 2: UGameplayStatics::PlaySound2D(GetWorld(), growl2SFX, volume); break;
+		case 3: UGameplayStatics::PlaySound2D(GetWorld(), growl3SFX, volume); break;
+		case 4: UGameplayStatics::PlaySound2D(GetWorld(), growl4SFX, volume); break;
 	}
 
 	characterState = State::Combo_Savage;
@@ -632,7 +632,7 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 
 void ABoomBoom::InitiateZipZapComboAttack_Projectile()
 {
-	if (zipZap != NULL && meter >= skillCost)
+	if (IsValid(zipZap) && meter >= skillCost)
 	{
 		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && (characterState != State::Siege) && inputAvailable)
 		{
