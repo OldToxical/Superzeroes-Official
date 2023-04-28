@@ -1121,9 +1121,9 @@ void AEnemy_Pigeon::UpdateState()
 	// Check Health
 	if (healthPoints <= 0.f)
 	{
-		if (spawner != nullptr)
+		if (IsValid(spawner))
 		{
-			//spawner->RemoveEnemy(this);
+			spawner->RemoveEnemy(this);
 		}
 
 		FVector location = GetActorLocation();
