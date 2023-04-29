@@ -204,6 +204,17 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 			spawner->SetActorTickEnabled(true);
 		}
 	}
+
+	// Remove burger
+	TArray<AActor*> burger;
+	FString tag_ = "Burger ";
+	tag_.Append(FString::FromInt(currentLevel - 1));
+	FName burgerTag = FName(*tag_);
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), burgerTag, burger);
+	for (AActor* actor : burger)
+	{
+		actor->Destroy();
+	}
 }
 
 void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)

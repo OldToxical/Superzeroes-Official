@@ -575,7 +575,6 @@ void ABoomBoom::Attack(float scaleVal)
 					{
 						flipbook->SetLooping(false);
 						flipbook->SetFlipbook(simpleAttackSequence);
-						isSimpleAttackSequenced = false;
 						punchPreludeTimer = AcutalPunchDelay / 2.5f;
 
 						// Change the state to "attacking"
@@ -609,6 +608,11 @@ void ABoomBoom::EndAttack()
 		characterState = State::Idle;
 		flipbook->SetLooping(true);
 		flipbook->Play();
+	}
+
+	if (flipbook->GetFlipbook() == simpleAttackSequence)
+	{
+		isSimpleAttackSequenced = false;
 	}
 }
 

@@ -14,9 +14,9 @@
 
 #define SavageComboExecutionTime 3
 #define StrongAttackMinimumInputTime 0.5
-#define SimpleAttackSequenceTimeout 0.6
-#define SimpleAttackAnimationLength 0.2
-#define AcutalPunchDelay 0.066
+#define SimpleAttackSequenceTimeout 0.65
+#define SimpleAttackAnimationLength 0.38
+#define AcutalPunchDelay 0.2
 
 UENUM()
 enum class State : uint8
