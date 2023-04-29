@@ -196,7 +196,7 @@ void ABoomBoom::Tick(float DeltaTime)
 	
 		if (toxicDamage == true)
 		{
-			setHealth(health - 0.03f); // This damages Boom Boom, but not as much as Zip Zap
+			setHealth(health - 0.2f); // This damages Boom Boom, but not as much as Zip Zap
 		}
 	
 		if (characterState != State::Hurt)
