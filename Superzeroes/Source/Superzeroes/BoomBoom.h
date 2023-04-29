@@ -251,9 +251,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool canSpawnZipZap;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		float volume;
-
 	//Audio variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* jumpSFX;
