@@ -138,6 +138,13 @@ void AZipZap::BeginPlay()
 	spawnLoc.Add(FVector(10948.f, .5f, 880.f)); //8
 	spawnLoc.Add(FVector(11178.f, .5f, 1580.f)); //9
 	spawnLoc.Add(FVector(13168.f, .5f, 2080.f)); //10
+	spawnLoc.Add(FVector(15148.f, .5f, 1580.f)); //11
+	spawnLoc.Add(FVector(17098.f, .5f, 860.f)); //12
+	spawnLoc.Add(FVector(19128.f, .5f, 320.f)); //13
+	spawnLoc.Add(FVector(21128.f, .5f, 290.f)); //14
+	spawnLoc.Add(FVector(23078.f, .5f, 660.f)); //15
+	spawnLoc.Add(FVector(25068.f, .5f, 930.f)); //16
+	spawnLoc.Add(FVector(27048.f, .5f, 1590.f)); //17
 }
 
 // Called every frame

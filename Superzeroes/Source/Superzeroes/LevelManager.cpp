@@ -111,7 +111,8 @@ void ALevelManager::GetCameraComponent()
 
 void ALevelManager::InitializeLevelStartLocations()
 {
-	/*levelStartLocations.Add(FVector(1058.f, .5f, -400.f)); //2
+	// Initialize level start locations
+	levelStartLocations.Add(FVector(1058.f, .5f, -400.f)); //2
 	levelStartLocations.Add(FVector(3043.f, .5f, -58.f)); //3
 	levelStartLocations.Add(FVector(5028.f, .5f, -400.f)); //4
 	levelStartLocations.Add(FVector(7008.f, .5f, -400.f)); //5
@@ -119,21 +120,20 @@ void ALevelManager::InitializeLevelStartLocations()
 	levelStartLocations.Add(FVector(10978.f, .5f, 50.f)); //7
 	levelStartLocations.Add(FVector(10948.f, .5f, 880.f)); //8
 	levelStartLocations.Add(FVector(11178.f, .5f, 1580.f)); //9
-l	evelStartLocations.Add(FVector(13168.f, .5f, 2080.f)); //10*/
-
-	// Initialize level start locations
-	levelStartLocations.Add(FVector(1058.f, .5f, -378.f)); //2
-	levelStartLocations.Add(FVector(3043.f, .5f, -58.f)); //3
-	levelStartLocations.Add(FVector(5028.f, .5f, -378.f)); //4
-	levelStartLocations.Add(FVector(7050.f, .5f, 42.f)); //5
-	levelStartLocations.Add(FVector(7120.f, .5f, 915.f)); //6
-	levelStartLocations.Add(FVector(7420.f, .5f, 1592.f)); //7
-	levelStartLocations.Add(FVector(9350.f, .5f, 2080.f)); //8
+	levelStartLocations.Add(FVector(13168.f, .5f, 2080.f)); //10
+	levelStartLocations.Add(FVector(15148.f, .5f, 1580.f)); //11
+	levelStartLocations.Add(FVector(17098.f, .5f, 860.f)); //12
+	levelStartLocations.Add(FVector(19128.f, .5f, 320.f)); //13
+	levelStartLocations.Add(FVector(21128.f, .5f, 290.f)); //14
+	levelStartLocations.Add(FVector(23078.f, .5f, 660.f)); //15
+	levelStartLocations.Add(FVector(25068.f, .5f, 930.f)); //16
+	levelStartLocations.Add(FVector(27048.f, .5f, 1590.f)); //17
 }
 
 void ALevelManager::InitializeCameraLocations()
 {
-	/*cameraLocations.Add(FVector(1990.f, 1000.f, 0.f)); //2 // Where will the correponsing trigger take the camera (from level 0 to level 1 in this case; trigger 0 will take it to the position that is intended for level 1)
+	// Initialize camera positions
+	cameraLocations.Add(FVector(1990.f, 1000.f, 0.f)); //2 // Where will the correponsing trigger take the camera (from level 0 to level 1 in this case; trigger 0 will take it to the position that is intended for level 1) 
 	cameraLocations.Add(FVector(3980.f, 1000.f, 0.f)); //3
 	cameraLocations.Add(FVector(5970.f, 1000.f, 0.f)); //4
 	cameraLocations.Add(FVector(7940.f, 1000.f, 0.f)); //5
@@ -141,17 +141,14 @@ void ALevelManager::InitializeCameraLocations()
 	cameraLocations.Add(FVector(11920.f, 1000.f, 500.f)); //7
 	cameraLocations.Add(FVector(10120.f, 1000.f, 1300.f)); //8
 	cameraLocations.Add(FVector(12110.f, 1000.f, 2000.f)); //9
-	cameraLocations.Add(FVector(14100.f, 1000.f, 2000.f)); //10*/
-	// Initialize camera positions
-
-	cameraLocations.Add(FVector(1990.f, 1000.f, 0.f)); //2 // Where will the correponsing trigger take the camera (from level 0 to level 1 in this case; trigger 0 will take it to the position that is intended for level 1) 
-	cameraLocations.Add(FVector(3980.f, 1000.f, 0.f)); //3
-	cameraLocations.Add(FVector(5970.f, 1000.f, 0.f)); //4
-	cameraLocations.Add(FVector(7940.f, 1000.f, 0.f)); //5
-	cameraLocations.Add(FVector(9930.f, 1000.f, 0.f)); //6
-	cameraLocations.Add(FVector(6280.f, .5f, 1350.f)); //6
-	cameraLocations.Add(FVector(8360.f, 1000.f, 2020.f)); //7
-	//cameraLocations.Add(FVector(10250.f, 1000.f, 2020.f)); //8
+	cameraLocations.Add(FVector(14100.f, 1000.f, 2000.f)); //10
+	cameraLocations.Add(FVector(16070.f, 1000.f, 1310.f)); //11
+	cameraLocations.Add(FVector(18060.f, 1000.f, 700.f)); //12
+	cameraLocations.Add(FVector(20040.f, 1000.f, 700.f)); //13
+	cameraLocations.Add(FVector(22030.f, 1000.f, 700.f)); //14
+	cameraLocations.Add(FVector(24020.f, 1000.f, 700.f)); //15
+	cameraLocations.Add(FVector(26000.f, 1000.f, 1330.f)); //16
+	cameraLocations.Add(FVector(27990.f, 1000.f, 1980.f)); //17
 }
 
 void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
@@ -166,7 +163,7 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 	LatentInfo.Linkage = 0;
 	LatentInfo.UUID = 0;
 
-	if (currentLevel == 10)
+	if (currentLevel == 17)
 	{
 		UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"));
 	}
