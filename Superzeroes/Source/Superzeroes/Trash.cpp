@@ -2,6 +2,7 @@
 
 
 #include "Trash.h"
+#include "TrashCan.h"
 #include "PaperSpriteActor.h"
 #include "Components/BoxComponent.h"
 #include "PaperFlipbookComponent.h"
@@ -34,6 +35,7 @@ void ATrash::BeginPlay()
 void ATrash::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	time += DeltaTime; //this is important so the trash doesnt destroy itself as soon as it is spawned
 	if (movingLeft)
 	{
 		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), -1.0, false);
@@ -41,6 +43,12 @@ void ATrash::Tick(float DeltaTime)
 	else {
 		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), 1.0, false);
 	}
+
+	if(charMove->Velocity.X <= 0.2f && charMove->Velocity.X >= -0.2f && time > 1.0f)
+	{
+		Destroy(); //this destroys the trash as soon as it stops moving
+	}
+	
 }
 
 
@@ -49,10 +57,7 @@ void ATrash::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 {
 	if (otherActor && (otherActor != this) && otherComp)
 	{
-		if (!otherActor->IsA(APaperSpriteActor::StaticClass()))
-		{
-			Destroy();
-		}
+		
 		if (otherActor->ActorHasTag(TEXT("BoomBoom")))
 		{
 			ABoomBoom* boomBoom = (ABoomBoom*)otherActor;

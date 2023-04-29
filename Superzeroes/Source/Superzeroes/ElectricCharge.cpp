@@ -2,6 +2,7 @@
 #include "ElectricCharge.h"
 #include "Button_But_Awesome.h"
 #include "BoxTrigger.h"
+#include "TrashCan.h"
 #include "Siege.h"
 #include "ComicFX.h"
 
@@ -57,6 +58,13 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 				{
 					button->ButtPress();
 				}
+			}
+		}
+		if (otherActor->IsA(ATrashCan::StaticClass()))
+		{
+			if (ATrashCan* can = Cast<ATrashCan>(otherActor))
+			{
+				can->setHealth(-2.f);
 			}
 		}
 

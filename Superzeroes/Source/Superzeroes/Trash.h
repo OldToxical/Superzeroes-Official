@@ -46,6 +46,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UBoxComponent* hitbox;
 
+	float time;
+
 
 
 };
