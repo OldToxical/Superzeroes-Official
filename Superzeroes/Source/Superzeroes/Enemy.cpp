@@ -1,9 +1,10 @@
 #include "Enemy.h"
+#include "TrashCan.h"
 
 AEnemy::AEnemy()
 {
-	characterMovementComponent = NULL;
-	flipbookComponent = NULL;
+	characterMovementComponent = nullptr;
+	flipbookComponent = nullptr;
 	TimeBetweenWalkSounds = 5.0f;
 	walkSoundTimer = TimeBetweenWalkSounds;
 }
@@ -23,6 +24,14 @@ void AEnemy::BeginPlay()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	characterMovementComponent = GetCharacterMovement();
+
+	TSubclassOf<ATrashCan> subclass;
+	subclass = ATrashCan::StaticClass();
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), subclass, actorsToIgnore);
+	for (AActor* actorToIgnore : actorsToIgnore)
+	{
+		GetCapsuleComponent()->IgnoreActorWhenMoving(actorToIgnore, true);
+	}
 
 	if (flipbookComponent)
 	{
