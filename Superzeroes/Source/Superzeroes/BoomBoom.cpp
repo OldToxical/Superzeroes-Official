@@ -196,7 +196,7 @@ void ABoomBoom::Tick(float DeltaTime)
 	
 		if (toxicDamage == true)
 		{
-			setHealth(health - 0.2f); // This damages Boom Boom, but not as much as Zip Zap
+			setHealth(health - 0.03f); // This damages Boom Boom, but not as much as Zip Zap
 		}
 	
 		if (characterState != State::Hurt)
@@ -542,7 +542,7 @@ void ABoomBoom::Attack(float scaleVal)
 	if (characterState != State::Dead && inputAvailable)
 	{
 		// Allow the execution of the simple attack only if the character is not in a state of savage attack
-		if (characterState != State::Combo_Savage && characterState != State::Siege && !charMove->IsFalling())
+		if (characterState != State::Combo_Savage && characterState != State::Siege && !charMove->IsFalling() && !canClimb)
 		{
 			// If the attack button is pressed (or held), keep track of how long the user is holding the button down
 			if (scaleVal > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength))
@@ -758,6 +758,12 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		if (otherActor->IsA(ALAdder::StaticClass()))
 		{
 			canClimb = true;
+
+			if (abs(charMove->Velocity.Z) <= 0.f)
+			{
+				flipbook->SetLooping(true);
+				flipbook->Play();
+			}
 		}
 		if (otherActor->ActorHasTag("LevelRespawnTrigger"))
 		{
@@ -787,7 +793,12 @@ void ABoomBoom::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherAct
 			canClimb = false;
 			charMove->GravityScale = 0.8f;
 			charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("shart"));
+
+			if (abs(charMove->Velocity.Z) <= 0.f)
+			{
+				flipbook->SetLooping(true);
+				flipbook->Play();
+			}
 		}
 	}
 }

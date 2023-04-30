@@ -169,7 +169,7 @@ void AZipZap::Tick(float DeltaTime)
 
 		if (toxicDamage == true)
 		{
-			setHealth(health - 2.0f); // This damages Zip Zap far more than Boom Boom
+			setHealth(health - 0.5f); // This damages Zip Zap far more than Boom Boom
 		}
 
 		if (characterState != State2::Hurt)
@@ -642,6 +642,12 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		if (otherActor->IsA(ALAdder::StaticClass()))
 		{
 			canClimb = true;
+
+			if (abs(charMove->Velocity.Z) <= 0.f)
+			{
+				flipbook->SetLooping(true);
+				flipbook->Play();
+			}
 		}
 		if (otherActor->ActorHasTag("LevelRespawnTrigger"))
 		{
@@ -671,6 +677,12 @@ void AZipZap::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor
 			canClimb = false;
 			charMove->GravityScale = 1.0f;
 			charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
+
+			if (abs(charMove->Velocity.Z) <= 0.f)
+			{
+				flipbook->SetLooping(true);
+				flipbook->Play();
+			}
 		}
 	}
 }
