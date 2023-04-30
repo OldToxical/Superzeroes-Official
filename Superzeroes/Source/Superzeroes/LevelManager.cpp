@@ -199,6 +199,7 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 		if (enemySpawnerLevelNum == currentLevel)
 		{
 			spawner->SetActorTickEnabled(true);
+			enemySpawners.Remove(spawner);
 		}
 	}
 

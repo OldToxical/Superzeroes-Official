@@ -196,7 +196,7 @@ void ABoomBoom::Tick(float DeltaTime)
 	
 		if (toxicDamage == true)
 		{
-			setHealth(health - 0.03f); // This damages Boom Boom, but not as much as Zip Zap
+			setHealth(health - 0.3f); // This damages Boom Boom, but not as much as Zip Zap
 		}
 	
 		if (characterState != State::Hurt)
@@ -758,12 +758,6 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		if (otherActor->IsA(ALAdder::StaticClass()))
 		{
 			canClimb = true;
-
-			if (abs(charMove->Velocity.Z) <= 0.f)
-			{
-				flipbook->SetLooping(true);
-				flipbook->Play();
-			}
 		}
 		if (otherActor->ActorHasTag("LevelRespawnTrigger"))
 		{
