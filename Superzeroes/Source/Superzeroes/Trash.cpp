@@ -8,6 +8,7 @@
 #include "PaperFlipbookComponent.h"
 #include "BoomBoom.h"
 #include "ZipZap.h"
+#include "Enemy.h"
 #include "Kismet/GameplayStatics.h"
 
 ATrash::ATrash()
@@ -75,6 +76,10 @@ void ATrash::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 				zipZap->setHealth(zipZap->getHealth() - 10.f);
 			}
 			Destroy();
+		}
+		if (otherActor->IsA(AEnemy::StaticClass()))
+		{
+			GetCapsuleComponent()->IgnoreActorWhenMoving(otherActor, true);
 		}
 	}
 }

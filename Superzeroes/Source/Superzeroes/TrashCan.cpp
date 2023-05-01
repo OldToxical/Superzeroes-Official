@@ -2,6 +2,7 @@
 
 
 #include "TrashCan.h"
+#include "Enemy.h"
 #include "Components/BoxComponent.h"
 
 ATrashCan::ATrashCan()

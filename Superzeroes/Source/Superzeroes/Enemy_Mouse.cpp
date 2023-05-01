@@ -3,6 +3,7 @@
 #include "Components/BoxComponent.h"
 #include "ComicFX.h"
 #include "LevelManager.h"
+#include "Trash.h"
 #include <chrono>
 #include <thread>
 #include "Kismet/KismetStringLibrary.h"
@@ -65,7 +66,9 @@ void AEnemy_Mouse::BeginPlay()
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy_Mouse::OverlapBegin);
 	TimeBetweenWalkSounds = 5.0f;
-	walkSoundTimer = TimeBetweenWalkSounds;
+	walkSoundTimer = TimeBetweenWalkSounds; 
+	
+
 }
 
 void AEnemy_Mouse::Tick(float DeltaTime)
@@ -448,7 +451,10 @@ void AEnemy_Mouse::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* oth
 		{
 			inCombat = true;
 		}
-
+		if (otherActor->IsA(ATrash::StaticClass()) )
+		{
+			GetCapsuleComponent()->IgnoreActorWhenMoving(otherActor, true);
+		}
 		ExecuteAction();
 	}
 }

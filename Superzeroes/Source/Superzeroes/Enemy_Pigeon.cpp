@@ -6,6 +6,7 @@
 #include "Projectile.h"
 #include "ComicFX.h"
 #include "LevelManager.h"
+#include "Trash.h"
 #include <chrono>
 #include <thread>
 
@@ -1266,6 +1267,10 @@ void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* ot
 			currentAction = Action::Attack;
 		}
 
+		if (otherActor->IsA(ATrash::StaticClass()))
+		{
+			GetCapsuleComponent()->IgnoreActorWhenMoving(otherActor, true);
+		}
 		ExecuteAction();
 	}
 }

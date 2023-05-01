@@ -25,7 +25,7 @@ ALAdder::~ALAdder()
 void ALAdder::BeginPlay()
 {
 	Super::BeginPlay();
-	//isActivated = false;
+	
 	GetRenderComponent()->SetFlipbook(ladder);
 	GetRenderComponent()->SetLooping(false);
 	GetRenderComponent()->SetPlaybackPositionInFrames(0,false);
