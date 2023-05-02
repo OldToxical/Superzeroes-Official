@@ -45,6 +45,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UBoxComponent* hitbox;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		FRotator rotation;
 
 	float time;
 

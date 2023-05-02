@@ -73,6 +73,7 @@ void ASiege::Tick(float DeltaTime)
 		boomBoom->setMeter(-100.f);
 		zipZap->setMeter(-100.f);
 		UGameplayStatics::PlaySound2D(GetWorld(), siegeActivate);
+		UGameplayStatics::PlaySound2D(GetWorld(), siegeVoice);
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(2.f, 2.f, true, true, true, true);
 		UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(2.f, 2.f, true, true, true, true);
 		flipbook->Play();

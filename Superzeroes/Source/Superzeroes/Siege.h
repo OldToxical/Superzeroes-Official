@@ -136,6 +136,9 @@ protected:
 		class USoundBase* siegeActivate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* siegeVoice;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 		class USoundBase* siegeShoot;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
