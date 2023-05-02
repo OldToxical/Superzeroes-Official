@@ -11,7 +11,7 @@
 #define MaximumDistanceBetweenPlayersForInitiatingSavageComboAttack 150
 
 UENUM(BlueprintType)
-enum class State2 : uint8
+enum class ZZ_State : uint8
 {
 	Idle,
 	Running,
@@ -36,88 +36,98 @@ public:
 	// Sets default values for this character's properties
 	AZipZap();
 
+	// Variable for the character movement component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class UCharacterMovementComponent* charMove;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbookComponent* flipbook;
+	class UCharacterMovementComponent* charMove;
 
+	// Variable for the flipbook component
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* idle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* run;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* jumping;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* simpleAttack;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* initiateBoomBoomSavageComboAttack;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* projectileFly;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* projectileFlyElectrified;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* hurt;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* dead;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UPaperFlipbook* airAttack;
+	class UPaperFlipbookComponent* flipbook;
 
-	UFUNCTION(BlueprintCallable)
-		void UpdateAnimation();
-	UFUNCTION(BlueprintCallable)
-		void UpdateState();
-	UFUNCTION(BlueprintCallable)
-		void move(float scaleVal);
-	UFUNCTION(BlueprintCallable)
-		void ExecuteJump();
-	UFUNCTION(BlueprintCallable)
-		void climb(float scaleVal);
-	UFUNCTION(BlueprintCallable)
+	// Flipbook animations
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* idle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* run;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* jumping;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* simpleAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* initiateBoomBoomSavageComboAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* projectileFly;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* projectileFlyElectrified;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* hurt;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* dead;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPaperFlipbook* airAttack;
 
-		void EndAttack();
+	// Functions for movement management (animations and motion)
 	UFUNCTION(BlueprintCallable)
-		void InitiateComboAttack_Savage();
+	void UpdateAnimation();
 	UFUNCTION(BlueprintCallable)
-		void InitiateComboAttack_Projectile(float directionRotation);
+	void UpdateState();
 	UFUNCTION(BlueprintCallable)
-		void Electrify();
+	void move(float scaleVal);
 	UFUNCTION(BlueprintCallable)
-		bool IsFacingBoomBoom();
+	void ExecuteJump();
 	UFUNCTION(BlueprintCallable)
-		void ProcessShoot(float damage_, bool inAir);
+	void climb(float scaleVal);
 	UFUNCTION(BlueprintCallable)
-		void SetLevelIndex(int level) { currentLevel = level; }
-	UFUNCTION(BlueprintCallable)
-		void Shoot();
-	UFUNCTION(BlueprintCallable)
-		void SetState(State2 state_) { characterState = state_; }
-	UFUNCTION(BlueprintCallable)
-		void SetInputAvailability(bool isAvailable) { inputAvailable = isAvailable; }
-	UFUNCTION(BlueprintCallable)
-		void Respawn() { SetActorLocation(spawnLoc[currentLevel]); }
-	UFUNCTION(BlueprintCallable)
-		void EnableLevelFinishedParticle() { levelFinishedParticle->ActivateSystem(false); }
-	UFUNCTION(BlueprintCallable)
-		void DisableLevelFinishedParticle() { levelFinishedParticle->DeactivateSystem(); }
+	void EndAttack();
 
+	// Functions for combat functionalities
 	UFUNCTION(BlueprintCallable)
-		void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
-			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+	void InitiateComboAttack_Savage();
 	UFUNCTION(BlueprintCallable)
-		void overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
-			UPrimitiveComponent* otherComp, int32 otherBodyIndex);
+	void InitiateComboAttack_Projectile(float directionRotation);
+	UFUNCTION(BlueprintCallable)
+	void Electrify();
+	UFUNCTION(BlueprintCallable)
+	bool IsFacingBoomBoom();
+	UFUNCTION(BlueprintCallable)
+	void ProcessShoot(float damage_, bool inAir);
+	UFUNCTION(BlueprintCallable)
+	void Shoot();
+
+	// Collision functions for delegates
+	UFUNCTION(BlueprintCallable)
+	void overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+	UFUNCTION(BlueprintCallable)
+	void overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex);
 
 	// Getters and setters
 	UFUNCTION(BlueprintCallable)
-		float getHealth() { return health; };
+	float getHealth() { return health; };
 	UFUNCTION(BlueprintCallable)
-		void setHealth(float newHealth);
+	void setHealth(float newHealth);
 	UFUNCTION(BlueprintCallable)
-		State2 GetState() { return characterState; }
+	ZZ_State GetState() { return characterState; }
 	UFUNCTION(BlueprintCallable)
-		float getMeter() { return meter; };
+	float getMeter() { return meter; };
 	UFUNCTION(BlueprintCallable)
-		void setMeter(float newMeter) { meter += newMeter; if (meter > 100.f) { meter = 100.f; } if (meter < 0.0f) { meter = 0.0f; } };
+	void setMeter(float newMeter) { meter += newMeter; if (meter > 100.f) { meter = 100.f; } if (meter < 0.0f) { meter = 0.0f; } };
+	UFUNCTION(BlueprintCallable)
+	void SetLevelIndex(int level) { currentLevel = level; }
+	UFUNCTION(BlueprintCallable)
+	void SetState(ZZ_State state_) { characterState = state_; }
+	UFUNCTION(BlueprintCallable)
+	void SetInputAvailability(bool isAvailable) { inputAvailable = isAvailable; }
+	UFUNCTION(BlueprintCallable)
+	void Respawn() { SetActorLocation(spawnLoc[currentLevel]); }
+	UFUNCTION(BlueprintCallable)
+	void EnableLevelFinishedParticle() { levelFinishedParticle->ActivateSystem(false); }
+	UFUNCTION(BlueprintCallable)
+	void DisableLevelFinishedParticle() { levelFinishedParticle->DeactivateSystem(); }
+	UFUNCTION(BlueprintCallable)
+		void EnableSiegeInitiationParticle() { if (!siegeInitiationParticle->IsActive() && IsValid(siegeInitiationParticle)) { siegeInitiationParticle->ActivateSystem(); } }
+	UFUNCTION(BlueprintCallable)
+		void DisableSiegeInitiationParticle() { if (IsValid(siegeInitiationParticle)) { siegeInitiationParticle->DeactivateSystem(); } }
+
 	UInputComponent* GetInputComponent() { return InputComponent; }
 
 protected:
@@ -132,168 +142,186 @@ protected:
 
 	// Called when Pawn is possessed
 	UFUNCTION(BlueprintCallable)
-		virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
+	// Variable for the rotator that keeps track of the rotation of the flipbook component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		FRotator rotation;
+	FRotator rotation;
+
 	// Enum instance for the character's state
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		State2 characterState;
+	ZZ_State characterState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		ABoomBoom* boomBoom;
+	ABoomBoom* boomBoom;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UInputComponent* Input;
+	UInputComponent* Input;
 
 	// Variable for the character's speed
 	UPROPERTY(EditAnywhere)
-		float characterSpeed;
+	float characterSpeed;
 
 	// Variable to keep track of what time should pass to execute the jump
 	UPROPERTY(EditAnywhere)
-		float jumpPreludeTimer;
+	float jumpPreludeTimer;
 
 	// Variable to keep track of what time should pass to start following whether zip zap is falling when he's in projectile attack state
 	UPROPERTY(EditAnywhere)
-		float projectileAttackResetStateTimeoutTimer;
+	float projectileAttackResetStateTimeoutTimer;
 
 	// Variable to keep track whether zip zap is electrified while he's executing his projectile combo attack
 	UPROPERTY(EditAnywhere)
-		bool isElectrified;
+	bool isElectrified;
 
 	// Variable to keep track whether zip zap is shooting or not during the current attack stage
 	UPROPERTY(EditAnywhere)
-		bool isShooting;
+	bool isShooting;
 
 	// Variable to keep track whether zip zap has dealt damage
 	UPROPERTY(EditAnywhere)
-		bool damageDealt;
+	bool damageDealt;
 
 	// Variable to keep track whether the input is available, depending on whether siege mode is being activated at the moment
 	UPROPERTY(EditAnywhere)
-		bool inputAvailable;
+	bool inputAvailable;
 
 	// Variable to keep track whether zip zap has iniated savage combo attack
 	UPROPERTY(EditAnywhere)
-		bool savageInitiated;
+	bool savageInitiated;
 
 	//Variable to keep track of Zip Zap's health
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		float health;
+	float health;
 
 	//Variables to keep track of Zip Zap's special meter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
-		float meter;
+	float meter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
-		float refillTime;
+	float refillTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combo_Meter)
-		float skillCost;
+	float skillCost;
 
 	// Particles' variables
 	UPROPERTY(BlueprintReadWrite)
-		UNiagaraComponent* smokeParticle;
+	UNiagaraComponent* smokeParticle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UParticleSystem* boomBoomImpact;
+	UParticleSystem* boomBoomImpact;
 
 	UPROPERTY(EditAnywhere)
-		UParticleSystem* enemyImpact;
+	UParticleSystem* enemyImpact;
 
 	UPROPERTY(EditAnywhere)
-		UParticleSystem* muzzleFlashParticle;
+	UParticleSystem* muzzleFlashParticle;
 
 	UPROPERTY(BlueprintReadWrite)
-		UNiagaraSystemWidget* comboBarParticle;
+	UParticleSystemComponent* siegeInitiationParticle;
 
 	UPROPERTY(BlueprintReadWrite)
-		UNiagaraSystemWidget* levelFinishedParticle;
+	UNiagaraSystemWidget* comboBarParticle;
 
+	UPROPERTY(BlueprintReadWrite)
+	UNiagaraSystemWidget* levelFinishedParticle;
+
+	 // Indicated whether or not a toxic damage sound should be played or not
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		bool toxicDamage;
-	//used for changing between the two toxic walk sound sfx
+	bool toxicDamage;
+
+	// Used for changing between the two toxic walk sound sfx
 	bool toxicWalkSoundBool;
+
+	// Variable to keep track of when UI combo particle is active
 	bool isComboParticleActive;
+
+	// Timers for health management
 	float healTimer;
 	float deathTimer;
-	float walkSoundTimer;
-	//Values for respawn timer and heal timer that can be changed in blueprint, so it can be tested without compiling
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
-		float respawnTime;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
-		float timeToHeal;
-	//This is so that the walk sound effect doesn't play every single frame
-	//there may be a better way of doing this?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
-		float TimeBetweenWalkSounds;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
-		float healRate;
 
+	// Values for respawn timer and heal timer that can be changed in blueprint, so it can be tested without compiling
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+	float respawnTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+	float timeToHeal;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+	float healRate;
+
+	// Variable for keeping track of what level the characters is currently on
 	int currentLevel;
+
+	// Variable for keeping track whether or not the character is on a ladder
 	bool canClimb;
+
+	// Variable to keep track of whether or not a step has been made while walking; used for sound initiation
 	bool stepMade;
+
+	// Variable to keep track of whether or not healing is currently active
 	bool healing;
 
 	//Audio variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* jumpSFX;
+	class USoundBase* jumpSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* jump2SFX;
+	class USoundBase* jump2SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* jump3SFX;
+	class USoundBase* jump3SFX;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* landSFX;
+	class USoundBase* landSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* land2SFX;
+	class USoundBase* land2SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* land3SFX;
+	class USoundBase* land3SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* land4SFX;
+	class USoundBase* land4SFX;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* walkSFX;
+	class USoundBase* walkSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* walk2SFX;
+	class USoundBase* walk2SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* walk3SFX;
+	class USoundBase* walk3SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* walk4SFX;
+	class USoundBase* walk4SFX;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* toxicWalk1SFX;
+	class USoundBase* toxicWalk1SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* toxicWalk2SFX;
+	class USoundBase* toxicWalk2SFX;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* death1SFX;
+	class USoundBase* death1SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* death2SFX;
+	class USoundBase* death2SFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* death3SFX;
+	class USoundBase* death3SFX;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* hurtSFX;
+	class USoundBase* hurtSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* healthRecharge;
+	class USoundBase* healthRecharge;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* meterFull;
+	class USoundBase* meterFull;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* flyingSFX;
+	class USoundBase* flyingSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class USoundBase* attackSFX;
+	class USoundBase* attackSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
-		class UAudioComponent* audComp;
+	class UAudioComponent* audComp;
 
+	// Array of locations, which serve as a starting point in each level; used in respawning
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		TArray<FVector> spawnLoc;
+	TArray<FVector> spawnLoc;
 
+	// Variable for the projectile that will be spawned on shooting
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<AProjectile> electricChargeClass;
+	TSubclassOf<AProjectile> electricChargeClass;
 
+	// Variable of the siege mode blueprint
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<class ASiege> siegeBPClass;
+	TSubclassOf<class ASiege> siegeBPClass;
 
+	// Variable for the comic effects' blueprint
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
-		TSubclassOf<class AComicFX> zap;
+	TSubclassOf<class AComicFX> zap;
 };

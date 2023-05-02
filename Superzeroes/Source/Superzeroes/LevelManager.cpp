@@ -50,7 +50,7 @@ void ALevelManager::Checkhealth()
 	{
 		if (zipZap->getHealth() <= 0.f && boomBoom->getHealth() <= 0.f)
 		{
-			UGameplayStatics::OpenLevel(GetWorld(), TEXT("Sample2DLevel"));
+			UGameplayStatics::OpenLevel(GetWorld(), TEXT("Final_Cinematic"));
 		}
 	}
 }
@@ -165,7 +165,7 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 
 	if (currentLevel == 17)
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), TEXT("Final_Cinematic"));
+		UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"));
 	}
 
 	UKismetSystemLibrary::MoveComponentTo(cameraComp, cameraLocations[triggerNum], cameraComp->GetComponentRotation(), true, true, 0.2f, false, EMoveComponentAction::Move, LatentInfo);
@@ -219,7 +219,7 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 {
 	if (otherActor->IsA(ABoomBoom::StaticClass()))
 	{
-		if (Cast<ABoomBoom>(otherActor)->GetState() != State::Siege)
+		if (Cast<ABoomBoom>(otherActor)->GetState() != BB_State::Siege)
 		{
 			boomBoomEnd = true;
 			boomBoom->EnableLevelFinishedParticle();
@@ -233,7 +233,7 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 
 	if (otherActor->IsA(AZipZap::StaticClass()))
 	{
-		if (Cast<AZipZap>(otherActor)->GetState() != State2::Siege)
+		if (Cast<AZipZap>(otherActor)->GetState() != ZZ_State::Siege)
 		{
 			zipZapEnd = true;
 			zipZap->EnableLevelFinishedParticle();

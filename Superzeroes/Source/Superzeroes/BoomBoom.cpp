@@ -31,7 +31,7 @@ ABoomBoom::ABoomBoom()
 	jumpPreludeTimer = 0.f;
 	punchPreludeTimer = 0.f;
 	charMove = nullptr;
-	characterState = State::Idle;
+	characterState = BB_State::Idle;
 	jumping = nullptr;
 	run = nullptr;
 	simpleAttack = nullptr;
@@ -67,8 +67,6 @@ ABoomBoom::ABoomBoom()
 		flipbook->SetGenerateOverlapEvents(false);
 	}
 
-	TimeBetweenWalkSounds = 16.0f;
-	walkSoundTimer = TimeBetweenWalkSounds;
 	toxicWalkSoundBool = false;
 }
 
@@ -86,27 +84,15 @@ ABoomBoom::~ABoomBoom()
 	Destroy();
 }
 
-void ABoomBoom::WriteFile(float scaleVal)
-{
-	/*FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/start.txt"));
-	if (!FFileHelper::SaveStringToFile(text, *path))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "Failed To save");
-		return;
-	}*/
-
-	//Cast<AEnemy_Pigeon>(UGameplayStatics::GetActorOfClass(GetWorld(), AEnemy_Pigeon::StaticClass()))->Attack();
-}
-
 void ABoomBoom::setHealth(float newHealth)
 {
-	if (characterState != State::Siege)
+	if (characterState != BB_State::Siege)
 	{
-		if (characterState != State::Hurt && characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Siege && newHealth < health)
+		if (characterState != BB_State::Hurt && characterState != BB_State::Attacking && characterState != BB_State::Combo_Savage && characterState != BB_State::Siege && newHealth < health)
 		{
 			healTimer = 0.f;
 			healing = false;
-			characterState = State::Hurt;
+			characterState = BB_State::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
 
@@ -179,7 +165,7 @@ void ABoomBoom::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (characterState != State::Siege)
+	if (characterState != BB_State::Siege)
 	{
 		setMeter(refillTime);
 
@@ -189,7 +175,7 @@ void ABoomBoom::Tick(float DeltaTime)
 		}
 	}
 
-	if (characterState != State::Dead)
+	if (characterState != BB_State::Dead)
 	{
 		UpdateState();
 		UpdateAnimation();
@@ -199,7 +185,7 @@ void ABoomBoom::Tick(float DeltaTime)
 			setHealth(health - 0.3f); // This damages Boom Boom, but not as much as Zip Zap
 		}
 	
-		if (characterState != State::Hurt)
+		if (characterState != BB_State::Hurt)
 		{
 			healTimer += DeltaTime;
 
@@ -224,7 +210,7 @@ void ABoomBoom::Tick(float DeltaTime)
 		if (health <= 0.f)
 		{
 			UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
-			characterState = State::Dead;
+			characterState = BB_State::Dead;
 			flipbook->SetFlipbook(dead);
 			flipbook->SetLooping(false);
 		}
@@ -239,7 +225,7 @@ void ABoomBoom::Tick(float DeltaTime)
 			health = 200.0f;
 			deathTimer = 0.0f;
 			SetActorLocation(spawnLoc[currentLevel]); // Respawn at last known location
-			characterState = State::Idle;
+			characterState = BB_State::Idle;
 			flipbook->SetLooping(true);
 			flipbook->Play();
 		}
@@ -254,9 +240,13 @@ void ABoomBoom::Landed(const FHitResult& Hit)
 	UGameplayStatics::PlaySound2D(GetWorld(), landSFX);
 	UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeLandBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, 0.3f, true, true, true, true);
-	characterState = State::Idle;
-	flipbook->SetLooping(true);
-	flipbook->Play();
+
+	if (characterState != BB_State::Combo_Savage)
+	{
+		characterState = BB_State::Idle;
+		flipbook->SetLooping(true);
+		flipbook->Play();
+	}
 }
 
 // Called to bind functionality to input
@@ -284,7 +274,7 @@ void ABoomBoom::UpdateState()
 	charMove->MaxWalkSpeed = characterSpeed;
 
 	// Execute the savage attack's function, if the character is in its state
-	if (characterState == State::Combo_Savage)
+	if (characterState == BB_State::Combo_Savage)
 	{
 		UpdateComboAttack_Savage();
 	}
@@ -342,7 +332,7 @@ void ABoomBoom::UpdateState()
 	}
 	else
 	{
-		if (characterState == State::Jumping && !charMove->IsFalling())
+		if (characterState == BB_State::Jumping && !charMove->IsFalling())
 		{
 			int jumpnum = rand() % 4 + 1;
 
@@ -360,7 +350,7 @@ void ABoomBoom::UpdateState()
 	}
 
 	// Handle UI Particle
-	if (characterState == State::Idle || characterState == State::Running)
+	if (characterState == BB_State::Idle || characterState == BB_State::Running)
 	{
 		float proximityToZipZapX = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
 		float proximityToZipZapZ = abs(zipZap->GetActorLocation().Z - GetActorLocation().Z);
@@ -388,17 +378,17 @@ void ABoomBoom::UpdateAnimation()
 	// If character is moving, change to running animation
 	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != State::Combo_Savage && characterState != State::Attacking && characterState != State::Jumping && characterState != State::Hurt && characterState != State::Siege)
+		if (characterState != BB_State::Combo_Savage && characterState != BB_State::Attacking && characterState != BB_State::Jumping && characterState != BB_State::Hurt && characterState != BB_State::Siege)
 		{
-			characterState = State::Running;
+			characterState = BB_State::Running;
 			flipbook->SetFlipbook(run);
 		}
 	}
 	else // Otherwise, change to idle animation
 	{
-		if (characterState != State::Attacking && characterState != State::Combo_Savage && characterState != State::Jumping && characterState != State::Hurt && characterState != State::Siege)
+		if (characterState != BB_State::Attacking && characterState != BB_State::Combo_Savage && characterState != BB_State::Jumping && characterState != BB_State::Hurt && characterState != BB_State::Siege)
 		{
-			characterState = State::Idle;
+			characterState = BB_State::Idle;
 			flipbook->SetFlipbook(idle);
 		}
 	}
@@ -407,16 +397,16 @@ void ABoomBoom::UpdateAnimation()
 void ABoomBoom::move(float scaleVal)
 {
 	// Add movement force only if the character is not in a state of attacking
-	if (characterState != State::Dead && inputAvailable)
+	if (characterState != BB_State::Dead && inputAvailable)
 	{
-		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && (characterState != State::Siege) && (attackInputTimer < StrongAttackMinimumInputTime))
+		if ((characterState != BB_State::Combo_Savage) && (characterState != BB_State::Attacking) && (characterState != BB_State::Siege) && (attackInputTimer < StrongAttackMinimumInputTime))
 		{
 			characterSpeed = 300.f;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), scaleVal, false);
 		}
 
 		// Determine the character's facing direction, regardless of the state
-		if (scaleVal > 0.f && (characterState == State::Running || characterState == State::Combo_Savage))
+		if (scaleVal > 0.f && (characterState == BB_State::Running || characterState == BB_State::Combo_Savage || characterState == BB_State::Attacking))
 		{
 			if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 7) && !charMove->IsFalling())
 			{
@@ -455,7 +445,7 @@ void ABoomBoom::move(float scaleVal)
 			rotation.Yaw = 0.f;
 			flipbook->SetWorldRotation(rotation);
 		}
-		else if (scaleVal < 0.f && (characterState == State::Running || characterState == State::Combo_Savage))
+		else if (scaleVal < 0.f && (characterState == BB_State::Running || characterState == BB_State::Combo_Savage))
 		{
 			if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 7) && !charMove->IsFalling())
 			{
@@ -499,12 +489,12 @@ void ABoomBoom::move(float scaleVal)
 
 void ABoomBoom::ExecuteJump()
 {
-	if (characterState != State::Dead && inputAvailable)
+	if (characterState != BB_State::Dead && inputAvailable)
 	{
-		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && (characterState != State::Hurt) && (characterState != State::Siege) && (characterState != State::Jumping) && (!canClimb))
+		if ((characterState != BB_State::Combo_Savage) && (characterState != BB_State::Attacking) && (!charMove->IsFalling()) && (characterState != BB_State::Hurt) && (characterState != BB_State::Siege) && (characterState != BB_State::Jumping) && (!canClimb))
 		{
 			jumpPreludeTimer = 0.2f;
-			characterState = State::Jumping;
+			characterState = BB_State::Jumping;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(jumping);
 		}
@@ -513,11 +503,11 @@ void ABoomBoom::ExecuteJump()
 
 void ABoomBoom::climb(float scaleVal)
 {
-	if (characterState != State::Dead)
+	if (characterState != BB_State::Dead)
 	{
-		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && characterState != State::Hurt && inputAvailable)
+		if ((characterState != BB_State::Combo_Savage) && (characterState != BB_State::Attacking) && characterState != BB_State::Hurt && inputAvailable)
 		{
-			if (canClimb == true && characterState != State::Jumping)
+			if (canClimb == true && characterState != BB_State::Jumping)
 			{
 				if (scaleVal != 0)
 				{
@@ -529,8 +519,11 @@ void ABoomBoom::climb(float scaleVal)
 				}
 				else
 				{
-					charMove->GravityScale = 1.0f;
-					charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
+					if (characterState != BB_State::Jumping)
+					{
+						charMove->GravityScale = 1.0f;
+						charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
+					}
 				}
 			}
 		}
@@ -539,10 +532,10 @@ void ABoomBoom::climb(float scaleVal)
 
 void ABoomBoom::Attack(float scaleVal)
 {
-	if (characterState != State::Dead && inputAvailable)
+	if (characterState != BB_State::Dead && inputAvailable)
 	{
 		// Allow the execution of the simple attack only if the character is not in a state of savage attack
-		if (characterState != State::Combo_Savage && characterState != State::Siege && !charMove->IsFalling() && !canClimb)
+		if (characterState != BB_State::Combo_Savage && characterState != BB_State::Siege && !charMove->IsFalling() && !canClimb)
 		{
 			// If the attack button is pressed (or held), keep track of how long the user is holding the button down
 			if (scaleVal > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength))
@@ -556,7 +549,7 @@ void ABoomBoom::Attack(float scaleVal)
 					flipbook->SetFlipbook(strongAttackCharge);
 
 					// Change the state to "attacking"
-					characterState = State::Attacking;
+					characterState = BB_State::Attacking;
 				}
 			}
 			else // The button is not pressed. If the value of "attackInputTimer" is bigger than 0.f, this means the button was released during the current iteration, so let's determine what attack to execute
@@ -576,7 +569,7 @@ void ABoomBoom::Attack(float scaleVal)
 						launchZipZap = false;
 
 						// Change the state to "attacking"
-						characterState = State::Attacking;
+						characterState = BB_State::Attacking;
 					}
 					else if (simpleAttack_sequenceTimeoutTimer > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength) && isSimpleAttackSequenced) // Second Attack
 					{
@@ -585,7 +578,7 @@ void ABoomBoom::Attack(float scaleVal)
 						punchPreludeTimer = AcutalPunchDelay / 2.5f;
 
 						// Change the state to "attacking"
-						characterState = State::Attacking;
+						characterState = BB_State::Attacking;
 					}
 				}
 				else if (attackInputTimer >= StrongAttackMinimumInputTime) // Strong attack
@@ -596,7 +589,7 @@ void ABoomBoom::Attack(float scaleVal)
 					punchPreludeTimer = AcutalPunchDelay + 0.264f;
 
 					// Change the state to "attacking"
-					characterState = State::Attacking;
+					characterState = BB_State::Attacking;
 				}
 
 				// Reset the timer, doesn't matter if the button was released or wasn't pressed at all during this iteration, it's currently not pressed.
@@ -610,9 +603,9 @@ void ABoomBoom::EndAttack()
 {
 	// Once an attack animation has finished, reset the character's state to "idle" and his flipbook's looping property to true, since only the attack animations shouldn't loop
 	
-	if (characterState != State::Dead && characterState != State::Jumping)
+	if (characterState != BB_State::Dead && characterState != BB_State::Jumping && characterState != BB_State::Combo_Savage)
 	{
-		characterState = State::Idle;
+		characterState = BB_State::Idle;
 		flipbook->SetLooping(true);
 		flipbook->Play();
 	}
@@ -639,7 +632,7 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 		case 4: UGameplayStatics::PlaySound2D(GetWorld(), growl4SFX); break;
 	}
 
-	characterState = State::Combo_Savage;
+	characterState = BB_State::Combo_Savage;
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, SavageComboExecutionTime, true, true, true, true);
 }
 
@@ -647,7 +640,7 @@ void ABoomBoom::InitiateZipZapComboAttack_Projectile()
 {
 	if (IsValid(zipZap) && meter >= skillCost)
 	{
-		if ((characterState != State::Combo_Savage) && (characterState != State::Attacking) && !charMove->IsFalling() && (characterState != State::Siege) && inputAvailable)
+		if ((characterState != BB_State::Combo_Savage) && (characterState != BB_State::Attacking) && !charMove->IsFalling() && (characterState != BB_State::Siege) && inputAvailable)
 		{
 			float proximityToZipZapX = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
 			float proximityToZipZapZ = abs(zipZap->GetActorLocation().Z - GetActorLocation().Z);
@@ -660,7 +653,7 @@ void ABoomBoom::InitiateZipZapComboAttack_Projectile()
 					launchZipZap = true;
 					flipbook->SetLooping(false);
 					flipbook->SetFlipbook(simpleAttack);
-					characterState = State::Attacking;
+					characterState = BB_State::Attacking;
 					setMeter(-skillCost);
 				}
 			}
@@ -712,7 +705,7 @@ void ABoomBoom::UpdateComboAttack_Savage()
 	else // There's no more time, end the savage attack
 	{
 		ComboAttack_Savage_ExecutionTimer = SavageComboExecutionTime;
-		characterState = State::Idle;
+		characterState = BB_State::Idle;
 	}
 }
 
@@ -734,7 +727,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))
 		{
-			if (characterState == State::Combo_Savage)
+			if (characterState == BB_State::Combo_Savage)
 			{
 				if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 				{
@@ -746,7 +739,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 		}
 		if (otherActor->IsA(AWindowTrigger::StaticClass()))
 		{
-			if (characterState == State::Combo_Savage)
+			if (characterState == BB_State::Combo_Savage)
 			{
 				if (AWindowTrigger* window = Cast<AWindowTrigger>(otherActor))
 				{
@@ -785,13 +778,11 @@ void ABoomBoom::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		if (otherActor->IsA(ALAdder::StaticClass()))
 		{
 			canClimb = false;
-			charMove->GravityScale = 0.8f;
-			charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
 
-			if (abs(charMove->Velocity.Z) <= 0.f)
+			if (characterState != BB_State::Jumping && characterState != BB_State::Combo_Savage)
 			{
-				flipbook->SetLooping(true);
-				flipbook->Play();
+				charMove->GravityScale = 0.8f;
+				charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
 			}
 		}
 	}

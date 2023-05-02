@@ -6,7 +6,6 @@
 #include "Projectile.h"
 #include "ComicFX.h"
 #include "LevelManager.h"
-#include "Trash.h"
 #include <chrono>
 #include <thread>
 
@@ -182,7 +181,7 @@ void AEnemy_Pigeon::CalculateReward()
 	else // It's in combat, let's see what it did
 	{
 		// If siege mode is active - whatever it does, it won't escape and won't survive
-		if (boomBoom->GetState() == State::Siege)
+		if (boomBoom->GetState() == BB_State::Siege)
 		{
 			UpdateQ(reward);
 			return;
@@ -243,7 +242,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 6 + 1) * difficulty;
 				}
@@ -289,7 +288,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 6 + 1) * difficulty;
 				}
@@ -300,12 +299,12 @@ void AEnemy_Pigeon::CalculateReward()
 				reward += (rand() % 5 + 2);
 
 				// Check if zip zap shoots, it would be great to avoid his projectiles
-				if (zipZap->GetState() == State2::Attacking)
+				if (zipZap->GetState() == ZZ_State::Attacking)
 				{
 					reward += (rand() % 4 + 1);
 				}
 				// Check if there are any combo attacks active, if there are - that's reaaaally good
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 5 + 2);
 				}
@@ -328,12 +327,12 @@ void AEnemy_Pigeon::CalculateReward()
 					reward += (rand() % 5 + 0);
 				}
 				// Better if the characters attack
-				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking || zipZap->GetState() == ZZ_State::Attacking)
 				{
 					reward += (rand() % 4 + 0);
 				}
 				// Even Better if the characters have combo attack active
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 7 + 3);
 				}
@@ -391,7 +390,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 6 + 1) * difficulty;
 				}
@@ -448,7 +447,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 3 + 0);
 				}
@@ -459,12 +458,12 @@ void AEnemy_Pigeon::CalculateReward()
 				reward += (rand() % 5 + 1);
 
 				// Check if zip zap shoots, it would be great to avoid
-				if (zipZap->GetState() == State2::Attacking)
+				if (zipZap->GetState() == ZZ_State::Attacking)
 				{
 					reward += (rand() % 4 + 1);
 				}
 				// Check if there are any combo attacks active, if there are - that's reaaaally good
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 5 + 2);
 				}
@@ -487,12 +486,12 @@ void AEnemy_Pigeon::CalculateReward()
 					reward += (rand() % 5 + 0);
 				}
 				// Better if the characters attack
-				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking || zipZap->GetState() == ZZ_State::Attacking)
 				{
 					reward += (rand() % 4 + 0);
 				}
 				// Even Better if the characters have combo attack active
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 7 + 3);
 				}
@@ -550,7 +549,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 6 + 1) * difficulty;
 				}
@@ -607,7 +606,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 3 + 0);
 				}
@@ -622,7 +621,7 @@ void AEnemy_Pigeon::CalculateReward()
 				// That's not the best thing to do after landing, especially if a combo attack is active
 				reward -= (rand() % 3 + 0);
 
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward -= (rand() % 4 + 1);
 				}
@@ -635,12 +634,12 @@ void AEnemy_Pigeon::CalculateReward()
 					reward += (rand() % 5 + 0);
 				}
 				// Better if the characters attack
-				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking || zipZap->GetState() == ZZ_State::Attacking)
 				{
 					reward += (rand() % 4 + 0);
 				}
 				// Even Better if the characters have combo attack active
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 7 + 3);
 				}
@@ -700,7 +699,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 3 + 0);
 				}
@@ -755,7 +754,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 6 + 1) * difficulty;
 				}
@@ -770,7 +769,7 @@ void AEnemy_Pigeon::CalculateReward()
 				// That's not the best thing to do after having been idle so far, especially if a combo attack is active
 				reward -= (rand() % 3 + 0);
 
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward -= (rand() % 6 + 2);
 				}
@@ -783,12 +782,12 @@ void AEnemy_Pigeon::CalculateReward()
 					reward += (rand() % 5 + 0);
 				}
 				// Better if the characters attack
-				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking || zipZap->GetState() == ZZ_State::Attacking)
 				{
 					reward += (rand() % 4 + 0);
 				}
 				// Even Better if the characters have combo attack active
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 7 + 3);
 				}
@@ -848,7 +847,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 3 + 0);
 				}
@@ -903,7 +902,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 6 + 1) * difficulty;
 				}
@@ -911,7 +910,7 @@ void AEnemy_Pigeon::CalculateReward()
 			else if (currentAction == Action::Jump) // It decides to jump
 			{
 				// Agility is good, especially if a combo attack is active
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 5 + 2);
 				}
@@ -919,7 +918,7 @@ void AEnemy_Pigeon::CalculateReward()
 			else if (currentAction == Action::GoIdle)
 			{
 				// If a combo attack is active, it's noot good, otherwise - if it's away from the characters
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward -= (rand() % 10 + 5) * difficulty;
 				}
@@ -936,7 +935,7 @@ void AEnemy_Pigeon::CalculateReward()
 				reward -= (rand() % 7 + 2);
 
 				// Repeat attack only if there are combo attacks active
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += 20.f;
 				}
@@ -1090,28 +1089,28 @@ void AEnemy_Pigeon::UpdateState()
 	// AI Sensing
 	if (boomBoom != nullptr && zipZap != nullptr)
 	{
-		if (zipZap->GetState() == State2::Dead)
+		if (zipZap->GetState() == ZZ_State::Dead)
 		{
 			playerToAttack = boomBoom;
 		}
 
-		if (boomBoom->GetState() == State::Dead)
+		if (boomBoom->GetState() == BB_State::Dead)
 		{
 			playerToAttack = zipZap;
 		}
 
-		if (zipZap->GetState() == State2::Dead && boomBoom->GetState() == State::Dead)
+		if (zipZap->GetState() == ZZ_State::Dead && boomBoom->GetState() == BB_State::Dead)
 		{
 			inCombat = false;
 		}
 
-		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && boomBoom->GetState() != State::Dead)
+		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && boomBoom->GetState() != BB_State::Dead)
 		{
 			inCombat = true;
 			playerToAttack = boomBoom;
 		}
 
-		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && zipZap->GetState() != State2::Dead)
+		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && zipZap->GetState() != ZZ_State::Dead)
 		{
 			inCombat = true;
 			playerToAttack = zipZap;
@@ -1248,7 +1247,7 @@ void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* ot
 		Destroy();
 	}
 
-	if (currentState != State3::Dead)
+	if (currentState != State3::Dead && !otherActor->IsA(AEnemy::StaticClass()))
 	{
 		isColliding = true;
 		chooseActionTimeoutTimer = 5.f;
@@ -1267,10 +1266,6 @@ void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* ot
 			currentAction = Action::Attack;
 		}
 
-		if (otherActor->IsA(ATrash::StaticClass()))
-		{
-			GetCapsuleComponent()->IgnoreActorWhenMoving(otherActor, true);
-		}
 		ExecuteAction();
 	}
 }
