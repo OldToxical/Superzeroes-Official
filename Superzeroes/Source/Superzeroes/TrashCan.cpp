@@ -13,7 +13,8 @@ ATrashCan::ATrashCan()
 	capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
 	capsule->SetupAttachment(RootComponent);
 	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
-	hitbox->SetRelativeScale3D(FVector(0.5, 0.5, 0.5));
+	hitbox->SetRelativeLocation(FVector(-125.0,0.0,491.666678));
+	hitbox->SetRelativeScale3D(FVector(16.91, 0.5, 28.66));
 	hitbox->SetupAttachment(RootComponent); 
 	trashMovingLeft = false;
 	canSpawn = true;
