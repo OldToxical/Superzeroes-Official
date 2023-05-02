@@ -23,6 +23,12 @@ void AEnemySpawner::BeginPlay()
 	Super::BeginPlay();
 	
 	spawnTimer = timeout;
+	spriteComponent = FindComponentByClass<UPaperSpriteComponent>();
+
+	if (!isInfinite)
+	{
+		spriteComponent->SetSprite(numberSprites[count]);
+	}
 }
 
 void AEnemySpawner::SpawnEnemy()
@@ -34,8 +40,7 @@ void AEnemySpawner::SpawnEnemy()
 
 	if (!isInfinite)
 	{
-		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, GetActorLocation(), GetActorRotation());
-		cfx->spriteChanger(count + 6);
+		spriteComponent->SetSprite(numberSprites[count]);
 	}
 
 	for (AEnemy* enemy : enemies)

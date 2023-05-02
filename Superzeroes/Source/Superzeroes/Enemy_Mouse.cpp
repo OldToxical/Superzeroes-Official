@@ -66,9 +66,7 @@ void AEnemy_Mouse::BeginPlay()
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy_Mouse::OverlapBegin);
 	TimeBetweenWalkSounds = 5.0f;
-	walkSoundTimer = TimeBetweenWalkSounds; 
-	
-
+	walkSoundTimer = TimeBetweenWalkSounds;
 }
 
 void AEnemy_Mouse::Tick(float DeltaTime)
@@ -232,28 +230,28 @@ void AEnemy_Mouse::UpdateState()
 	// AI Sensing
 	if (boomBoom != NULL && zipZap != NULL && currentState != State4::Dead)
 	{
-		if (zipZap->GetState() == State2::Dead)
+		if (zipZap->GetState() == ZZ_State::Dead)
 		{
 			playerToAttack = boomBoom;
 		}
 
-		if (boomBoom->GetState() == State::Dead)
+		if (boomBoom->GetState() == BB_State::Dead)
 		{
 			playerToAttack = zipZap;
 		}
 
-		if (zipZap->GetState() == State2::Dead && boomBoom->GetState() == State::Dead)
+		if (zipZap->GetState() == ZZ_State::Dead && boomBoom->GetState() == BB_State::Dead)
 		{
 			inCombat = false;
 		}
 
-		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && boomBoom->GetState() != State::Dead)
+		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && boomBoom->GetState() != BB_State::Dead)
 		{
 			inCombat = true;
 			playerToAttack = boomBoom;
 		}
 
-		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && zipZap->GetState() != State2::Dead)
+		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && zipZap->GetState() != ZZ_State::Dead)
 		{
 			inCombat = true;
 			playerToAttack = zipZap;
@@ -414,7 +412,7 @@ void AEnemy_Mouse::DealDamage()
 		{
 			zipZap->setHealth(zipZap->getHealth() - damage);
 
-			if (zipZap->GetState() != State2::Siege)
+			if (zipZap->GetState() != ZZ_State::Siege)
 			{
 				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, FVector(zipZap->GetActorLocation().X, zipZap->GetActorLocation().Y + 30.f, zipZap->GetActorLocation().Z), FRotator(0, 0, 0), FVector(.6f, .6f, .6f));
 				return;
@@ -433,7 +431,7 @@ void AEnemy_Mouse::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* oth
 		Destroy();
 	}
 
-	if (currentState != State4::Dead)
+	if (currentState != State4::Dead && !otherActor->IsA(AEnemy::StaticClass()) && !otherActor->IsA(ATrash::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
 	{
 		isColliding = true;
 		chooseActionTimeoutTimer = 5.f;
@@ -451,10 +449,7 @@ void AEnemy_Mouse::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* oth
 		{
 			inCombat = true;
 		}
-		if (otherActor->IsA(ATrash::StaticClass()) )
-		{
-			GetCapsuleComponent()->IgnoreActorWhenMoving(otherActor, true);
-		}
+
 		ExecuteAction();
 	}
 }

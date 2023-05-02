@@ -49,7 +49,7 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		{
 			if (ABoomBoom* boomBoom = Cast<ABoomBoom>(otherActor))
 			{
-				if (boomBoom->GetState() != State::Dead)
+				if (boomBoom->GetState() != BB_State::Dead)
 				{
 					CalculateDamage();
 					boomBoom->setHealth(boomBoom->getHealth() - damage);
@@ -68,7 +68,7 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		{
 			if (AZipZap* zipZap = Cast<AZipZap>(otherActor))
 			{
-				if (zipZap->GetState() != State2::Dead)
+				if (zipZap->GetState() != ZZ_State::Dead)
 				{
 					CalculateDamage();
 					zipZap->setHealth(zipZap->getHealth() - damage);

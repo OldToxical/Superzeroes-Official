@@ -99,7 +99,7 @@ void ASiege::Tick(float DeltaTime)
 	inititationAnimationTimer = InitiationAnimationLength;
 	executionTimer = SiegeModeExecutionLength;
 	inputAvailable = false;
-	SetActorLocation(boomBoom->GetActorLocation());
+	SetActorLocation(FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y, boomBoom->GetActorLocation().Z + 50.f));
 }
 
 void ASiege::SetupBoomBoomInputComponent(UInputComponent* bbInput)
@@ -121,16 +121,18 @@ void ASiege::HandleBoomBoomInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && boomBoom->GetState() == State::Idle && boomBoom->getMeter() >= 100.f)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && boomBoom->GetState() == BB_State::Idle && boomBoom->getMeter() >= 100.f)
 		{
 			boomBoomInputTimer += GetWorld()->GetDeltaSeconds();
 			boomBoom->SetInputAvailability(false);
+			boomBoom->EnableSiegeInitiationParticle();
 			return;
 		}
 	}
 
 	boomBoomInputTimer = 0.f;
 	boomBoom->SetInputAvailability(true);
+	boomBoom->DisableSiegeInitiationParticle();
 }
 
 void ASiege::HandleZipZapInput(float scaleVal)
@@ -140,16 +142,18 @@ void ASiege::HandleZipZapInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && zipZap->GetState() == State2::Idle && zipZap->getMeter() >= 100.f)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && zipZap->GetState() == ZZ_State::Idle && zipZap->getMeter() >= 100.f)
 		{
 			zipZapInputTimer += GetWorld()->GetDeltaSeconds();
 			zipZap->SetInputAvailability(false);
+			zipZap->EnableSiegeInitiationParticle();
 			return;
 		}
 	}
 
 	zipZapInputTimer = 0.f;
 	zipZap->SetInputAvailability(true);
+	zipZap->DisableSiegeInitiationParticle();
 }
 
 void ASiege::ExecuteSiegeMode()
@@ -163,9 +167,9 @@ void ASiege::ExecuteSiegeMode()
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("MainCharacter"));
 			SetActorHiddenInGame(false);
 			boomBoom->SetActorHiddenInGame(true);
-			boomBoom->SetState(State::Siege);
+			boomBoom->SetState(BB_State::Siege);
 			zipZap->SetActorHiddenInGame(true);
-			zipZap->SetState(State2::Siege);
+			zipZap->SetState(ZZ_State::Siege);
 
 			boomBoom->SetActorLocation(GetActorLocation());
 			zipZap->SetActorLocation(FVector(GetActorLocation().X + 50.f, GetActorLocation().Y, GetActorLocation().Z));
@@ -214,9 +218,9 @@ void ASiege::ExecuteSiegeMode()
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
 	SetActorHiddenInGame(true);
 	boomBoom->SetActorHiddenInGame(false);
-	boomBoom->SetState(State::Idle);
+	boomBoom->SetState(BB_State::Idle);
 	zipZap->SetActorHiddenInGame(false);
-	zipZap->SetState(State2::Idle);
+	zipZap->SetState(ZZ_State::Idle);
 	executionTimer = SiegeModeExecutionLength;
 	modeIsActive = false;
 }
@@ -332,6 +336,13 @@ void ASiege::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 		if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 		{
 			Enemy->TakeEnemyDamage(100.f);
+		}
+
+		if (otherActor->ActorHasTag("LevelRespawnTrigger"))
+		{
+			executionTimer = 0.f;
+			boomBoom->Respawn();
+			zipZap->Respawn();
 		}
 	}
 }

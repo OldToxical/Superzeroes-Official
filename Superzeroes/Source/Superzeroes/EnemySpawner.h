@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PaperSpriteComponent.h"
 #include "EnemySpawner.generated.h"
 
 UCLASS()
@@ -22,25 +23,28 @@ protected:
 	void SpawnEnemy();
 
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<class AEnemy> EnemyClass;
-
-	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<class AComicFX> comicFX;
+	TSubclassOf<class AEnemy> EnemyClass;
 
 	UPROPERTY(VisibleAnywhere)
-		TArray<class AEnemy*> enemies;
+	TArray<class AEnemy*> enemies;
+
+	UPROPERTY(BlueprintReadWrite)
+	UPaperSpriteComponent* spriteComponent;
+
+	UPROPERTY(EditAnywhere)
+	TArray<UPaperSprite*> numberSprites;
 
 	UPROPERTY(VisibleAnywhere)
-		float spawnTimer;
+	float spawnTimer;
 
 	UPROPERTY(EditAnywhere)
-		float timeout;
+	float timeout;
 
 	UPROPERTY(EditAnywhere)
-		int count;
+	int count;
 
 	UPROPERTY(EditAnywhere)
-		bool isInfinite;
+	bool isInfinite;
 
 public:	
 	// Called every frame

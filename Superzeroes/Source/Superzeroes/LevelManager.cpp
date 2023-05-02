@@ -33,6 +33,8 @@ void ALevelManager::Tick(float DeltaTime)
 	GetCharacters();
 	Checkhealth();
 	GetEnemies();
+
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::SanitizeFloat(enemies.Num()));
 }
 
 void ALevelManager::GetCharacters()
@@ -190,6 +192,10 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 		{
 			enemy->SetActorTickEnabled(true);
 		}
+		else if (enemyLevelNum < currentLevel)
+		{
+			enemy->TakeEnemyDamage(200.f);
+		}
 	}
 
 	// Activate spawners
@@ -219,7 +225,7 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 {
 	if (otherActor->IsA(ABoomBoom::StaticClass()))
 	{
-		if (Cast<ABoomBoom>(otherActor)->GetState() != State::Siege)
+		if (Cast<ABoomBoom>(otherActor)->GetState() != BB_State::Siege)
 		{
 			boomBoomEnd = true;
 			boomBoom->EnableLevelFinishedParticle();
@@ -233,7 +239,7 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 
 	if (otherActor->IsA(AZipZap::StaticClass()))
 	{
-		if (Cast<AZipZap>(otherActor)->GetState() != State2::Siege)
+		if (Cast<AZipZap>(otherActor)->GetState() != ZZ_State::Siege)
 		{
 			zipZapEnd = true;
 			zipZap->EnableLevelFinishedParticle();
