@@ -3,6 +3,7 @@
 #include "Components/BoxComponent.h"
 #include "ComicFX.h"
 #include "LevelManager.h"
+#include "Trash.h"
 #include <chrono>
 #include <thread>
 #include "Kismet/KismetStringLibrary.h"
@@ -430,7 +431,7 @@ void AEnemy_Mouse::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* oth
 		Destroy();
 	}
 
-	if (currentState != State4::Dead && !otherActor->IsA(AEnemy::StaticClass()))
+	if (currentState != State4::Dead && !otherActor->IsA(AEnemy::StaticClass()) && !otherActor->IsA(ATrash::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
 	{
 		isColliding = true;
 		chooseActionTimeoutTimer = 5.f;

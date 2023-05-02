@@ -6,6 +6,7 @@
 #include "Projectile.h"
 #include "ComicFX.h"
 #include "LevelManager.h"
+#include "Trash.h"
 #include <chrono>
 #include <thread>
 
@@ -84,22 +85,6 @@ void AEnemy_Pigeon::BeginPlay()
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy_Pigeon::OverlapBegin);
 	TimeBetweenWalkSounds = 5.0f;
 	walkSoundTimer = TimeBetweenWalkSounds;
-
-	/*FString Qtable;
-	FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/start.txt"));
-	for (int i = 0; i < 5; i++)
-	{
-		for (int j = 0; j < 5; j++)
-		{
-			Qtable += FString::SanitizeFloat(AI_Q[i][j]);
-			Qtable += FString(TEXT(" "));
-		}
-		Qtable += FString(TEXT("\r\n"));
-	}
-	Qtable += FString(TEXT("\r\n"));
-	Qtable += FString(TEXT("\r\n"));
-	Qtable += FString(TEXT("\r\n"));
-	WriteStringToFile(path, Qtable);*/
 }
 
 void AEnemy_Pigeon::Tick(float DeltaTime)
@@ -1247,7 +1232,7 @@ void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* ot
 		Destroy();
 	}
 
-	if (currentState != State3::Dead && !otherActor->IsA(AEnemy::StaticClass()))
+	if (currentState != State3::Dead && !otherActor->IsA(AEnemy::StaticClass()) && !otherActor->IsA(ATrash::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
 	{
 		isColliding = true;
 		chooseActionTimeoutTimer = 5.f;
@@ -1290,18 +1275,6 @@ void AEnemy_Pigeon::EndAttack()
 
 	if (currentState == State3::Dead)
 	{
-		/*FString Qtable;
-		FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/niska kruv.txt"));
-		for (int i = 0; i < 5; i++)
-		{
-			for (int j = 0; j < 5; j++)
-			{
-				Qtable += FString::SanitizeFloat(AI_Q[i][j]);
-				Qtable += FString(TEXT(" "));
-			}
-			Qtable += FString(TEXT("\r\n"));
-		}
-		WriteStringToFile(path, Qtable);*/
 		Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
 		Destroy();
 	}

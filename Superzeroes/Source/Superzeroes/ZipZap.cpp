@@ -671,7 +671,7 @@ void AZipZap::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor
 		{
 			canClimb = false;
 
-			if (characterState != ZZ_State::Jumping)
+			if (characterState != ZZ_State::Jumping && characterState != ZZ_State::Combo_Projectile)
 			{
 				charMove->GravityScale = 1.0f;
 				charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;

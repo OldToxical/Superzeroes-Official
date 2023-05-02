@@ -33,6 +33,8 @@ void ALevelManager::Tick(float DeltaTime)
 	GetCharacters();
 	Checkhealth();
 	GetEnemies();
+
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::SanitizeFloat(enemies.Num()));
 }
 
 void ALevelManager::GetCharacters()
@@ -50,7 +52,7 @@ void ALevelManager::Checkhealth()
 	{
 		if (zipZap->getHealth() <= 0.f && boomBoom->getHealth() <= 0.f)
 		{
-			UGameplayStatics::OpenLevel(GetWorld(), TEXT("Final_Cinematic"));
+			UGameplayStatics::OpenLevel(GetWorld(), TEXT("Sample2DLevel"));
 		}
 	}
 }
@@ -165,7 +167,7 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 
 	if (currentLevel == 17)
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"));
+		UGameplayStatics::OpenLevel(GetWorld(), TEXT("Final_Cinematic"));
 	}
 
 	UKismetSystemLibrary::MoveComponentTo(cameraComp, cameraLocations[triggerNum], cameraComp->GetComponentRotation(), true, true, 0.2f, false, EMoveComponentAction::Move, LatentInfo);
@@ -189,6 +191,10 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 		if (enemyLevelNum == currentLevel)
 		{
 			enemy->SetActorTickEnabled(true);
+		}
+		else if (enemyLevelNum < currentLevel)
+		{
+			enemy->TakeEnemyDamage(200.f);
 		}
 	}
 
