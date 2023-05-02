@@ -28,6 +28,7 @@ ATrash::~ATrash()
 void ATrash::BeginPlay()
 {
 	Super::BeginPlay();
+	rotation = FRotator::ZeroRotator;
 	charMove = GetCharacterMovement();
 	hitbox->OnComponentBeginOverlap.AddDynamic(this, &ATrash::overlapBegin);
 	hitbox->OnComponentEndOverlap.AddDynamic(this, &ATrash::overlapEnd);
@@ -40,9 +41,13 @@ void ATrash::Tick(float DeltaTime)
 	if (movingLeft)
 	{
 		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), -1.0, false);
+		rotation.Pitch += 2.f;
+		GetSprite()->SetWorldRotation(rotation);
 	}
 	else {
 		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), 1.0, false);
+		rotation.Pitch -= 2.f;
+		GetSprite()->SetWorldRotation(rotation);
 	}
 
 	if(charMove->Velocity.X <= 0.2f && charMove->Velocity.X >= -0.2f && time > 1.0f)
