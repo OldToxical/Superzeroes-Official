@@ -165,7 +165,7 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 
 	if (currentLevel == 17)
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenu"));
+		UGameplayStatics::OpenLevel(GetWorld(), TEXT("Final_Cinematic"));
 	}
 
 	UKismetSystemLibrary::MoveComponentTo(cameraComp, cameraLocations[triggerNum], cameraComp->GetComponentRotation(), true, true, 0.2f, false, EMoveComponentAction::Move, LatentInfo);
