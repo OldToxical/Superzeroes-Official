@@ -689,6 +689,8 @@ void ABoomBoom::UpdateComboAttack_Savage()
 	// The length of the attack is finite, decrease the timer that keeps of this each iteration
 	ComboAttack_Savage_ExecutionTimer -= GetWorld()->GetDeltaSeconds();
 	flipbook->SetFlipbook(savageComboAttack);
+	flipbook->SetLooping(true);
+	flipbook->Play();
 
 	// There is still time to be executed
 	if (ComboAttack_Savage_ExecutionTimer > 0.f)
@@ -706,6 +708,8 @@ void ABoomBoom::UpdateComboAttack_Savage()
 	{
 		ComboAttack_Savage_ExecutionTimer = SavageComboExecutionTime;
 		characterState = BB_State::Idle;
+		flipbook->SetLooping(true);
+		flipbook->Play();
 	}
 }
 
