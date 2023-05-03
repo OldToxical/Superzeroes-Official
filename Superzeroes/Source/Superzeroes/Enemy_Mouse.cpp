@@ -326,7 +326,7 @@ void AEnemy_Mouse::Attack()
 {
 	currentState = State4::Attacking;
 
-	if (playerToAttack != nullptr)
+	if (IsValid(playerToAttack))
 	{
 		if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) > MinimumDistanceToDealDamage && flipbookComponent->GetFlipbook() != attack)
 		{
@@ -384,7 +384,7 @@ void AEnemy_Mouse::Attack()
 
 void AEnemy_Mouse::GoToPlayer()
 {
-	if (playerToAttack != nullptr)
+	if (IsValid(playerToAttack))
 	{
 		// Face the player
 		if (playerToAttack->GetActorLocation().X < GetActorLocation().X) // He's on the left
@@ -407,7 +407,7 @@ void AEnemy_Mouse::DealDamage()
 	float distanceToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
 	float distanceToZipZap = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
 
-	if (playerToAttack != nullptr)
+	if (IsValid(playerToAttack))
 	{
 		if (playerToAttack->ActorHasTag("BoomBoom") && distanceToBoomBoom < MinimumDistanceToDealDamage)
 		{
@@ -437,7 +437,7 @@ void AEnemy_Mouse::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* oth
 		Destroy();
 	}
 
-	if (currentState != State4::Dead && !otherActor->IsA(AEnemy::StaticClass()) && !otherActor->IsA(ATrash::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
+	if (currentState != State4::Dead && !otherActor->IsA(AEnemy::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
 	{
 		isColliding = true;
 		chooseActionTimeoutTimer = 5.f;
@@ -454,6 +454,11 @@ void AEnemy_Mouse::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* oth
 		if (otherActor->IsA(ABoomBoom::StaticClass()) || otherActor->IsA(AZipZap::StaticClass()))
 		{
 			inCombat = true;
+		}
+
+		if (otherActor->IsA(ATrash::StaticClass()))
+		{
+			GetCapsuleComponent()->IgnoreActorWhenMoving(otherActor, true);
 		}
 
 		ExecuteAction();

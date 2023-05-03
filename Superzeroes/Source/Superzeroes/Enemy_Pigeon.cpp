@@ -1166,35 +1166,38 @@ void AEnemy_Pigeon::WalkRight()
 
 void AEnemy_Pigeon::Attack()
 {
-	FaceNearestPlayer();
-
-	if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && shootAvailable)
+	if (IsValid(playerToAttack))
 	{
 		FaceNearestPlayer();
 
-		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 81.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
-		FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
-
-		if (rotation.Yaw > 0.f) // Right
+		if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && shootAvailable)
 		{
-			muzzleFlashLocation.X += 162.68f;
+			FaceNearestPlayer();
+
+			FVector muzzleFlashLocation = FVector(GetActorLocation().X - 81.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
+			FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
+
+			if (rotation.Yaw > 0.f) // Right
+			{
+				muzzleFlashLocation.X += 162.68f;
+			}
+
+			// Spawn particle
+			FRotator muzzleFlashSpawnRotator = FRotator(rotation.Pitch, rotation.Yaw - 180.f, rotation.Roll);
+			UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, muzzleFlashSpawnRotator, FVector(.6f, .6f, .6f));
+			muzzleFlash->CustomTimeDilation = 1.4f;
+
+			// Spawn bullet
+			UGameplayStatics::PlaySound2D(GetWorld(), shootSFX);
+			AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
+			shootAvailable = false;
 		}
-
-		// Spawn particle
-		FRotator muzzleFlashSpawnRotator = FRotator(rotation.Pitch, rotation.Yaw - 180.f, rotation.Roll);
-		UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, muzzleFlashSpawnRotator, FVector(.6f, .6f, .6f));
-		muzzleFlash->CustomTimeDilation = 1.4f;
-
-		// Spawn bullet
-		UGameplayStatics::PlaySound2D(GetWorld(), shootSFX);
-		AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
-		shootAvailable = false;
 	}
 }
 
 void AEnemy_Pigeon::FaceNearestPlayer()
 {
-	if (playerToAttack != nullptr)
+	if (IsValid(playerToAttack))
 	{
 		// Boom Boom is closer
 		if (playerToAttack->ActorHasTag("BoomBoom"))
@@ -1238,7 +1241,7 @@ void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* ot
 		Destroy();
 	}
 
-	if (currentState != State3::Dead && !otherActor->IsA(AEnemy::StaticClass()) && !otherActor->IsA(ATrash::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
+	if (currentState != State3::Dead && !otherActor->IsA(AEnemy::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
 	{
 		isColliding = true;
 		chooseActionTimeoutTimer = 5.f;
@@ -1255,6 +1258,11 @@ void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* ot
 		if (otherActor->IsA(ABoomBoom::StaticClass()) || otherActor->IsA(AZipZap::StaticClass()))
 		{
 			currentAction = Action::Attack;
+		}
+
+		if (otherActor->IsA(ATrash::StaticClass()))
+		{
+			GetCapsuleComponent()->IgnoreActorWhenMoving(otherActor, true);
 		}
 
 		ExecuteAction();
