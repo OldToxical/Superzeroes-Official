@@ -1065,6 +1065,12 @@ void AEnemy_Pigeon::UpdateState()
 	case State3::Dead:
 		flipbookComponent->SetFlipbook(dead);
 		flipbookComponent->SetLooping(false);
+
+		if ((flipbookComponent->GetFlipbook() == dead && flipbookComponent->GetPlaybackPositionInFrames() == 15) || (flipbookComponent->GetFlipbook() == hurtAnim && flipbookComponent->GetPlaybackPositionInFrames() == 0))
+		{
+			Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
+			Destroy();
+		}
 		break;
 
 	default:
