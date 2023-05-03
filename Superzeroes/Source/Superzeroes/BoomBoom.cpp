@@ -321,7 +321,6 @@ void ABoomBoom::UpdateState()
 			ProcessHit(damage);
 		}
 
-		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(feedbackIntensity, .2f, true, true, true, true);
 	}
 
@@ -861,7 +860,19 @@ void ABoomBoom::ProcessHit(float damage_)
 		{
 			can->setHealth(-7.0f);
 		}
+		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), smokeParticle->GetAsset(), endPoint, FRotator(0.f, 0.f, 0.f), FVector(5.f, 5.f, 5.f));
+	}
+	else {
+		int jumpnum = rand() % 4 + 1;
+
+		switch (jumpnum)
+		{
+		case 1: UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX); break;
+		case 2: UGameplayStatics::PlaySound2D(GetWorld(), jump2SFX); break;
+		case 3: UGameplayStatics::PlaySound2D(GetWorld(), jump3SFX); break;
+		case 4: UGameplayStatics::PlaySound2D(GetWorld(), jump4SFX); break;
+		}
 	}
 }

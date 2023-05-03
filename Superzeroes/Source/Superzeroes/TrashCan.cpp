@@ -3,6 +3,7 @@
 
 #include "TrashCan.h"
 #include "Enemy.h"
+#include "LevelManager.h"
 #include "Components/BoxComponent.h"
 
 ATrashCan::ATrashCan()
@@ -13,12 +14,14 @@ ATrashCan::ATrashCan()
 	capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
 	capsule->SetupAttachment(RootComponent);
 	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
-	hitbox->SetRelativeScale3D(FVector(0.5, 0.5, 0.5));
+	hitbox->SetRelativeLocation(FVector(-125.0,0.0,491.666678));
+	hitbox->SetRelativeScale3D(FVector(16.91, 0.5, 28.66));
 	hitbox->SetupAttachment(RootComponent); 
 	trashMovingLeft = false;
 	canSpawn = true;
 	health = 20.f;
-	hurtTime = 0.0f;
+	hurtTime = 0.0f; 
+
 }
 
 ATrashCan::~ATrashCan()
@@ -48,17 +51,17 @@ void ATrashCan::BeginPlay()
 	GetRenderComponent()->SetSprite(idle);
 	RootComponent->SetMobility(EComponentMobility::Static);
 	hitbox->OnComponentBeginOverlap.AddDynamic(this, &ATrashCan::overlapBegin);
-	hitbox->OnComponentEndOverlap.AddDynamic(this, &ATrashCan::overlapEnd);
+	hitbox->OnComponentEndOverlap.AddDynamic(this, &ATrashCan::overlapEnd); 
 }
 
 void ATrashCan::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	timeBetweenShoots += DeltaTime;
-	//UE_LOG(LogTemp,Warning,TEXT("%f"),health);
+	//UE_LOG(LogTemp,Warning,TEXT("spunch bob"));
 	if (health <= 0.0f)
 	{
-
+		Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveTrashCan(this);
 		Destroy();
 	}
 	if (timeBetweenShoots >= ShootTime && canSpawn == true)

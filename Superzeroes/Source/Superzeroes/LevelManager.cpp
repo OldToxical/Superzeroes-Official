@@ -10,6 +10,7 @@ ALevelManager::ALevelManager()
 	boomBoomEnd = false;
 	zipZapEnd = false;
 	enemiesInitialized = false;
+	trashCansInitialized = false;
 	currentLevel = 0;
 }
 
@@ -33,8 +34,7 @@ void ALevelManager::Tick(float DeltaTime)
 	GetCharacters();
 	Checkhealth();
 	GetEnemies();
-
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::SanitizeFloat(enemies.Num()));
+	GetTrashCans();
 }
 
 void ALevelManager::GetCharacters()
@@ -86,6 +86,24 @@ void ALevelManager::GetEnemies()
 
 		enemyActors.Empty();
 		enemiesInitialized = true;
+	}
+}
+
+void ALevelManager::GetTrashCans()
+{
+	if (!trashCansInitialized)
+	{
+		TArray<AActor*> trashCanActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATrashCan::StaticClass(), trashCanActors);
+
+		for (AActor* trashCan : trashCanActors)
+		{
+			trashCan->SetActorTickEnabled(false);
+			trashCans.Add(Cast<ATrashCan>(trashCan));
+		}
+
+		trashCanActors.Empty();
+		trashCansInitialized = true;
 	}
 }
 
@@ -192,9 +210,15 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 		{
 			enemy->SetActorTickEnabled(true);
 		}
-		else if (enemyLevelNum < currentLevel)
+	}
+	//Activate trash cans
+	for (ATrashCan* trash : trashCans)
+	{
+		int trashCanLevelNum = UKismetStringLibrary::Conv_StringToInt(trash->Tags[1].ToString());
+
+		if (trashCanLevelNum == currentLevel)
 		{
-			enemy->TakeEnemyDamage(200.f);
+			trash->SetActorTickEnabled(true);
 		}
 	}
 
@@ -225,7 +249,7 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 {
 	if (otherActor->IsA(ABoomBoom::StaticClass()))
 	{
-		if (Cast<ABoomBoom>(otherActor)->GetState() != BB_State::Siege)
+		if (Cast<ABoomBoom>(otherActor)->GetState() != State::Siege)
 		{
 			boomBoomEnd = true;
 			boomBoom->EnableLevelFinishedParticle();
@@ -239,7 +263,7 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 
 	if (otherActor->IsA(AZipZap::StaticClass()))
 	{
-		if (Cast<AZipZap>(otherActor)->GetState() != ZZ_State::Siege)
+		if (Cast<AZipZap>(otherActor)->GetState() != State2::Siege)
 		{
 			zipZapEnd = true;
 			zipZap->EnableLevelFinishedParticle();

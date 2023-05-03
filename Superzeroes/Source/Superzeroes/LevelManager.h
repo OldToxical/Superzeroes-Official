@@ -8,6 +8,7 @@
 #include "ZipZap.h"
 #include "Enemy.h"
 #include "EnemySpawner.h"
+#include "TrashCan.h"
 #include "LevelManager.generated.h"
 
 /**
@@ -20,6 +21,7 @@ class SUPERZEROES_API ALevelManager : public ALevelScriptActor
 
 public:
 	void RemoveEnemy(AEnemy* enemy) { enemies.Remove(enemy); }
+	void RemoveTrashCan(ATrashCan* trash) { trashCans.Remove(trash); }
 	
 protected:
 	ALevelManager();
@@ -32,6 +34,7 @@ protected:
 	void SwitchToNextLevel(AActor* triggerToDestroy);
 	void GetLevelTriggers();
 	void GetEnemies();
+	void GetTrashCans();
 	void GetEnemySpawners();
 	void GetCameraComponent();
 	void InitializeLevelStartLocations();
@@ -65,9 +68,13 @@ protected:
 		TArray<AEnemySpawner*> enemySpawners;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		TArray<ATrashCan*> trashCans;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int currentLevel;
 
 	bool boomBoomEnd;
 	bool zipZapEnd;
 	bool enemiesInitialized;
+	bool trashCansInitialized;
 };
