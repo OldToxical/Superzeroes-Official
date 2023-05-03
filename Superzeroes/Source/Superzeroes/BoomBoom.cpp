@@ -377,7 +377,7 @@ void ABoomBoom::UpdateAnimation()
 	// If character is moving, change to running animation
 	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != BB_State::Combo_Savage && characterState != BB_State::Attacking && characterState != BB_State::Jumping && characterState != BB_State::Hurt && characterState != BB_State::Siege)
+		if (characterState != BB_State::Combo_Savage && characterState != BB_State::Attacking && characterState != BB_State::Jumping && characterState != BB_State::Hurt && characterState != BB_State::Siege && !canClimb)
 		{
 			characterState = BB_State::Running;
 			flipbook->SetFlipbook(run);
@@ -405,7 +405,7 @@ void ABoomBoom::move(float scaleVal)
 		}
 
 		// Determine the character's facing direction, regardless of the state
-		if (scaleVal > 0.f && (characterState == BB_State::Running || characterState == BB_State::Combo_Savage || characterState == BB_State::Attacking))
+		if (scaleVal > 0.f && (characterState == BB_State::Running || characterState == BB_State::Combo_Savage || characterState == BB_State::Attacking || characterState == BB_State::Jumping))
 		{
 			if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 7) && !charMove->IsFalling())
 			{
@@ -444,7 +444,7 @@ void ABoomBoom::move(float scaleVal)
 			rotation.Yaw = 0.f;
 			flipbook->SetWorldRotation(rotation);
 		}
-		else if (scaleVal < 0.f && (characterState == BB_State::Running || characterState == BB_State::Combo_Savage))
+		else if (scaleVal < 0.f && (characterState == BB_State::Running || characterState == BB_State::Combo_Savage || characterState == BB_State::Attacking || characterState == BB_State::Jumping))
 		{
 			if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 7) && !charMove->IsFalling())
 			{

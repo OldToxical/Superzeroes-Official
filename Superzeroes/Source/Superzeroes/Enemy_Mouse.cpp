@@ -222,6 +222,12 @@ void AEnemy_Mouse::UpdateState()
 		case State4::Dead:
 			flipbookComponent->SetFlipbook(dead);
 			flipbookComponent->SetLooping(false);
+
+			if ((flipbookComponent->GetFlipbook() == dead && flipbookComponent->GetPlaybackPositionInFrames() == 11) || (flipbookComponent->GetFlipbook() == hurtAnim && flipbookComponent->GetPlaybackPositionInFrames() == 2))
+			{
+				Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
+				Destroy();
+			}
 			break;
 	    default:
 			break;

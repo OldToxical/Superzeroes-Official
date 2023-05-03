@@ -19,7 +19,6 @@ void ALevelManager::BeginPlay()
 	SetActorTickEnabled(true);
 
 	GetLevelTriggers();
-	//GetEnemies();
 	GetEnemySpawners();
 	GetCameraComponent();
 	InitializeLevelStartLocations();
@@ -33,8 +32,6 @@ void ALevelManager::Tick(float DeltaTime)
 	GetCharacters();
 	Checkhealth();
 	GetEnemies();
-
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::SanitizeFloat(enemies.Num()));
 }
 
 void ALevelManager::GetCharacters()

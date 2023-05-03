@@ -257,7 +257,7 @@ void AZipZap::UpdateAnimation()
 	// If character is moving, change to running animation
 	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != ZZ_State::Attacking && characterState != ZZ_State::Combo_Projectile && characterState != ZZ_State::Jumping && characterState != ZZ_State::Hurt && characterState != ZZ_State::Siege)
+		if (characterState != ZZ_State::Attacking && characterState != ZZ_State::Combo_Projectile && characterState != ZZ_State::Jumping && characterState != ZZ_State::Hurt && characterState != ZZ_State::Siege && !canClimb)
 		{
 			characterState = ZZ_State::Running;
 			flipbook->SetFlipbook(run);
