@@ -377,7 +377,7 @@ void ABoomBoom::UpdateAnimation()
 	// If character is moving, change to running animation
 	if (charMove->Velocity.X != 0.f)
 	{
-		if (characterState != BB_State::Combo_Savage && characterState != BB_State::Attacking && characterState != BB_State::Jumping && characterState != BB_State::Hurt && characterState != BB_State::Siege)
+		if (characterState != BB_State::Combo_Savage && characterState != BB_State::Attacking && characterState != BB_State::Jumping && characterState != BB_State::Hurt && characterState != BB_State::Siege && !canClimb)
 		{
 			characterState = BB_State::Running;
 			flipbook->SetFlipbook(run);
@@ -405,7 +405,7 @@ void ABoomBoom::move(float scaleVal)
 		}
 
 		// Determine the character's facing direction, regardless of the state
-		if (scaleVal > 0.f && (characterState == BB_State::Running || characterState == BB_State::Combo_Savage || characterState == BB_State::Attacking))
+		if (scaleVal > 0.f && (characterState == BB_State::Running || characterState == BB_State::Combo_Savage || characterState == BB_State::Attacking || characterState == BB_State::Jumping))
 		{
 			if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 7) && !charMove->IsFalling())
 			{
@@ -444,7 +444,7 @@ void ABoomBoom::move(float scaleVal)
 			rotation.Yaw = 0.f;
 			flipbook->SetWorldRotation(rotation);
 		}
-		else if (scaleVal < 0.f && (characterState == BB_State::Running || characterState == BB_State::Combo_Savage))
+		else if (scaleVal < 0.f && (characterState == BB_State::Running || characterState == BB_State::Combo_Savage || characterState == BB_State::Attacking || characterState == BB_State::Jumping))
 		{
 			if (flipbook->GetFlipbook() == run && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 7) && !charMove->IsFalling())
 			{
@@ -688,6 +688,8 @@ void ABoomBoom::UpdateComboAttack_Savage()
 	// The length of the attack is finite, decrease the timer that keeps of this each iteration
 	ComboAttack_Savage_ExecutionTimer -= GetWorld()->GetDeltaSeconds();
 	flipbook->SetFlipbook(savageComboAttack);
+	flipbook->SetLooping(true);
+	flipbook->Play();
 
 	// There is still time to be executed
 	if (ComboAttack_Savage_ExecutionTimer > 0.f)
@@ -705,6 +707,8 @@ void ABoomBoom::UpdateComboAttack_Savage()
 	{
 		ComboAttack_Savage_ExecutionTimer = SavageComboExecutionTime;
 		characterState = BB_State::Idle;
+		flipbook->SetLooping(true);
+		flipbook->Play();
 	}
 }
 
@@ -860,19 +864,20 @@ void ABoomBoom::ProcessHit(float damage_)
 		{
 			can->setHealth(-7.0f);
 		}
-		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 
+		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), smokeParticle->GetAsset(), endPoint, FRotator(0.f, 0.f, 0.f), FVector(5.f, 5.f, 5.f));
 	}
-	else {
+	else 
+	{
 		int jumpnum = rand() % 4 + 1;
 
 		switch (jumpnum)
 		{
-		case 1: UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX); break;
-		case 2: UGameplayStatics::PlaySound2D(GetWorld(), jump2SFX); break;
-		case 3: UGameplayStatics::PlaySound2D(GetWorld(), jump3SFX); break;
-		case 4: UGameplayStatics::PlaySound2D(GetWorld(), jump4SFX); break;
+			case 1: UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX); break;
+			case 2: UGameplayStatics::PlaySound2D(GetWorld(), jump2SFX); break;
+			case 3: UGameplayStatics::PlaySound2D(GetWorld(), jump3SFX); break;
+			case 4: UGameplayStatics::PlaySound2D(GetWorld(), jump4SFX); break;
 		}
 	}
 }

@@ -20,7 +20,6 @@ void ALevelManager::BeginPlay()
 	SetActorTickEnabled(true);
 
 	GetLevelTriggers();
-	//GetEnemies();
 	GetEnemySpawners();
 	GetCameraComponent();
 	InitializeLevelStartLocations();
@@ -210,7 +209,12 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 		{
 			enemy->SetActorTickEnabled(true);
 		}
+		else if (enemyLevelNum < currentLevel)
+		{
+			enemy->TakeEnemyDamage(200.f);
+		}
 	}
+
 	//Activate trash cans
 	for (ATrashCan* trash : trashCans)
 	{
@@ -249,7 +253,7 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 {
 	if (otherActor->IsA(ABoomBoom::StaticClass()))
 	{
-		if (Cast<ABoomBoom>(otherActor)->GetState() != State::Siege)
+		if (Cast<ABoomBoom>(otherActor)->GetState() != BB_State::Siege)
 		{
 			boomBoomEnd = true;
 			boomBoom->EnableLevelFinishedParticle();
@@ -263,7 +267,7 @@ void ALevelManager::OverlapBegin(AActor* overlappedActor, AActor* otherActor)
 
 	if (otherActor->IsA(AZipZap::StaticClass()))
 	{
-		if (Cast<AZipZap>(otherActor)->GetState() != State2::Siege)
+		if (Cast<AZipZap>(otherActor)->GetState() != ZZ_State::Siege)
 		{
 			zipZapEnd = true;
 			zipZap->EnableLevelFinishedParticle();
