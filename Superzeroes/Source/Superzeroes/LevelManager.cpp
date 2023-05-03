@@ -10,6 +10,7 @@ ALevelManager::ALevelManager()
 	boomBoomEnd = false;
 	zipZapEnd = false;
 	enemiesInitialized = false;
+	trashCansInitialized = false;
 	currentLevel = 0;
 }
 
@@ -32,6 +33,7 @@ void ALevelManager::Tick(float DeltaTime)
 	GetCharacters();
 	Checkhealth();
 	GetEnemies();
+	GetTrashCans();
 }
 
 void ALevelManager::GetCharacters()
@@ -83,6 +85,24 @@ void ALevelManager::GetEnemies()
 
 		enemyActors.Empty();
 		enemiesInitialized = true;
+	}
+}
+
+void ALevelManager::GetTrashCans()
+{
+	if (!trashCansInitialized)
+	{
+		TArray<AActor*> trashCanActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATrashCan::StaticClass(), trashCanActors);
+
+		for (AActor* trashCan : trashCanActors)
+		{
+			trashCan->SetActorTickEnabled(false);
+			trashCans.Add(Cast<ATrashCan>(trashCan));
+		}
+
+		trashCanActors.Empty();
+		trashCansInitialized = true;
 	}
 }
 
@@ -192,6 +212,17 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 		else if (enemyLevelNum < currentLevel)
 		{
 			enemy->TakeEnemyDamage(200.f);
+		}
+	}
+
+	//Activate trash cans
+	for (ATrashCan* trash : trashCans)
+	{
+		int trashCanLevelNum = UKismetStringLibrary::Conv_StringToInt(trash->Tags[1].ToString());
+
+		if (trashCanLevelNum == currentLevel)
+		{
+			trash->SetActorTickEnabled(true);
 		}
 	}
 
