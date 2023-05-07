@@ -5,6 +5,8 @@
 #include "Components/BoxComponent.h"
 #include "Projectile.h"
 #include "ComicFX.h"
+#include "LevelManager.h"
+#include "Trash.h"
 #include <chrono>
 #include <thread>
 
@@ -54,16 +56,20 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	AI_Q.Add(actionsAfterAttacking);
 
 	currentState = State3::Idle;
-	chooseActionTimeoutTimer = 2.f;
+	chooseActionTimeoutTimer = FMath::RandRange(1, 6);
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
 	damage = 20.f;
+	TimeBetweenWalkSounds = 5.0f;
+	MinimumDistanceToGetIntoCombatX = 500.f;
+	MinimumDistanceToGetIntoCombatZ = 40.f;
 
 	Q_EstimatedOptimalFutureValue = 12.f;
 	Q_DiscountFactor = 0.17f;
 	Q_LearningRate = 0.9f;
 	difficulty = 1;
 	inCombat = false;
+	shootAvailable = true;
 }
 
 void AEnemy_Pigeon::AI()
@@ -76,34 +82,32 @@ void AEnemy_Pigeon::BeginPlay()
 {
 	Super::BeginPlay();
 	healthPoints = 50.f;
-
-	/*FString Qtable;
-	FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/start.txt"));
-	for (int i = 0; i < 5; i++)
-	{
-		for (int j = 0; j < 5; j++)
-		{
-			Qtable += FString::SanitizeFloat(AI_Q[i][j]);
-			Qtable += FString(TEXT(" "));
-		}
-		Qtable += FString(TEXT("\r\n"));
-	}
-	Qtable += FString(TEXT("\r\n"));
-	Qtable += FString(TEXT("\r\n"));
-	Qtable += FString(TEXT("\r\n"));
-	WriteStringToFile(path, Qtable);*/
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy_Pigeon::OverlapBegin);
+	TimeBetweenWalkSounds = 5.0f;
+	walkSoundTimer = TimeBetweenWalkSounds;
 }
 
 void AEnemy_Pigeon::Tick(float DeltaTime)
 {
+	if (zipZap == nullptr || boomBoom == nullptr)
+	{
+		boomBoom = Cast<ABoomBoom>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass()));
+		zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
+	}
+
 	AI();
 }
 
 void AEnemy_Pigeon::TakeEnemyDamage(float damage_)
 {
-	healthPoints -= damage_;
-	flipbookComponent->SetFlipbook(hurtAnim);
-	flipbookComponent->SetLooping(false);
+	if (flipbookComponent->GetFlipbook() != hurtAnim && currentState != State3::Dead && currentState != State3::Jumping)
+	{
+		healthPoints -= damage_;
+		flipbookComponent->SetFlipbook(hurtAnim);
+		flipbookComponent->SetLooping(false);
+	}
+
+	UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
 }
 
 void AEnemy_Pigeon::GetState()
@@ -150,6 +154,12 @@ void AEnemy_Pigeon::CalculateReward()
 	//float reward = rand() % 10 + 5;
 	float reward = 0.f;
 
+	if (isColliding)
+	{
+		isColliding = false;
+		return;
+	}
+
 	if (!inCombat)
 	{
 		reward = rand() % 10 + 5;
@@ -157,7 +167,7 @@ void AEnemy_Pigeon::CalculateReward()
 	else // It's in combat, let's see what it did
 	{
 		// If siege mode is active - whatever it does, it won't escape and won't survive
-		if (boomBoom->GetState() == State::Siege)
+		if (boomBoom->GetState() == BB_State::Siege)
 		{
 			UpdateQ(reward);
 			return;
@@ -218,7 +228,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 6 + 1) * difficulty;
 				}
@@ -264,7 +274,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 6 + 1) * difficulty;
 				}
@@ -275,12 +285,12 @@ void AEnemy_Pigeon::CalculateReward()
 				reward += (rand() % 5 + 2);
 
 				// Check if zip zap shoots, it would be great to avoid his projectiles
-				if (zipZap->GetState() == State2::Attacking)
+				if (zipZap->GetState() == ZZ_State::Attacking)
 				{
 					reward += (rand() % 4 + 1);
 				}
 				// Check if there are any combo attacks active, if there are - that's reaaaally good
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 5 + 2);
 				}
@@ -303,12 +313,12 @@ void AEnemy_Pigeon::CalculateReward()
 					reward += (rand() % 5 + 0);
 				}
 				// Better if the characters attack
-				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking || zipZap->GetState() == ZZ_State::Attacking)
 				{
 					reward += (rand() % 4 + 0);
 				}
 				// Even Better if the characters have combo attack active
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 7 + 3);
 				}
@@ -366,7 +376,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 6 + 1) * difficulty;
 				}
@@ -423,7 +433,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 3 + 0);
 				}
@@ -434,12 +444,12 @@ void AEnemy_Pigeon::CalculateReward()
 				reward += (rand() % 5 + 1);
 
 				// Check if zip zap shoots, it would be great to avoid
-				if (zipZap->GetState() == State2::Attacking)
+				if (zipZap->GetState() == ZZ_State::Attacking)
 				{
 					reward += (rand() % 4 + 1);
 				}
 				// Check if there are any combo attacks active, if there are - that's reaaaally good
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 5 + 2);
 				}
@@ -462,12 +472,12 @@ void AEnemy_Pigeon::CalculateReward()
 					reward += (rand() % 5 + 0);
 				}
 				// Better if the characters attack
-				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking || zipZap->GetState() == ZZ_State::Attacking)
 				{
 					reward += (rand() % 4 + 0);
 				}
 				// Even Better if the characters have combo attack active
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 7 + 3);
 				}
@@ -525,7 +535,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 6 + 1) * difficulty;
 				}
@@ -582,7 +592,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 3 + 0);
 				}
@@ -597,7 +607,7 @@ void AEnemy_Pigeon::CalculateReward()
 				// That's not the best thing to do after landing, especially if a combo attack is active
 				reward -= (rand() % 3 + 0);
 
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward -= (rand() % 4 + 1);
 				}
@@ -610,12 +620,12 @@ void AEnemy_Pigeon::CalculateReward()
 					reward += (rand() % 5 + 0);
 				}
 				// Better if the characters attack
-				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking || zipZap->GetState() == ZZ_State::Attacking)
 				{
 					reward += (rand() % 4 + 0);
 				}
 				// Even Better if the characters have combo attack active
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 7 + 3);
 				}
@@ -675,7 +685,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 3 + 0);
 				}
@@ -730,7 +740,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 6 + 1) * difficulty;
 				}
@@ -745,7 +755,7 @@ void AEnemy_Pigeon::CalculateReward()
 				// That's not the best thing to do after having been idle so far, especially if a combo attack is active
 				reward -= (rand() % 3 + 0);
 
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward -= (rand() % 6 + 2);
 				}
@@ -758,12 +768,12 @@ void AEnemy_Pigeon::CalculateReward()
 					reward += (rand() % 5 + 0);
 				}
 				// Better if the characters attack
-				if (boomBoom->GetState() == State::Attacking || zipZap->GetState() == State2::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking || zipZap->GetState() == ZZ_State::Attacking)
 				{
 					reward += (rand() % 4 + 0);
 				}
 				// Even Better if the characters have combo attack active
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 7 + 3);
 				}
@@ -823,7 +833,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 3 + 0);
 				}
@@ -878,7 +888,7 @@ void AEnemy_Pigeon::CalculateReward()
 					}
 				}
 				// Check if boom boom is attacking, it must be away from him
-				if (boomBoom->GetState() == State::Attacking)
+				if (boomBoom->GetState() == BB_State::Attacking)
 				{
 					reward -= (rand() % 6 + 1) * difficulty;
 				}
@@ -886,7 +896,7 @@ void AEnemy_Pigeon::CalculateReward()
 			else if (currentAction == Action::Jump) // It decides to jump
 			{
 				// Agility is good, especially if a combo attack is active
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += (rand() % 5 + 2);
 				}
@@ -894,7 +904,7 @@ void AEnemy_Pigeon::CalculateReward()
 			else if (currentAction == Action::GoIdle)
 			{
 				// If a combo attack is active, it's noot good, otherwise - if it's away from the characters
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward -= (rand() % 10 + 5) * difficulty;
 				}
@@ -911,7 +921,7 @@ void AEnemy_Pigeon::CalculateReward()
 				reward -= (rand() % 7 + 2);
 
 				// Repeat attack only if there are combo attacks active
-				if (zipZap->GetState() == State2::Combo_Projectile || boomBoom->GetState() == State::Combo_Savage)
+				if (zipZap->GetState() == ZZ_State::Combo_Projectile || boomBoom->GetState() == BB_State::Combo_Savage)
 				{
 					reward += 20.f;
 				}
@@ -976,7 +986,7 @@ void AEnemy_Pigeon::ExecuteAction()
 	else if (currentAction == Action::Jump)
 	{
 		currentState = State3::Jumping;
-		chooseActionTimeoutTimer = (2 * (characterMovementComponent->JumpZVelocity)) / -9.8f;
+		chooseActionTimeoutTimer = (2 * (characterMovementComponent->JumpZVelocity)) / 980.f;
 	}
 	else if (currentAction == Action::WalkLeft)
 	{
@@ -999,8 +1009,9 @@ void AEnemy_Pigeon::ExecuteAction()
 	else if (currentAction == Action::Attack)
 	{
 		currentState = State3::Attacking;
-		stateUpdateTimer = ShootingAnimationLength;
+		stateUpdateTimer = 1.f;
 		chooseActionTimeoutTimer = stateUpdateTimer;
+		shootAvailable = true;
 	}
 }
 
@@ -1019,10 +1030,11 @@ void AEnemy_Pigeon::UpdateState()
 		break;
 
 	case State3::Jumping:
-		if (flipbookComponent->GetFlipbook() != hurtAnim)
+		if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim && !characterMovementComponent->IsFalling())
 		{
 			flipbookComponent->SetFlipbook(jumpAnim);
 			flipbookComponent->SetLooping(false);
+			UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
 			Jump();
 		}
 		break;
@@ -1054,6 +1066,12 @@ void AEnemy_Pigeon::UpdateState()
 	case State3::Dead:
 		flipbookComponent->SetFlipbook(dead);
 		flipbookComponent->SetLooping(false);
+
+		if ((flipbookComponent->GetFlipbook() == dead && flipbookComponent->GetPlaybackPositionInFrames() == 15) || (flipbookComponent->GetFlipbook() == hurtAnim && flipbookComponent->GetPlaybackPositionInFrames() == 0))
+		{
+			Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
+			Destroy();
+		}
 		break;
 
 	default:
@@ -1063,28 +1081,28 @@ void AEnemy_Pigeon::UpdateState()
 	// AI Sensing
 	if (boomBoom != nullptr && zipZap != nullptr)
 	{
-		if (zipZap->GetState() == State2::Dead)
+		if (zipZap->GetState() == ZZ_State::Dead)
 		{
 			playerToAttack = boomBoom;
 		}
 
-		if (boomBoom->GetState() == State::Dead)
+		if (boomBoom->GetState() == BB_State::Dead)
 		{
 			playerToAttack = zipZap;
 		}
 
-		if (zipZap->GetState() == State2::Dead && boomBoom->GetState() == State::Dead)
+		if (zipZap->GetState() == ZZ_State::Dead && boomBoom->GetState() == BB_State::Dead)
 		{
 			inCombat = false;
 		}
 
-		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && boomBoom->GetState() != State::Dead)
+		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && boomBoom->GetState() != BB_State::Dead)
 		{
 			inCombat = true;
 			playerToAttack = boomBoom;
 		}
 
-		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && zipZap->GetState() != State2::Dead)
+		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && zipZap->GetState() != ZZ_State::Dead)
 		{
 			inCombat = true;
 			playerToAttack = zipZap;
@@ -1095,7 +1113,7 @@ void AEnemy_Pigeon::UpdateState()
 	// Check Health
 	if (healthPoints <= 0.f)
 	{
-		if (spawner != nullptr)
+		if (IsValid(spawner))
 		{
 			spawner->RemoveEnemy(this);
 		}
@@ -1105,7 +1123,9 @@ void AEnemy_Pigeon::UpdateState()
 		location.Y -= 0.1f;
 		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
 		cfx->spriteChanger(2);
+		UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
 		currentState = State3::Dead;
+		healthPoints = 0.01f;
 	}
 }
 
@@ -1117,6 +1137,13 @@ void AEnemy_Pigeon::WalkLeft()
 		AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.3f, false);
 		rotation.Yaw = 0.f;
 		flipbookComponent->SetWorldRotation(rotation);
+		walkSoundTimer += 0.1f;
+
+		if (walkSoundTimer >= TimeBetweenWalkSounds)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+			walkSoundTimer = 0.0f;
+		}
 	}
 }
 
@@ -1128,43 +1155,72 @@ void AEnemy_Pigeon::WalkRight()
 		AddMovementInput(FVector(1.f, 0.f, 0.f), 0.3f, false);
 		rotation.Yaw = 180.f;
 		flipbookComponent->SetWorldRotation(rotation);
+		walkSoundTimer += 0.1f;
+
+		if (walkSoundTimer >= TimeBetweenWalkSounds)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+			walkSoundTimer = 0.0f;
+		}
 	}
 }
 
 void AEnemy_Pigeon::Attack()
 {
-	// Wait until the needed frame is executed
-	if (stateUpdateTimer > 0.f)
-	{
-		stateUpdateTimer -= GetWorld()->GetDeltaSeconds();
-		FaceNearestPlayer();
-	}
-	else // The frame is on the screen, execute the actual attacking functionality once
+	if (IsValid(playerToAttack))
 	{
 		FaceNearestPlayer();
 
-		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 94.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
-		FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
-
-		if (rotation.Yaw > 0.f) // Right
+		if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && shootAvailable)
 		{
-			muzzleFlashLocation.X += 188.68f;
+			FaceNearestPlayer();
+
+			FVector muzzleFlashLocation = FVector(GetActorLocation().X - 81.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
+			FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
+
+			if (rotation.Yaw > 0.f) // Right
+			{
+				muzzleFlashLocation.X += 162.68f;
+			}
+
+			// Spawn particle
+			FRotator muzzleFlashSpawnRotator = FRotator(rotation.Pitch, rotation.Yaw - 180.f, rotation.Roll);
+			UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, muzzleFlashSpawnRotator, FVector(.6f, .6f, .6f));
+			muzzleFlash->CustomTimeDilation = 1.4f;
+
+			// Spawn bullet
+			UGameplayStatics::PlaySound2D(GetWorld(), shootSFX);
+			AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
+			shootAvailable = false;
 		}
-
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation);
-
-		// Spawn bullet
-		AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
 	}
 }
 
 void AEnemy_Pigeon::FaceNearestPlayer()
 {
-	// Boom Boom is closer
-	if (playerToAttack->ActorHasTag("BoomBoom"))
+	if (IsValid(playerToAttack))
 	{
-		// Face him
-		if (boomBoom->GetActorLocation().X < GetActorLocation().X) // He's on the left
+		// Boom Boom is closer
+		if (playerToAttack->ActorHasTag("BoomBoom"))
+		{
+			// Face him
+			if (boomBoom->GetActorLocation().X < GetActorLocation().X) // He's on the left
+			{
+				rotation.Yaw = 0.f;
+				flipbookComponent->SetWorldRotation(rotation);
+
+			}
+			else // He's on the right
+			{
+				rotation.Yaw = 180.f;
+				flipbookComponent->SetWorldRotation(rotation);
+			}
+
+			return;
+		}
+
+		// // Zip Zap is closer, face him
+		if (zipZap->GetActorLocation().X < GetActorLocation().X) // He's on the left
 		{
 			rotation.Yaw = 0.f;
 			flipbookComponent->SetWorldRotation(rotation);
@@ -1175,23 +1231,48 @@ void AEnemy_Pigeon::FaceNearestPlayer()
 			rotation.Yaw = 180.f;
 			flipbookComponent->SetWorldRotation(rotation);
 		}
-
-		return;
 	}
+}
 
-	// // Zip Zap is closer, face him
-	if (zipZap->GetActorLocation().X < GetActorLocation().X) // He's on the left
+void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
+{
+	if (otherActor->ActorHasTag("LevelRespawnTrigger"))
 	{
-		rotation.Yaw = 0.f;
-		flipbookComponent->SetWorldRotation(rotation);
+		Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
+		Destroy();
+	}
 
-	}
-	else // He's on the right
+	if (currentState != State3::Dead && !otherActor->IsA(AEnemy::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
 	{
-		rotation.Yaw = 180.f;
-		flipbookComponent->SetWorldRotation(rotation);
+		isColliding = true;
+		chooseActionTimeoutTimer = 5.f;
+
+		if (currentState == State3::WalkingLeft)
+		{
+			currentAction = Action::WalkRight;
+		}
+		else if (currentState == State3::WalkingRight)
+		{
+			currentAction = Action::WalkLeft;
+		}
+
+		if (otherActor->IsA(ABoomBoom::StaticClass()) || otherActor->IsA(AZipZap::StaticClass()))
+		{
+			currentAction = Action::Attack;
+		}
+
+		if (otherActor->IsA(ATrash::StaticClass()))
+		{
+			GetCapsuleComponent()->IgnoreActorWhenMoving(otherActor, true);
+		}
+
+		ExecuteAction();
 	}
-	
+}
+
+void AEnemy_Pigeon::OverlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
+{
+	isColliding = false;
 }
 
 void AEnemy_Pigeon::EndAttack()
@@ -1199,6 +1280,12 @@ void AEnemy_Pigeon::EndAttack()
 	if (flipbookComponent->GetFlipbook() == hurtAnim)
 	{
 		flipbookComponent->SetFlipbook(idle);
+
+		if (characterMovementComponent->IsFalling())
+		{
+			flipbookComponent->SetLooping(true);
+			flipbookComponent->Play();
+		}
 	}
 
 	if (currentState != State3::Jumping && currentState != State3::Dead)
@@ -1209,18 +1296,7 @@ void AEnemy_Pigeon::EndAttack()
 
 	if (currentState == State3::Dead)
 	{
-		/*FString Qtable;
-		FString path = FString(TEXT("C:/Users/Zlatko Radev/Desktop/niska kruv.txt"));
-		for (int i = 0; i < 5; i++)
-		{
-			for (int j = 0; j < 5; j++)
-			{
-				Qtable += FString::SanitizeFloat(AI_Q[i][j]);
-				Qtable += FString(TEXT(" "));
-			}
-			Qtable += FString(TEXT("\r\n"));
-		}
-		WriteStringToFile(path, Qtable);*/
+		Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
 		Destroy();
 	}
 }
@@ -1229,9 +1305,12 @@ void AEnemy_Pigeon::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 	
-	flipbookComponent->SetFlipbook(idle);
-	flipbookComponent->SetLooping(true);
-	flipbookComponent->Play();
+	if (currentState != State3::Dead && flipbookComponent->GetFlipbook() != hurtAnim)
+	{
+		flipbookComponent->SetFlipbook(idle);
+		flipbookComponent->SetLooping(true);
+		flipbookComponent->Play();
+	}
 }
 
 void AEnemy_Pigeon::WriteStringToFile(FString FilePath, FString String)

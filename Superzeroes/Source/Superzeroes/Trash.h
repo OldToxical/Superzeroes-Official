@@ -36,12 +36,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
 			UPrimitiveComponent* otherComp, int32 otherBodyIndex);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool movingLeft;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UBoxComponent* hitbox;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		FRotator rotation;
+
+	float time;
+
 
 
 };

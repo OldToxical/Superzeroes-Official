@@ -2,18 +2,22 @@
 
 
 #include "Trash.h"
+#include "TrashCan.h"
+#include "PaperSpriteActor.h"
 #include "Components/BoxComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "BoomBoom.h"
 #include "ZipZap.h"
+#include "Enemy.h"
 #include "Kismet/GameplayStatics.h"
 
 ATrash::ATrash()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	hitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hitbox"));
-	hitbox->SetRelativeScale3D(FVector(0.75, 0.75, 0.75));
+	hitbox->SetRelativeScale3D(FVector(0.5, 0.5, 0.5));
 	hitbox->SetupAttachment(RootComponent); 
+	movingLeft = false;
 }
 
 ATrash::~ATrash()
@@ -24,16 +28,33 @@ ATrash::~ATrash()
 void ATrash::BeginPlay()
 {
 	Super::BeginPlay();
+	rotation = FRotator::ZeroRotator;
 	charMove = GetCharacterMovement();
 	hitbox->OnComponentBeginOverlap.AddDynamic(this, &ATrash::overlapBegin);
 	hitbox->OnComponentEndOverlap.AddDynamic(this, &ATrash::overlapEnd);
-	Jump();
 }
 
 void ATrash::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	AddMovementInput(FVector(0.3f, 0.0f, 0.0f), 1.0, false);
+	time += DeltaTime; //this is important so the trash doesnt destroy itself as soon as it is spawned
+	if (movingLeft)
+	{
+		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), -1.0, false);
+		rotation.Pitch += 2.f;
+		GetSprite()->SetWorldRotation(rotation);
+	}
+	else {
+		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), 1.0, false);
+		rotation.Pitch -= 2.f;
+		GetSprite()->SetWorldRotation(rotation);
+	}
+
+	if(charMove->Velocity.X <= 0.2f && charMove->Velocity.X >= -0.2f && time > 1.0f)
+	{
+		Destroy(); //this destroys the trash as soon as it stops moving
+	}
+	
 }
 
 
@@ -42,10 +63,7 @@ void ATrash::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 {
 	if (otherActor && (otherActor != this) && otherComp)
 	{
-		if (!otherActor->ActorHasTag(TEXT("Floor")))
-		{
-			Destroy();
-		}
+		
 		if (otherActor->ActorHasTag(TEXT("BoomBoom")))
 		{
 			ABoomBoom* boomBoom = (ABoomBoom*)otherActor;
@@ -64,6 +82,10 @@ void ATrash::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 			}
 			Destroy();
 		}
+		if (otherActor->IsA(AEnemy::StaticClass()))
+		{
+			GetCapsuleComponent()->IgnoreActorWhenMoving(otherActor, true);
+		}
 	}
 }
 
@@ -72,6 +94,6 @@ void ATrash::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
 {
 	if (otherActor && (otherActor != this) && otherComp)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("i am gaming!"));
+		
 	}
 }

@@ -6,14 +6,11 @@
 #include "Enemy.h"
 #include "BoomBoom.h"
 #include "ZipZap.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Enemy_Pigeon.generated.h"
 
-#define MinimumDistanceToGetIntoCombatX 500
-#define MinimumDistanceToGetIntoCombatZ 40
 #define ShootingAnimationLength 0.6
 
 class ABoomBoom;
@@ -66,6 +63,14 @@ private:
 	void Attack();
 	void FaceNearestPlayer();
 
+	UFUNCTION()
+		void OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+
+	UFUNCTION()
+		void OverlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+
 	float chooseActionTimeoutTimer;
 	float stateUpdateTimer;
 	float speed;
@@ -73,6 +78,8 @@ private:
 	float Q_EstimatedOptimalFutureValue;
 	float Q_DiscountFactor;
 	float Q_LearningRate;
+	bool shootAvailable;
+	bool isColliding;
 	State3 currentState;
 	Action currentAction;
 	TArray<TArray<float, TFixedAllocator<5>>, TFixedAllocator<5>> AI_Q;
@@ -82,6 +89,12 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		int difficulty;
+
+	UPROPERTY(EditAnywhere)
+		float MinimumDistanceToGetIntoCombatX;
+
+	UPROPERTY(EditAnywhere)
+		float MinimumDistanceToGetIntoCombatZ;
 
 	// Animations
 	UPROPERTY(EditAnywhere)
@@ -104,7 +117,7 @@ private:
 
 	// Particles
 	UPROPERTY(EditAnywhere)
-		UNiagaraSystem* muzzleFlashParticle;
+		UParticleSystem* muzzleFlashParticle;
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -130,4 +143,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
 		TSubclassOf<class AComicFX> comicFX;
+
+	//Audio variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* shootSFX;
 };

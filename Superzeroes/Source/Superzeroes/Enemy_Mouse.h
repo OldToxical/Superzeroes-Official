@@ -6,7 +6,6 @@
 #include "Enemy.h"
 #include "BoomBoom.h"
 #include "ZipZap.h"
-#include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Enemy_Mouse.generated.h"
@@ -67,6 +66,14 @@ private:
 	void GoToPlayer();
 	void DealDamage();
 
+	UFUNCTION()
+		void OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+
+	UFUNCTION()
+		void OverlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor,
+			UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result);
+
 	float chooseActionTimeoutTimer;
 	float stateUpdateTimer;
 	float speed;
@@ -79,6 +86,8 @@ private:
 	    bool inCombat;
 
 	bool hitAvailable;
+	bool deathFXcompleted;
+	bool isColliding;
 
 	// Animations
 	UPROPERTY(EditAnywhere)
@@ -103,6 +112,9 @@ private:
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* boomBoomImpact;
 
+	UPROPERTY(EditAnywhere)
+		UParticleSystem* zipZapImpact;
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	    void EndAttack();
@@ -121,4 +133,18 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FX)
 		TSubclassOf<class AComicFX> comicFX;
+
+	//Audio variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* attack1SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* attack2SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* attack3SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* attack4SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* attack5SFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* attack6SFX;
 };

@@ -1,20 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Enemy.h"
+#include "TrashCan.h"
 
 AEnemy::AEnemy()
 {
-	characterMovementComponent = NULL;
-	flipbookComponent = NULL;
-
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
+	characterMovementComponent = nullptr;
+	flipbookComponent = nullptr;
+	TimeBetweenWalkSounds = 5.0f;
+	walkSoundTimer = TimeBetweenWalkSounds;
 }
 
 void AEnemy::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime); 
 
 	//UpdateActorState();
 	//UpdateRotation();
@@ -23,18 +20,29 @@ void AEnemy::Tick(float DeltaTime)
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	characterMovementComponent = GetCharacterMovement();
+
+	TSubclassOf<ATrashCan> subclass;
+	subclass = ATrashCan::StaticClass();
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), subclass, actorsToIgnore);
+	for (AActor* actorToIgnore : actorsToIgnore)
+	{
+		GetCapsuleComponent()->IgnoreActorWhenMoving(actorToIgnore, true);
+	}
 
 	if (flipbookComponent)
 	{
 		flipbookComponent->bOwnerNoSee = false;
 		flipbookComponent->bAffectDynamicIndirectLighting = true;
 		flipbookComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
-		flipbookComponent->SetupAttachment(GetCapsuleComponent());
-		static FName CollisionProfileName(TEXT("CharacterMesh"));
+		//flipbookComponent->SetupAttachment(GetCapsuleComponent());
+		static FName CollisionProfileName(TEXT("MainCharacter"));
 		flipbookComponent->SetCollisionProfileName(CollisionProfileName);
 		flipbookComponent->SetGenerateOverlapEvents(false);
+		flipbookComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 }
 

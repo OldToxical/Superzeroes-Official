@@ -35,6 +35,18 @@ public:
 		class UPaperSprite* oof;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UPaperSprite* bam; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperSprite* number_0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperSprite* number_1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperSprite* number_2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperSprite* number_3;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperSprite* number_4;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UPaperSprite* number_5;
 
 protected:
 		// Called when the game starts or when spawned

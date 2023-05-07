@@ -7,6 +7,7 @@
 #include "PaperFlipbookComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "EnemySpawner.h"
 #include "Enemy.generated.h"
 
@@ -51,8 +52,25 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		AEnemySpawner* spawner;
 
+	// Audio ariables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* jumpSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* deathSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* walkSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		USoundBase* hurtSFX;
+
+	float walkSoundTimer;
+	//This is so that the walk sound effect doesn't play every single frame
+	//there may be a better way of doing this?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Timers)
+		float TimeBetweenWalkSounds;
+
 public:
 	virtual void TakeEnemyDamage(float damage_);
 	void AddToGetActorsToIgnore(AActor* actor) { actorsToIgnore.Add(actor); }
 	void SetSpawner(AEnemySpawner* spawner_) { spawner = spawner_; }
+	float GetHealth() { return healthPoints; }
 };

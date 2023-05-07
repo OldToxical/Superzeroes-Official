@@ -2,8 +2,11 @@
 #include "Enemy_Mouse.h"
 #include "Components/BoxComponent.h"
 #include "ComicFX.h"
+#include "LevelManager.h"
+#include "Trash.h"
 #include <chrono>
 #include <thread>
+#include "Kismet/KismetStringLibrary.h"
 
 AEnemy_Mouse::AEnemy_Mouse()
 {
@@ -39,13 +42,16 @@ AEnemy_Mouse::AEnemy_Mouse()
 	AI_Q.Add(actionsAfterWalkingRight);
 
 	currentState = State4::Idle;
-	chooseActionTimeoutTimer = 2.f;
+	chooseActionTimeoutTimer = FMath::RandRange(1, 6);
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
 	damage = 30.f;
+	TimeBetweenWalkSounds = 5.0f;
 	healthPoints = 100.f;
 	hitAvailable = true;
 	inCombat = false;
+	deathFXcompleted = false;
+	isColliding = false;
 }
 
 void AEnemy_Mouse::AI()
@@ -57,18 +63,31 @@ void AEnemy_Mouse::AI()
 void AEnemy_Mouse::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy_Mouse::OverlapBegin);
+	TimeBetweenWalkSounds = 5.0f;
+	walkSoundTimer = TimeBetweenWalkSounds;
 }
 
 void AEnemy_Mouse::Tick(float DeltaTime)
 {
+	if (zipZap == nullptr || boomBoom == nullptr)
+	{
+		boomBoom = Cast<ABoomBoom>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass()));
+		zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
+	}
+
 	AI();
 }
 
 void AEnemy_Mouse::TakeEnemyDamage(float damage_)
 {
-	healthPoints -= damage_;
-	flipbookComponent->SetFlipbook(hurtAnim);
-	flipbookComponent->SetLooping(false);
+	if (flipbookComponent->GetFlipbook() != hurtAnim && currentState != State4::Dead && currentState != State4::Jumping)
+	{
+		healthPoints -= damage_;
+		flipbookComponent->SetFlipbook(hurtAnim);
+		flipbookComponent->SetLooping(false);
+	}
 }
 
 void AEnemy_Mouse::GetState()
@@ -111,6 +130,13 @@ void AEnemy_Mouse::ChooseAction()
 void AEnemy_Mouse::CalculateReward()
 {
 	float reward = rand() % 10 + 5;
+
+	if (isColliding)
+	{
+		isColliding = false;
+		return;
+	}
+
 	UpdateQ(reward);
 }
 
@@ -133,7 +159,7 @@ void AEnemy_Mouse::ExecuteAction()
 	else if (currentAction == Action::Jump)
 	{
 		currentState = State4::Jumping;
-		chooseActionTimeoutTimer = (2 * (characterMovementComponent->JumpZVelocity)) / -9.8f;
+		chooseActionTimeoutTimer = (2 * (characterMovementComponent->JumpZVelocity)) / 980.f;
 	}
 	else if (currentAction == Action::WalkLeft)
 	{
@@ -162,19 +188,20 @@ void AEnemy_Mouse::UpdateState()
 	switch (currentState)
 	{
 	    case State4::Idle:
-			if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
+			if (flipbookComponent->GetFlipbook() != hurtAnim)
 			{
 				flipbookComponent->SetFlipbook(idle);
 				flipbookComponent->SetLooping(true);
 			}
 			break;
 		case State4::Jumping:
-			if (flipbookComponent->GetFlipbook() != hurtAnim)
+			if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim && !characterMovementComponent->IsFalling())
 			{
 				flipbookComponent->SetFlipbook(jumpAnim);
 				flipbookComponent->SetLooping(false);
+				UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX);
+				Jump();
 			}
-			Jump();
 			break;
 		case State4::WalkingLeft:
 			if (flipbookComponent->GetFlipbook() != hurtAnim && flipbookComponent->GetFlipbook() != jumpAnim)
@@ -195,6 +222,12 @@ void AEnemy_Mouse::UpdateState()
 		case State4::Dead:
 			flipbookComponent->SetFlipbook(dead);
 			flipbookComponent->SetLooping(false);
+
+			if ((flipbookComponent->GetFlipbook() == dead && flipbookComponent->GetPlaybackPositionInFrames() == 11) || (flipbookComponent->GetFlipbook() == hurtAnim && flipbookComponent->GetPlaybackPositionInFrames() == 2))
+			{
+				Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
+				Destroy();
+			}
 			break;
 	    default:
 			break;
@@ -203,13 +236,28 @@ void AEnemy_Mouse::UpdateState()
 	// AI Sensing
 	if (boomBoom != NULL && zipZap != NULL && currentState != State4::Dead)
 	{
-		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ))
+		if (zipZap->GetState() == ZZ_State::Dead)
+		{
+			playerToAttack = boomBoom;
+		}
+
+		if (boomBoom->GetState() == BB_State::Dead)
+		{
+			playerToAttack = zipZap;
+		}
+
+		if (zipZap->GetState() == ZZ_State::Dead && boomBoom->GetState() == BB_State::Dead)
+		{
+			inCombat = false;
+		}
+
+		if ((abs(GetActorLocation().X - boomBoom->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - boomBoom->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && boomBoom->GetState() != BB_State::Dead)
 		{
 			inCombat = true;
 			playerToAttack = boomBoom;
 		}
 
-		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ))
+		if ((abs(GetActorLocation().X - zipZap->GetActorLocation().X) < MinimumDistanceToGetIntoCombatX) && (abs(GetActorLocation().Z - zipZap->GetActorLocation().Z) < MinimumDistanceToGetIntoCombatZ) && zipZap->GetState() != ZZ_State::Dead)
 		{
 			inCombat = true;
 			playerToAttack = zipZap;
@@ -219,16 +267,21 @@ void AEnemy_Mouse::UpdateState()
 	// Check Health
 	if (healthPoints <= 0.f)
 	{
-		if (spawner != nullptr)
+		if (IsValid(spawner))
 		{
 			spawner->RemoveEnemy(this);
 		}
 
-		FVector location = GetActorLocation();
-		location.Z += 30.f;
-		location.Y -= 0.1f;
-		AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
-		cfx->spriteChanger(2);
+		if (!deathFXcompleted)
+		{
+			FVector location = GetActorLocation();
+			location.Z += 30.f;
+			location.Y -= 0.1f;
+			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
+			cfx->spriteChanger(2);
+			UGameplayStatics::PlaySound2D(GetWorld(), deathSFX);
+			deathFXcompleted = true;
+		}
 		currentState = State4::Dead;
 	}
 }
@@ -241,6 +294,13 @@ void AEnemy_Mouse::WalkLeft()
 		AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.3f, false);
 		rotation.Yaw = 180.f;
 		flipbookComponent->SetWorldRotation(rotation);
+		walkSoundTimer += 0.1f;
+
+		if (walkSoundTimer >= TimeBetweenWalkSounds)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+			walkSoundTimer = 0.0f;
+		}
 	}
 }
 
@@ -252,6 +312,13 @@ void AEnemy_Mouse::WalkRight()
 		AddMovementInput(FVector(1.f, 0.f, 0.f), 0.3f, false);
 		rotation.Yaw = 0.f;
 		flipbookComponent->SetWorldRotation(rotation);
+		walkSoundTimer += 0.1f;
+
+		if (walkSoundTimer >= TimeBetweenWalkSounds)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), walkSFX);
+			walkSoundTimer = 0.0f;
+		}
 	}
 }
 
@@ -259,53 +326,79 @@ void AEnemy_Mouse::Attack()
 {
 	currentState = State4::Attacking;
 
-	if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) > MinimumDistanceToDealDamage && flipbookComponent->GetFlipbook() != attack)
+	if (IsValid(playerToAttack))
 	{
-		if (flipbookComponent->GetFlipbook() != hurtAnim)
+		if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) > MinimumDistanceToDealDamage && flipbookComponent->GetFlipbook() != attack)
 		{
-			flipbookComponent->SetFlipbook(walk);
-			flipbookComponent->SetLooping(true);
+			if (flipbookComponent->GetFlipbook() != hurtAnim)
+			{
+				flipbookComponent->SetFlipbook(walk);
+				flipbookComponent->SetLooping(true);
+			}
+			GoToPlayer();
 		}
-		GoToPlayer();
-	}
-	else if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) < MinimumDistanceToDealDamage)
-	{
-		flipbookComponent->SetFlipbook(attack);
-		flipbookComponent->SetLooping(false);
-
-		if (flipbookComponent->GetPlaybackPositionInFrames() == 5 && hitAvailable)
+		else if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) < MinimumDistanceToDealDamage && abs(playerToAttack->GetActorLocation().Z - GetActorLocation().Z) < MinimumDistanceToDealDamage)
 		{
-			hitAvailable = false;
-			DealDamage();
-		}
+			flipbookComponent->SetFlipbook(attack);
+			flipbookComponent->SetLooping(false);
 
-		if (flipbookComponent->GetPlaybackPositionInFrames() == 6)
-		{
-			hitAvailable = true;
-		}
+			if (flipbookComponent->GetPlaybackPositionInFrames() == 5 && hitAvailable)
+			{
+				hitAvailable = false;
+				int attackSFX = rand() % 5 + 1;
+				switch (attackSFX)
+				{
+					case 1: UGameplayStatics::PlaySound2D(GetWorld(), attack1SFX);
+					case 2: UGameplayStatics::PlaySound2D(GetWorld(), attack2SFX);
+					case 3:	UGameplayStatics::PlaySound2D(GetWorld(), attack3SFX);
+					case 4:	UGameplayStatics::PlaySound2D(GetWorld(), attack4SFX);
+					case 5:	UGameplayStatics::PlaySound2D(GetWorld(), attack5SFX);
+					case 6:	UGameplayStatics::PlaySound2D(GetWorld(), attack6SFX);
+				}
+				DealDamage();
+			}
 
-		if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && hitAvailable)
-		{
-			hitAvailable = false;
-			DealDamage();
+			if (flipbookComponent->GetPlaybackPositionInFrames() == 6)
+			{
+				hitAvailable = true;
+			}
+
+			if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && hitAvailable)
+			{
+				hitAvailable = false;
+				int attackSFX = rand() % 5 + 1;
+				switch (attackSFX)
+				{
+					case 1: UGameplayStatics::PlaySound2D(GetWorld(), attack1SFX);
+					case 2: UGameplayStatics::PlaySound2D(GetWorld(), attack2SFX);
+					case 3:	UGameplayStatics::PlaySound2D(GetWorld(), attack3SFX);
+					case 4:	UGameplayStatics::PlaySound2D(GetWorld(), attack4SFX);
+					case 5:	UGameplayStatics::PlaySound2D(GetWorld(), attack5SFX);
+					case 6:	UGameplayStatics::PlaySound2D(GetWorld(), attack6SFX);
+				}
+				DealDamage();
+			}
 		}
 	}
 }
 
 void AEnemy_Mouse::GoToPlayer()
 {
-	// Face the player
-	if (playerToAttack->GetActorLocation().X < GetActorLocation().X) // He's on the left
+	if (IsValid(playerToAttack))
 	{
-		rotation.Yaw = 180.f;
-		flipbookComponent->SetWorldRotation(rotation);
-		AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.3f, false);
-	}
-	else // He's on the right
-	{
-		rotation.Yaw = 0.f;
-		flipbookComponent->SetWorldRotation(rotation);
-		AddMovementInput(FVector(1.f, 0.f, 0.f), 0.3f, false);
+		// Face the player
+		if (playerToAttack->GetActorLocation().X < GetActorLocation().X) // He's on the left
+		{
+			rotation.Yaw = 180.f;
+			flipbookComponent->SetWorldRotation(rotation);
+			AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.3f, false);
+		}
+		else // He's on the right
+		{
+			rotation.Yaw = 0.f;
+			flipbookComponent->SetWorldRotation(rotation);
+			AddMovementInput(FVector(1.f, 0.f, 0.f), 0.3f, false);
+		}
 	}
 }
 
@@ -314,14 +407,67 @@ void AEnemy_Mouse::DealDamage()
 	float distanceToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
 	float distanceToZipZap = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
 
-	if (playerToAttack->ActorHasTag("BoomBoom") && distanceToBoomBoom < MinimumDistanceToDealDamage)
+	if (IsValid(playerToAttack))
 	{
-		boomBoom->setHealth(boomBoom->getHealth() - damage);
+		if (playerToAttack->ActorHasTag("BoomBoom") && distanceToBoomBoom < MinimumDistanceToDealDamage)
+		{
+			boomBoom->setHealth(boomBoom->getHealth() - damage);			
+			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y + 30.f, boomBoom->GetActorLocation().Z), FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
+		}
+		else if (playerToAttack->ActorHasTag("ZipZap") && distanceToZipZap < MinimumDistanceToDealDamage)
+		{
+			zipZap->setHealth(zipZap->getHealth() - damage);
+
+			if (zipZap->GetState() != ZZ_State::Siege)
+			{
+				UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, FVector(zipZap->GetActorLocation().X, zipZap->GetActorLocation().Y + 30.f, zipZap->GetActorLocation().Z), FRotator(0, 0, 0), FVector(.6f, .6f, .6f));
+				return;
+			}
+
+			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, FVector(zipZap->GetActorLocation().X, zipZap->GetActorLocation().Y + 30.f, zipZap->GetActorLocation().Z), FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
+		}
 	}
-	else if (playerToAttack->ActorHasTag("ZipZap") && distanceToZipZap < MinimumDistanceToDealDamage)
+}
+
+void AEnemy_Mouse::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
+{
+	if (otherActor->ActorHasTag("LevelRespawnTrigger"))
 	{
-		zipZap->setHealth(zipZap->getHealth() - damage);
+		Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
+		Destroy();
 	}
+
+	if (currentState != State4::Dead && !otherActor->IsA(AEnemy::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
+	{
+		isColliding = true;
+		chooseActionTimeoutTimer = 5.f;
+
+		if (currentState == State4::WalkingLeft)
+		{
+			currentAction = Action::WalkRight;
+		}
+		else if (currentState == State4::WalkingRight)
+		{
+			currentAction = Action::WalkLeft;
+		}
+
+		if (otherActor->IsA(ABoomBoom::StaticClass()) || otherActor->IsA(AZipZap::StaticClass()))
+		{
+			inCombat = true;
+		}
+
+		if (otherActor->IsA(ATrash::StaticClass()))
+		{
+			GetCapsuleComponent()->IgnoreActorWhenMoving(otherActor, true);
+		}
+
+		ExecuteAction();
+	}
+}
+
+void AEnemy_Mouse::OverlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& result)
+{
+	isColliding = false;
 }
 
 void AEnemy_Mouse::EndAttack()
@@ -331,6 +477,12 @@ void AEnemy_Mouse::EndAttack()
 	if (flipbookComponent->GetFlipbook() == hurtAnim)
 	{
 		flipbookComponent->SetFlipbook(idle);
+
+		if (characterMovementComponent->IsFalling())
+		{
+			flipbookComponent->SetLooping(true);
+			flipbookComponent->Play();
+		}
 	}
 
 	if (currentState != State4::Jumping && currentState != State4::Dead)
@@ -342,6 +494,7 @@ void AEnemy_Mouse::EndAttack()
 
 	if (currentState == State4::Dead)
 	{
+		Cast<ALevelManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ALevelManager::StaticClass()))->RemoveEnemy(this);
 		Destroy();
 	}
 }
@@ -350,7 +503,11 @@ void AEnemy_Mouse::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
-	currentState = State4::Idle;
-	flipbookComponent->SetLooping(true);
-	flipbookComponent->Play();
+	if (currentState != State4::Dead && flipbookComponent->GetFlipbook() != hurtAnim)
+	{
+		currentState = State4::Idle;
+		flipbookComponent->SetFlipbook(idle);
+		flipbookComponent->SetLooping(true);
+		flipbookComponent->Play();
+	}
 }

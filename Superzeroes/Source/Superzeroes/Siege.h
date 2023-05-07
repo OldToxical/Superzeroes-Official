@@ -15,8 +15,8 @@
 #define InputTime 1.3
 #define ShootCooldownTime 0.5
 #define MaximumXDistanceBetweenPlayersForInitiatingSiegeMode 120
-#define MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 30
-#define InitiationAnimationLength 2
+#define MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 40
+#define InitiationAnimationLength 2.2
 
 UENUM()
 enum class SiegeState : uint8
@@ -41,7 +41,8 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-	void SetupPlayerInput(UInputComponent* input_);
+	void SetupBoomBoomInputComponent(UInputComponent* bbInput);
+	void SetupZipZapInputComponent(UInputComponent* zzInput);
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -55,12 +56,14 @@ protected:
 	UFUNCTION(BlueprintCallable)
 		void EndAttackAnimation();
 
-	void HandleBoomBoomInput(float scaleVal);
-	void HandleZipZapInput(float scaleVal);
 	void ExecuteSiegeMode();
-	void Move(float scaleVal);
-	void Shoot();
 	void UpdateAnimation();
+	void HandleBoomBoomInput(float scaleVal);
+	UFUNCTION(BlueprintCallable)
+	void HandleZipZapInput(float scaleVal);
+	void Move(float scaleVal);
+	UFUNCTION(BlueprintCallable)
+	void Shoot();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		SiegeState state;
@@ -86,9 +89,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AZipZap* zipZap;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UInputComponent* Input;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FRotator rotation;
 
@@ -96,10 +96,10 @@ protected:
 		TSubclassOf<AProjectile> electricChargeClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UNiagaraSystem* electricBeam;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UParticleSystem* muzzleFlash;
+
+	UPROPERTY(BlueprintReadWrite)
+		UNiagaraComponent* smokeParticle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UUserWidget* initiationAnimationUserWidget;
@@ -112,6 +112,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool shotFired;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		bool stepMade;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool inputAvailable;
@@ -127,4 +130,21 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float inititationAnimationTimer;
+
+	//Audio variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* siegeActivate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* siegeVoice;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* siegeShoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+		class USoundBase* siegeWalk;
+
+	// Blueprint references
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UCameraShakeBase> cameraShakeLandBP;
 };

@@ -4,33 +4,50 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PaperSpriteComponent.h"
 #include "EnemySpawner.generated.h"
-
-#define SpawnTimeout 5;
-
-class AEnemy;
 
 UCLASS()
 class SUPERZEROES_API AEnemySpawner : public AActor
 {
 	GENERATED_BODY()
-
-protected:
+	
+public:	
+	// Sets default values for this actor's properties
 	AEnemySpawner();
 
+protected:
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
+
 	void SpawnEnemy();
 
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<AEnemy> EnemyClass;
+	TSubclassOf<class AEnemy> EnemyClass;
 
 	UPROPERTY(VisibleAnywhere)
-		TArray<AEnemy*> enemies;
+	TArray<class AEnemy*> enemies;
+
+	UPROPERTY(BlueprintReadWrite)
+	UPaperSpriteComponent* spriteComponent;
+
+	UPROPERTY(EditAnywhere)
+	TArray<UPaperSprite*> numberSprites;
 
 	UPROPERTY(VisibleAnywhere)
-		float spawnTimer;
+	float spawnTimer;
 
-public:
+	UPROPERTY(EditAnywhere)
+	float timeout;
+
+	UPROPERTY(EditAnywhere)
+	int count;
+
+	UPROPERTY(EditAnywhere)
+	bool isInfinite;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 	void RemoveEnemy(AEnemy* enemy) { enemies.Remove(enemy); }
 };

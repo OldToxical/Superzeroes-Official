@@ -28,9 +28,7 @@ private:
 
 	// Particles
 	UPROPERTY(EditAnywhere)
-		UParticleSystem* boomBoomImpact;
-	UPROPERTY(EditAnywhere)
-		UParticleSystem* zipZapImpact;
+		UParticleSystem* impactParticle;
 
 	FVector startPos;
 

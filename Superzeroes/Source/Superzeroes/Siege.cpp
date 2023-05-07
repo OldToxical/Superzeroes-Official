@@ -11,7 +11,6 @@ ASiege::ASiege()
 {
 	boomBoom = nullptr;
 	zipZap = nullptr;
-	Input = nullptr;
 	charMove = nullptr;
 	electricChargeClass = nullptr;
 	initiationAnimationUserWidget = nullptr;
@@ -54,6 +53,10 @@ void ASiege::BeginPlay()
 	flipbook->SetFlipbook(idle);
 	flipbook->SetLooping(false);
 	flipbook->Stop();
+	flipbook->OnFinishedPlaying.AddDynamic(this, &ASiege::EndAttackAnimation);
+	boomBoom = Cast<ABoomBoom>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoomBoom::StaticClass()));
+	zipZap = Cast<AZipZap>(UGameplayStatics::GetActorOfClass(GetWorld(), AZipZap::StaticClass()));
+	SetupBoomBoomInputComponent(boomBoom->InputComponent);
 }
 
 void ASiege::Tick(float DeltaTime)
@@ -67,6 +70,12 @@ void ASiege::Tick(float DeltaTime)
 		SetActorRotation(boomBoom->GetActorRotation());
 		bullets = 5;
 		modeIsActive = true;
+		boomBoom->setMeter(-100.f);
+		zipZap->setMeter(-100.f);
+		UGameplayStatics::PlaySound2D(GetWorld(), siegeActivate);
+		UGameplayStatics::PlaySound2D(GetWorld(), siegeVoice);
+		UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(2.f, 2.f, true, true, true, true);
+		UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(2.f, 2.f, true, true, true, true);
 		flipbook->Play();
 	}
 
@@ -90,17 +99,19 @@ void ASiege::Tick(float DeltaTime)
 	inititationAnimationTimer = InitiationAnimationLength;
 	executionTimer = SiegeModeExecutionLength;
 	inputAvailable = false;
-	SetActorLocation(boomBoom->GetActorLocation());
+	SetActorLocation(FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y, boomBoom->GetActorLocation().Z + 50.f));
 }
 
-void ASiege::SetupPlayerInput(UInputComponent* input_)
+void ASiege::SetupBoomBoomInputComponent(UInputComponent* bbInput)
 {
-	Input = input_;
+	bbInput->BindAxis("SiegeBoomBoom", this, &ASiege::HandleBoomBoomInput);
+	bbInput->BindAxis("MoveBoomBoom", this, &ASiege::Move);
+}
 
-	Input->BindAxis("SiegeBoomBoom", this, &ASiege::HandleBoomBoomInput);
-	Input->BindAxis("SiegeZipZap", this, &ASiege::HandleZipZapInput);
-	Input->BindAxis("MoveBoomBoom", this, &ASiege::Move);
-	Input->BindAction("ShootZipZap", IE_Pressed, this, &ASiege::Shoot);
+void ASiege::SetupZipZapInputComponent(UInputComponent* zzInput)
+{
+	zzInput->BindAxis("SiegeZipZap", this, &ASiege::HandleZipZapInput);
+	zzInput->BindAction("ShootZipZap", IE_Pressed, this, &ASiege::Shoot);
 }
 
 void ASiege::HandleBoomBoomInput(float scaleVal)
@@ -110,16 +121,18 @@ void ASiege::HandleBoomBoomInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && boomBoom->GetState() == State::Idle)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && boomBoom->GetState() == BB_State::Idle && boomBoom->getMeter() >= 100.f)
 		{
 			boomBoomInputTimer += GetWorld()->GetDeltaSeconds();
 			boomBoom->SetInputAvailability(false);
+			boomBoom->EnableSiegeInitiationParticle();
 			return;
 		}
 	}
 
 	boomBoomInputTimer = 0.f;
 	boomBoom->SetInputAvailability(true);
+	boomBoom->DisableSiegeInitiationParticle();
 }
 
 void ASiege::HandleZipZapInput(float scaleVal)
@@ -129,16 +142,18 @@ void ASiege::HandleZipZapInput(float scaleVal)
 		float distanceX = abs(boomBoom->GetActorLocation().X - zipZap->GetActorLocation().X);
 		float distanceZ = abs(boomBoom->GetActorLocation().Z - zipZap->GetActorLocation().Z);
 
-		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && zipZap->GetState() == State2::Idle)
+		if (distanceX <= MaximumXDistanceBetweenPlayersForInitiatingSiegeMode && distanceZ <= MaximumZDistanceBetweenPlayersForInitiatingSiegeMode && zipZap->GetState() == ZZ_State::Idle && zipZap->getMeter() >= 100.f)
 		{
 			zipZapInputTimer += GetWorld()->GetDeltaSeconds();
 			zipZap->SetInputAvailability(false);
+			zipZap->EnableSiegeInitiationParticle();
 			return;
 		}
 	}
 
 	zipZapInputTimer = 0.f;
 	zipZap->SetInputAvailability(true);
+	zipZap->DisableSiegeInitiationParticle();
 }
 
 void ASiege::ExecuteSiegeMode()
@@ -152,29 +167,46 @@ void ASiege::ExecuteSiegeMode()
 			GetCapsuleComponent()->SetCollisionProfileName(TEXT("MainCharacter"));
 			SetActorHiddenInGame(false);
 			boomBoom->SetActorHiddenInGame(true);
-			boomBoom->SetState(State::Siege);
+			boomBoom->SetState(BB_State::Siege);
 			zipZap->SetActorHiddenInGame(true);
-			zipZap->SetState(State2::Siege);
+			zipZap->SetState(ZZ_State::Siege);
 
 			boomBoom->SetActorLocation(GetActorLocation());
 			zipZap->SetActorLocation(FVector(GetActorLocation().X + 50.f, GetActorLocation().Y, GetActorLocation().Z));
 
 			if (flipbook->GetPlaybackPositionInFrames() == 4 && shotFired)
 			{
-				FVector muzzleFlashLocation = FVector(GetActorLocation().X + 54.f, GetActorLocation().Y, GetActorLocation().Z - 5.f);
-				FVector beamVelocity = FVector(60000.f, 0.f, 0.f);
+				FVector muzzleFlashLocation = FVector(GetActorLocation().X + 150.f, GetActorLocation().Y, GetActorLocation().Z + 35.f);
 
 				if (rotation.Yaw > 0.f) // Left
 				{
-					muzzleFlashLocation.X -= 108.f;
-					beamVelocity.X *= -1.f;
+					muzzleFlashLocation.X -= 300.f;
 				}
 
-				UNiagaraComponent* beam = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), electricBeam, FVector(muzzleFlashLocation.X, muzzleFlashLocation.Y + 1, muzzleFlashLocation.Z), rotation);
-				beam->SetVectorParameter("Velocity", beamVelocity);
-				UParticleSystemComponent* muzzleFlashParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlash, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.2f, .2f, .2f));
+				// Check for close range collision
+				FHitResult OutHit;
+				TArray<AActor*> actorsToIgnore;
+				actorsToIgnore.Add(boomBoom);
+				actorsToIgnore.Add(zipZap);
+				actorsToIgnore.Add(UGameplayStatics::GetActorOfClass(GetWorld(), ASiege::StaticClass()));
+				bool hit = UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), muzzleFlashLocation, UEngineTypes::ConvertToTraceType(ECC_Pawn), false, actorsToIgnore, EDrawDebugTrace::None, OutHit, true);
+				
+				if (hit)
+				{
+					AActor* HitActor = OutHit.GetActor();
+
+					if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
+					{
+						Enemy->TakeEnemyDamage(100.f);
+					}
+				}
+
+				UParticleSystemComponent* muzzleFlashParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlash, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.6f, .6f, .6f));
 				muzzleFlashParticle->CustomTimeDilation = 3.f;
 				AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
+				UGameplayStatics::PlaySound2D(GetWorld(), siegeShoot);
+				UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, .2f, true, true, true, true);
+				UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(1.f, .2f, true, true, true, true);
 				shotFired = false;
 				bullets--;
 			}
@@ -186,9 +218,9 @@ void ASiege::ExecuteSiegeMode()
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
 	SetActorHiddenInGame(true);
 	boomBoom->SetActorHiddenInGame(false);
-	boomBoom->SetState(State::Idle);
+	boomBoom->SetState(BB_State::Idle);
 	zipZap->SetActorHiddenInGame(false);
-	zipZap->SetState(State2::Idle);
+	zipZap->SetState(ZZ_State::Idle);
 	executionTimer = SiegeModeExecutionLength;
 	modeIsActive = false;
 }
@@ -204,6 +236,21 @@ void ASiege::Move(float scaleVal)
 				state = SiegeState::Walking;
 			}
 
+			if (flipbook->GetFlipbook() == walk && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 9) && !charMove->IsFalling())
+			{
+				stepMade = true;
+				smokeParticle->ActivateSystem();
+				UGameplayStatics::PlaySound2D(GetWorld(), siegeWalk);
+				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeLandBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
+				UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, .15f, true, true, true, true);
+				UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(1.f, .15f, true, true, true, true);
+			}
+
+			if (flipbook->GetFlipbook() == walk && (flipbook->GetPlaybackPositionInFrames() == 2 || flipbook->GetPlaybackPositionInFrames() == 10))
+			{
+				stepMade = false;
+			}
+
 			AddMovementInput(FVector(1.f, 0.f, 0.f), 0.4f, false);
 			rotation.Yaw = 0.f;
 		}
@@ -212,6 +259,21 @@ void ASiege::Move(float scaleVal)
 			if (state != SiegeState::Attacking)
 			{
 				state = SiegeState::Walking;
+			}
+
+			if (flipbook->GetFlipbook() == walk && !stepMade && (flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 9) && !charMove->IsFalling())
+			{
+				stepMade = true;
+				smokeParticle->ActivateSystem();
+				UGameplayStatics::PlaySound2D(GetWorld(), siegeWalk);
+				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeLandBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
+				UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, .2f, true, true, true, true);
+				UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(1.f, .2f, true, true, true, true);
+			}
+
+			if (flipbook->GetFlipbook() == walk && (flipbook->GetPlaybackPositionInFrames() == 2 || flipbook->GetPlaybackPositionInFrames() == 10))
+			{
+				stepMade = false;
 			}
 
 			AddMovementInput(FVector(-1.f, 0.f, 0.f), 0.4f, false);
@@ -274,6 +336,13 @@ void ASiege::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 		if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 		{
 			Enemy->TakeEnemyDamage(100.f);
+		}
+
+		if (otherActor->ActorHasTag("LevelRespawnTrigger"))
+		{
+			executionTimer = 0.f;
+			boomBoom->Respawn();
+			zipZap->Respawn();
 		}
 	}
 }

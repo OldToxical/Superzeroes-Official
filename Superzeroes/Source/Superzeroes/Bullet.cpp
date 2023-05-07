@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Bullet.h"
 #include "BoxTrigger.h"
+#include "Enemy.h"
+#include "Siege.h"
 #include "ComicFX.h"
 
 ABullet::ABullet()
@@ -24,7 +26,6 @@ void ABullet::CalculateDamage()
 	FVector collidingPoint = GetActorLocation();
 	FVector distanceTravelled = FVector(abs(startPos.X - collidingPoint.X), abs(startPos.Y - collidingPoint.Y), abs(startPos.Z - collidingPoint.Z));
 	float distance = sqrt(pow(distanceTravelled.X, 2) + pow(distanceTravelled.Z, 2));
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::SanitizeFloat(damage));
 
 	if (distance <= 200.f)
 	{
@@ -48,12 +49,17 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		{
 			if (ABoomBoom* boomBoom = Cast<ABoomBoom>(otherActor))
 			{
-				if (boomBoom->GetState() != State::Dead)
+				if (boomBoom->GetState() != BB_State::Dead)
 				{
 					CalculateDamage();
 					boomBoom->setHealth(boomBoom->getHealth() - damage);
 					FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
 					UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
+					Destroy();
+				}
+				else
+				{
+					return;
 				}
 			}
 		}
@@ -62,24 +68,41 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 		{
 			if (AZipZap* zipZap = Cast<AZipZap>(otherActor))
 			{
-				if (zipZap->GetState() != State2::Dead)
+				if (zipZap->GetState() != ZZ_State::Dead)
 				{
 					CalculateDamage();
 					zipZap->setHealth(zipZap->getHealth() - damage);
 					FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
-					UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
+					UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(.6f, .6f, .6f));
 					FVector location = zipZap->GetActorLocation();
 					location.Z += 30.f;
 					location.Y -= 0.1f;
 					AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, location, GetActorRotation());
 					cfx->spriteChanger(1);
+					Destroy();
+				}
+				else
+				{
+					return;
 				}
 			}
 		}
 
-		if (!otherActor->IsA(ABoxTrigger::StaticClass()))
+		if (otherActor->IsA(ASiege::StaticClass()))
 		{
+			FVector impactSpawnLocation = FVector(GetActorLocation().X, GetActorLocation().Y + 30.f, GetActorLocation().Z);
+			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, impactSpawnLocation, FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
 			Destroy();
+		}
+
+		if (otherActor->IsA(ABoxTrigger::StaticClass()) && !otherActor->IsA(AEnemy::StaticClass()))
+		{
+			if (!otherActor->ActorHasTag("BulletWall"))
+			{
+				FVector impactDebrisSpawnLocation = FVector(GetActorLocation().X, 1.f, GetActorLocation().Z);
+				UParticleSystemComponent* impactDebris = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), impactParticle, impactDebrisSpawnLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));
+				Destroy();
+			}
 		}
 	}
 }
