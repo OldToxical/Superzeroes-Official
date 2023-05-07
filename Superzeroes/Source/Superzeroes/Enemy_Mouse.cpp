@@ -42,7 +42,7 @@ AEnemy_Mouse::AEnemy_Mouse()
 	AI_Q.Add(actionsAfterWalkingRight);
 
 	currentState = State4::Idle;
-	chooseActionTimeoutTimer = 2.f;
+	chooseActionTimeoutTimer = FMath::RandRange(1, 6);
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
 	damage = 30.f;
@@ -82,7 +82,7 @@ void AEnemy_Mouse::Tick(float DeltaTime)
 
 void AEnemy_Mouse::TakeEnemyDamage(float damage_)
 {
-	if (flipbookComponent->GetFlipbook() != hurtAnim && currentState != State4::Dead)
+	if (flipbookComponent->GetFlipbook() != hurtAnim && currentState != State4::Dead && currentState != State4::Jumping)
 	{
 		healthPoints -= damage_;
 		flipbookComponent->SetFlipbook(hurtAnim);
@@ -326,7 +326,7 @@ void AEnemy_Mouse::Attack()
 {
 	currentState = State4::Attacking;
 
-	if (playerToAttack != nullptr)
+	if (IsValid(playerToAttack))
 	{
 		if (abs(playerToAttack->GetActorLocation().X - GetActorLocation().X) > MinimumDistanceToDealDamage && flipbookComponent->GetFlipbook() != attack)
 		{
@@ -384,7 +384,7 @@ void AEnemy_Mouse::Attack()
 
 void AEnemy_Mouse::GoToPlayer()
 {
-	if (playerToAttack != nullptr)
+	if (IsValid(playerToAttack))
 	{
 		// Face the player
 		if (playerToAttack->GetActorLocation().X < GetActorLocation().X) // He's on the left
@@ -407,7 +407,7 @@ void AEnemy_Mouse::DealDamage()
 	float distanceToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
 	float distanceToZipZap = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
 
-	if (playerToAttack != nullptr)
+	if (IsValid(playerToAttack))
 	{
 		if (playerToAttack->ActorHasTag("BoomBoom") && distanceToBoomBoom < MinimumDistanceToDealDamage)
 		{
@@ -437,7 +437,7 @@ void AEnemy_Mouse::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* oth
 		Destroy();
 	}
 
-	if (currentState != State4::Dead && !otherActor->IsA(AEnemy::StaticClass()) && !otherActor->IsA(ATrash::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
+	if (currentState != State4::Dead && !otherActor->IsA(AEnemy::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
 	{
 		isColliding = true;
 		chooseActionTimeoutTimer = 5.f;
@@ -456,6 +456,11 @@ void AEnemy_Mouse::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* oth
 			inCombat = true;
 		}
 
+		if (otherActor->IsA(ATrash::StaticClass()))
+		{
+			GetCapsuleComponent()->IgnoreActorWhenMoving(otherActor, true);
+		}
+
 		ExecuteAction();
 	}
 }
@@ -472,6 +477,12 @@ void AEnemy_Mouse::EndAttack()
 	if (flipbookComponent->GetFlipbook() == hurtAnim)
 	{
 		flipbookComponent->SetFlipbook(idle);
+
+		if (characterMovementComponent->IsFalling())
+		{
+			flipbookComponent->SetLooping(true);
+			flipbookComponent->Play();
+		}
 	}
 
 	if (currentState != State4::Jumping && currentState != State4::Dead)

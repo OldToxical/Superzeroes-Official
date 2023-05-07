@@ -56,7 +56,7 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	AI_Q.Add(actionsAfterAttacking);
 
 	currentState = State3::Idle;
-	chooseActionTimeoutTimer = 2.f;
+	chooseActionTimeoutTimer = FMath::RandRange(1, 6);
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
 	damage = 20.f;
@@ -100,13 +100,14 @@ void AEnemy_Pigeon::Tick(float DeltaTime)
 
 void AEnemy_Pigeon::TakeEnemyDamage(float damage_)
 {
-	if (flipbookComponent->GetFlipbook() != hurtAnim && currentState != State3::Dead)
+	if (flipbookComponent->GetFlipbook() != hurtAnim && currentState != State3::Dead && currentState != State3::Jumping)
 	{
 		healthPoints -= damage_;
 		flipbookComponent->SetFlipbook(hurtAnim);
 		flipbookComponent->SetLooping(false);
-		UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
 	}
+
+	UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
 }
 
 void AEnemy_Pigeon::GetState()
@@ -1166,35 +1167,38 @@ void AEnemy_Pigeon::WalkRight()
 
 void AEnemy_Pigeon::Attack()
 {
-	FaceNearestPlayer();
-
-	if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && shootAvailable)
+	if (IsValid(playerToAttack))
 	{
 		FaceNearestPlayer();
 
-		FVector muzzleFlashLocation = FVector(GetActorLocation().X - 81.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
-		FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
-
-		if (rotation.Yaw > 0.f) // Right
+		if (flipbookComponent->GetPlaybackPositionInFrames() == 8 && shootAvailable)
 		{
-			muzzleFlashLocation.X += 162.68f;
+			FaceNearestPlayer();
+
+			FVector muzzleFlashLocation = FVector(GetActorLocation().X - 81.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
+			FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
+
+			if (rotation.Yaw > 0.f) // Right
+			{
+				muzzleFlashLocation.X += 162.68f;
+			}
+
+			// Spawn particle
+			FRotator muzzleFlashSpawnRotator = FRotator(rotation.Pitch, rotation.Yaw - 180.f, rotation.Roll);
+			UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, muzzleFlashSpawnRotator, FVector(.6f, .6f, .6f));
+			muzzleFlash->CustomTimeDilation = 1.4f;
+
+			// Spawn bullet
+			UGameplayStatics::PlaySound2D(GetWorld(), shootSFX);
+			AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
+			shootAvailable = false;
 		}
-
-		// Spawn particle
-		FRotator muzzleFlashSpawnRotator = FRotator(rotation.Pitch, rotation.Yaw - 180.f, rotation.Roll);
-		UParticleSystemComponent* muzzleFlash = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, muzzleFlashLocation, muzzleFlashSpawnRotator, FVector(.6f, .6f, .6f));
-		muzzleFlash->CustomTimeDilation = 1.4f;
-
-		// Spawn bullet
-		UGameplayStatics::PlaySound2D(GetWorld(), shootSFX);
-		AProjectile* bullet = GetWorld()->SpawnActor<AProjectile>(bulletClass, muzzleFlashLocation, bulletLookAtVector);
-		shootAvailable = false;
 	}
 }
 
 void AEnemy_Pigeon::FaceNearestPlayer()
 {
-	if (playerToAttack != nullptr)
+	if (IsValid(playerToAttack))
 	{
 		// Boom Boom is closer
 		if (playerToAttack->ActorHasTag("BoomBoom"))
@@ -1238,7 +1242,7 @@ void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* ot
 		Destroy();
 	}
 
-	if (currentState != State3::Dead && !otherActor->IsA(AEnemy::StaticClass()) && !otherActor->IsA(ATrash::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
+	if (currentState != State3::Dead && !otherActor->IsA(AEnemy::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
 	{
 		isColliding = true;
 		chooseActionTimeoutTimer = 5.f;
@@ -1257,6 +1261,11 @@ void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* ot
 			currentAction = Action::Attack;
 		}
 
+		if (otherActor->IsA(ATrash::StaticClass()))
+		{
+			GetCapsuleComponent()->IgnoreActorWhenMoving(otherActor, true);
+		}
+
 		ExecuteAction();
 	}
 }
@@ -1271,6 +1280,12 @@ void AEnemy_Pigeon::EndAttack()
 	if (flipbookComponent->GetFlipbook() == hurtAnim)
 	{
 		flipbookComponent->SetFlipbook(idle);
+
+		if (characterMovementComponent->IsFalling())
+		{
+			flipbookComponent->SetLooping(true);
+			flipbookComponent->Play();
+		}
 	}
 
 	if (currentState != State3::Jumping && currentState != State3::Dead)
