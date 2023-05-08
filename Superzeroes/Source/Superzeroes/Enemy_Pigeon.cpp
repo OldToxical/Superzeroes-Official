@@ -56,7 +56,7 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	AI_Q.Add(actionsAfterAttacking);
 
 	currentState = State3::Idle;
-	chooseActionTimeoutTimer = 2.f;
+	chooseActionTimeoutTimer = FMath::RandRange(1, 6);
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
 	damage = 20.f;
@@ -100,13 +100,14 @@ void AEnemy_Pigeon::Tick(float DeltaTime)
 
 void AEnemy_Pigeon::TakeEnemyDamage(float damage_)
 {
-	if (flipbookComponent->GetFlipbook() != hurtAnim && currentState != State3::Dead)
+	if (flipbookComponent->GetFlipbook() != hurtAnim && currentState != State3::Dead && currentState != State3::Jumping)
 	{
 		healthPoints -= damage_;
 		flipbookComponent->SetFlipbook(hurtAnim);
 		flipbookComponent->SetLooping(false);
-		UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
 	}
+
+	UGameplayStatics::PlaySound2D(GetWorld(), hurtSFX);
 }
 
 void AEnemy_Pigeon::GetState()
@@ -1279,6 +1280,12 @@ void AEnemy_Pigeon::EndAttack()
 	if (flipbookComponent->GetFlipbook() == hurtAnim)
 	{
 		flipbookComponent->SetFlipbook(idle);
+
+		if (characterMovementComponent->IsFalling())
+		{
+			flipbookComponent->SetLooping(true);
+			flipbookComponent->Play();
+		}
 	}
 
 	if (currentState != State3::Jumping && currentState != State3::Dead)

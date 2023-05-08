@@ -42,7 +42,7 @@ AEnemy_Mouse::AEnemy_Mouse()
 	AI_Q.Add(actionsAfterWalkingRight);
 
 	currentState = State4::Idle;
-	chooseActionTimeoutTimer = 2.f;
+	chooseActionTimeoutTimer = FMath::RandRange(1, 6);
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
 	damage = 30.f;
@@ -82,7 +82,7 @@ void AEnemy_Mouse::Tick(float DeltaTime)
 
 void AEnemy_Mouse::TakeEnemyDamage(float damage_)
 {
-	if (flipbookComponent->GetFlipbook() != hurtAnim && currentState != State4::Dead)
+	if (flipbookComponent->GetFlipbook() != hurtAnim && currentState != State4::Dead && currentState != State4::Jumping)
 	{
 		healthPoints -= damage_;
 		flipbookComponent->SetFlipbook(hurtAnim);
@@ -477,6 +477,12 @@ void AEnemy_Mouse::EndAttack()
 	if (flipbookComponent->GetFlipbook() == hurtAnim)
 	{
 		flipbookComponent->SetFlipbook(idle);
+
+		if (characterMovementComponent->IsFalling())
+		{
+			flipbookComponent->SetLooping(true);
+			flipbookComponent->Play();
+		}
 	}
 
 	if (currentState != State4::Jumping && currentState != State4::Dead)
