@@ -70,20 +70,6 @@ ABoomBoom::ABoomBoom()
 	toxicWalkSoundBool = false;
 }
 
-ABoomBoom::~ABoomBoom()
-{
-	flipbook = NULL;
-	charMove = NULL;
-	jumping = NULL;
-	run = NULL;
-	simpleAttack = NULL;
-	strongAttack = NULL;
-	strongAttackCharge = NULL;
-	zipZap = NULL;
-
-	Destroy();
-}
-
 void ABoomBoom::setHealth(float newHealth)
 {
 	if (characterState != BB_State::Siege)
@@ -726,7 +712,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 			FVector loc = FVector(GetActorLocation().X, GetActorLocation().Y - 0.1f, GetActorLocation().Z + 40.f);
 			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, loc, GetActorRotation());
 			cfx->spriteChanger(4);
-			setHealth(health - 5.f);
+			setHealth(health - 20.f);
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))
 		{
@@ -734,7 +720,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 			{
 				if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 				{
-					Enemy->TakeEnemyDamage(100.f);
+					Enemy->TakeEnemyDamage(50.f);
 					UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyImpact, FVector(Enemy->GetActorLocation().X, Enemy->GetActorLocation().Y + 30.f, Enemy->GetActorLocation().Z), FRotator(0, 0, 0), FVector(.9f, .9f, .9f));
 					UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, 0.2f, true, true, true, true);
 				}
@@ -862,7 +848,7 @@ void ABoomBoom::ProcessHit(float damage_)
 
 		if (ATrashCan* can = Cast<ATrashCan>(HitActor))
 		{
-			can->setHealth(-7.0f);
+			can->setHealth(-25.0f);
 		}
 
 		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);

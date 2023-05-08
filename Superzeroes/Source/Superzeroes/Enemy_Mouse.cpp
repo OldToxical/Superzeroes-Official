@@ -45,9 +45,9 @@ AEnemy_Mouse::AEnemy_Mouse()
 	chooseActionTimeoutTimer = FMath::RandRange(1, 6);
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
-	damage = 30.f;
+	damage = 50.f;
 	TimeBetweenWalkSounds = 5.0f;
-	healthPoints = 100.f;
+	healthPoints = 125.f;
 	hitAvailable = true;
 	inCombat = false;
 	deathFXcompleted = false;

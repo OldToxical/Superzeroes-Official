@@ -39,7 +39,6 @@ class SUPERZEROES_API ABoomBoom : public APaperCharacter
 public:
 	// Sets default values for this character's properties
 	ABoomBoom();
-	~ABoomBoom();
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

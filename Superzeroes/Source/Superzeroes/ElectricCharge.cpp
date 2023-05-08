@@ -8,7 +8,7 @@
 
 AElectricCharge::AElectricCharge()
 {
-	damage = 20.f;
+	damage = 25.f;
 	startPos = FVector(0.f, 0.f, 0.f);
 }
 
@@ -64,7 +64,7 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 		{
 			if (ATrashCan* can = Cast<ATrashCan>(otherActor))
 			{
-				can->setHealth(-2.f);
+				can->setHealth(-25.f);
 			}
 		}
 

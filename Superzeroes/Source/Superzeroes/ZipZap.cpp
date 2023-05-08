@@ -606,7 +606,7 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 			loc.Z += 30;
 			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap, loc, GetActorRotation());
 			cfx->spriteChanger(5);
-			setHealth(health - 10.f);
+			setHealth(health - 20.f);
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))
 		{
@@ -620,13 +620,13 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 					{
 						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(1.f, 1.f, 1.f));
 						impact->CustomTimeDilation = 3.f;
-						Enemy->TakeEnemyDamage(90.f);
+						Enemy->TakeEnemyDamage(50.f);
 						impactForce.X += 100.f;
 					}
 					else
 					{
 						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyImpact, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(.9f, .9f, .9f));
-						Enemy->TakeEnemyDamage(60.f);
+						Enemy->TakeEnemyDamage(50.f);
 					}
 
 					if (rotation.Yaw > 0.f) // Looking left
@@ -775,7 +775,7 @@ void AZipZap::ProcessShoot(float damage_, bool inAir)
 
 		if (ATrashCan* can = Cast<ATrashCan>(HitActor))
 		{
-			can->setHealth(-7.0f);
+			can->setHealth(-25.0f);
 		}
 	}
 }

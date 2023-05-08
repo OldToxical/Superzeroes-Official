@@ -18,7 +18,7 @@ ASiege::ASiege()
 	executionTimer = SiegeModeExecutionLength;
 	boomBoomInputTimer = 0.f;
 	zipZapInputTimer = 0.f;
-	bullets = 5;
+	bullets = 50;
 	inititationAnimationTimer = InitiationAnimationLength;
 	modeIsActive = false;
 	shotFired = false;
@@ -68,7 +68,7 @@ void ASiege::Tick(float DeltaTime)
 	if (boomBoomInputTimer >= InputTime && zipZapInputTimer >= InputTime && !modeIsActive)
 	{
 		SetActorRotation(boomBoom->GetActorRotation());
-		bullets = 5;
+		bullets = 50;
 		modeIsActive = true;
 		boomBoom->setMeter(-100.f);
 		zipZap->setMeter(-100.f);
@@ -197,7 +197,7 @@ void ASiege::ExecuteSiegeMode()
 
 					if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
 					{
-						Enemy->TakeEnemyDamage(100.f);
+						Enemy->TakeEnemyDamage(125.f);
 					}
 				}
 
@@ -335,7 +335,7 @@ void ASiege::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 	{
 		if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 		{
-			Enemy->TakeEnemyDamage(100.f);
+			Enemy->TakeEnemyDamage(75.f);
 		}
 
 		if (otherActor->ActorHasTag("LevelRespawnTrigger"))

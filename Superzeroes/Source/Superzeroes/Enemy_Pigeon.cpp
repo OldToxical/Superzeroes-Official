@@ -59,7 +59,7 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	chooseActionTimeoutTimer = FMath::RandRange(1, 6);
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
-	damage = 20.f;
+	damage = 30.f;
 	TimeBetweenWalkSounds = 5.0f;
 	MinimumDistanceToGetIntoCombatX = 500.f;
 	MinimumDistanceToGetIntoCombatZ = 40.f;
@@ -81,7 +81,7 @@ void AEnemy_Pigeon::AI()
 void AEnemy_Pigeon::BeginPlay()
 {
 	Super::BeginPlay();
-	healthPoints = 50.f;
+	healthPoints = 75.f;
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy_Pigeon::OverlapBegin);
 	TimeBetweenWalkSounds = 5.0f;
 	walkSoundTimer = TimeBetweenWalkSounds;
@@ -1277,8 +1277,16 @@ void AEnemy_Pigeon::OverlapEnd(UPrimitiveComponent* overlappedComp, AActor* othe
 
 void AEnemy_Pigeon::EndAttack()
 {
+	switch (currentState)
+	{
+	case 1: UE_LOG(LogTemp, Error, TEXT("krai na skok")); break;
+	case 4: UE_LOG(LogTemp, Error, TEXT("krai na ataka")); break;
+	case 5: UE_LOG(LogTemp, Error, TEXT("krai na smurt")); break;
+	}
+
 	if (flipbookComponent->GetFlipbook() == hurtAnim)
 	{
+		UE_LOG(LogTemp, Error, TEXT("krai na hurt animaciq"));
 		flipbookComponent->SetFlipbook(idle);
 
 		if (characterMovementComponent->IsFalling())

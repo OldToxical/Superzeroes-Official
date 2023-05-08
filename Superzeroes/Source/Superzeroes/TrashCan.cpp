@@ -19,7 +19,7 @@ ATrashCan::ATrashCan()
 	hitbox->SetupAttachment(RootComponent); 
 	trashMovingLeft = false;
 	canSpawn = true;
-	health = 20.f;
+	health = 100.f;
 	hurtTime = 0.0f; 
 
 }
