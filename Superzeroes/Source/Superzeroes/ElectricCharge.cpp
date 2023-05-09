@@ -4,6 +4,7 @@
 #include "BoxTrigger.h"
 #include "TrashCan.h"
 #include "Siege.h"
+#include "LAdder.h"
 #include "ComicFX.h"
 
 AElectricCharge::AElectricCharge()
@@ -68,7 +69,7 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 			}
 		}
 
-		if (!otherActor->IsA(ABoxTrigger::StaticClass()) && !otherActor->IsA(ABoomBoom::StaticClass()) && !otherActor->IsA(AZipZap::StaticClass()) && !otherActor->IsA(ASiege::StaticClass()))
+		if (!otherActor->IsA(ABoxTrigger::StaticClass()) && !otherActor->IsA(ABoomBoom::StaticClass()) && !otherActor->IsA(AZipZap::StaticClass()) && !otherActor->IsA(ASiege::StaticClass()) && !otherActor->IsA(ALAdder::StaticClass()))
 		{
 			FVector impactDebrisSpawnLocation = FVector(GetActorLocation().X, 1.f, GetActorLocation().Z);
 			UParticleSystemComponent* impactDebris = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), impactParticle, impactDebrisSpawnLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));

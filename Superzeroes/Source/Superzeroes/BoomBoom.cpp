@@ -838,6 +838,7 @@ void ABoomBoom::ProcessHit(float damage_)
 				UGameplayStatics::PlayWorldCameraShake(GetWorld(), cameraShakeHitBP, GetActorLocation(), 0.f, 2000.f, 1.f, false);
 			}
 
+			UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 			return;
 		}
 
@@ -854,7 +855,7 @@ void ABoomBoom::ProcessHit(float damage_)
 		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), smokeParticle->GetAsset(), endPoint, FRotator(0.f, 0.f, 0.f), FVector(5.f, 5.f, 5.f));
 	}
-	else 
+	else
 	{
 		int jumpnum = rand() % 4 + 1;
 
