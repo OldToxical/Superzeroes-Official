@@ -99,7 +99,7 @@ void ASiege::Tick(float DeltaTime)
 	inititationAnimationTimer = InitiationAnimationLength;
 	executionTimer = SiegeModeExecutionLength;
 	inputAvailable = false;
-	SetActorLocation(FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y, boomBoom->GetActorLocation().Z + 50.f));
+	SetActorLocation(FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y, boomBoom->GetActorLocation().Z + 100.f));
 }
 
 void ASiege::SetupBoomBoomInputComponent(UInputComponent* bbInput)

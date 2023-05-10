@@ -11,9 +11,9 @@
 #include "Components/Image.h"
 #include "Siege.generated.h"
 
-#define SiegeModeExecutionLength 12.2
+#define SiegeModeExecutionLength 10.2
 #define InputTime 1.3
-#define ShootCooldownTime 1
+#define ShootCooldownTime 2
 #define MaximumXDistanceBetweenPlayersForInitiatingSiegeMode 120
 #define MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 40
 #define InitiationAnimationLength 2.2

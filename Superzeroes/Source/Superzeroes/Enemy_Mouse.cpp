@@ -437,7 +437,7 @@ void AEnemy_Mouse::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* oth
 		Destroy();
 	}
 
-	if (currentState != State4::Dead && !otherActor->IsA(AEnemy::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
+	if (currentState != State4::Dead && currentState != State4::Jumping && !otherActor->IsA(AEnemy::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
 	{
 		isColliding = true;
 		chooseActionTimeoutTimer = 5.f;

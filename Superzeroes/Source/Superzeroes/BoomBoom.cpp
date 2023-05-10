@@ -520,7 +520,7 @@ void ABoomBoom::Attack(float scaleVal)
 	if (characterState != BB_State::Dead && inputAvailable)
 	{
 		// Allow the execution of the simple attack only if the character is not in a state of savage attack
-		if (characterState != BB_State::Combo_Savage && characterState != BB_State::Siege && !charMove->IsFalling() && !canClimb)
+		if (characterState != BB_State::Combo_Savage && characterState != BB_State::Siege && !charMove->IsFalling())
 		{
 			// If the attack button is pressed (or held), keep track of how long the user is holding the button down
 			if (scaleVal > 0.f && simpleAttack_sequenceTimeoutTimer < (SimpleAttackSequenceTimeout - SimpleAttackAnimationLength))

@@ -69,7 +69,7 @@ void ATrash::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 			ABoomBoom* boomBoom = (ABoomBoom*)otherActor;
 			if (boomBoom->getHealth() > 0.0f)
 			{
-				boomBoom->setHealth(boomBoom->getHealth() - 20.f);
+				boomBoom->setHealth(boomBoom->getHealth() - 0.f);
 			}
 			Destroy();
 		}
@@ -78,7 +78,7 @@ void ATrash::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 			AZipZap* zipZap = (AZipZap*)otherActor;
 			if (zipZap->getHealth() > 0.0f)
 			{
-				zipZap->setHealth(zipZap->getHealth() - 20.f);
+				zipZap->setHealth(zipZap->getHealth() - 0.f);
 			}
 			Destroy();
 		}
