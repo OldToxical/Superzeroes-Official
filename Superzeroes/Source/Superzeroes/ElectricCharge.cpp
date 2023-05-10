@@ -27,6 +27,7 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 {
 	if (otherActor && (otherActor != this))
 	{
+		
 		if (otherActor->IsA(AEnemy::StaticClass()))
 		{
 			if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
@@ -75,13 +76,9 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 			UParticleSystemComponent* impactDebris = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), impactParticle, impactDebrisSpawnLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));
 			Destroy();
 		}
-		if (!otherActor->ActorHasTag("EndLevel") && !otherActor->IsA(ABoomBoom::StaticClass()))
+
+		if (otherActor->ActorHasTag("EndLevel") && !otherActor->IsA(ALAdder::StaticClass()))
 		{
-			Destroy();
-		}
-
-		if (otherActor->ActorHasTag("LevelBorder")) {
-
 			Destroy();
 		}
 	}

@@ -37,7 +37,6 @@ class SUPERZEROES_API ASiege : public APaperCharacter
 
 public:
 	ASiege();
-	~ASiege();
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -118,6 +117,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool inputAvailable;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		bool isSpawningProjectileAvailable;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float boomBoomInputTimer;

@@ -82,6 +82,11 @@ void ABoomBoom::setHealth(float newHealth)
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
 
+			if (IsValid(healthBarParticle))
+			{
+				healthBarParticle->ActivateSystem(true);
+			}
+
 			//hurt clip will play over and over without this
 			if (!toxicDamage)
 			{

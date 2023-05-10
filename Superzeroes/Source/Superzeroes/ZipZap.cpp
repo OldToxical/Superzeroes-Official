@@ -41,6 +41,7 @@ AZipZap::AZipZap()
 	isShooting = false;
 	toxicDamage = false;
 	damageDealt = false;
+	isSpawningProjectileAvailable = true;
 	savageInitiated = false;
 	inputAvailable = true;
 	canClimb = false;
@@ -74,6 +75,11 @@ void AZipZap::setHealth(float newHealth)
 			characterState = ZZ_State::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
+
+			if (IsValid(healthBarParticle))
+			{
+				healthBarParticle->ActivateSystem(true);
+			}
 
 			//hurt clip will play over and over without this
 			if (!toxicDamage)
@@ -654,6 +660,10 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 				Respawn();
 			}
 		}
+		if (otherActor->ActorHasTag("EndLevel") || otherActor->ActorHasTag("LevelTrigger"))
+		{
+			isSpawningProjectileAvailable = false;
+		}
 	}
 }
 
@@ -676,6 +686,11 @@ void AZipZap::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor
 				charMove->GravityScale = 1.0f;
 				charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
 			}
+		}
+
+		if (otherActor->ActorHasTag("EndLevel") || otherActor->ActorHasTag("LevelTrigger"))
+		{
+			isSpawningProjectileAvailable = true;
 		}
 	}
 }
@@ -730,7 +745,10 @@ void AZipZap::ProcessShoot(float damage_, bool inAir)
 	muzzleFlash->CustomTimeDilation = 3.f;
 
 	// Spawn electric charge
-	AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
+	if ((isSpawningProjectileAvailable) || (!isSpawningProjectileAvailable && rotation.Yaw > 0.f))
+	{
+		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
+	}
 
 	// Spawn Comic VFX
 	float zOffset = 70.f;
