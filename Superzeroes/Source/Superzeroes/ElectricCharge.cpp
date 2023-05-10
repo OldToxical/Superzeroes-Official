@@ -6,6 +6,7 @@
 #include "Siege.h"
 #include "LAdder.h"
 #include "ComicFX.h"
+#include "LAdder.h"
 
 AElectricCharge::AElectricCharge()
 {
@@ -27,6 +28,7 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 {
 	if (otherActor && (otherActor != this))
 	{
+		
 		if (otherActor->IsA(AEnemy::StaticClass()))
 		{
 			if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
@@ -73,6 +75,11 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 		{
 			FVector impactDebrisSpawnLocation = FVector(GetActorLocation().X, 1.f, GetActorLocation().Z);
 			UParticleSystemComponent* impactDebris = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), impactParticle, impactDebrisSpawnLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));
+			Destroy();
+		}
+
+		if (otherActor->ActorHasTag("EndLevel") && !otherActor->IsA(ALAdder::StaticClass()))
+		{
 			Destroy();
 		}
 	}

@@ -228,6 +228,9 @@ protected:
 	UNiagaraSystemWidget* comboBarParticle;
 
 	UPROPERTY(BlueprintReadWrite)
+	UNiagaraSystemWidget* healthBarParticle;
+
+	UPROPERTY(BlueprintReadWrite)
 	UNiagaraSystemWidget* levelFinishedParticle;
 
 	// Indicated whether or not a toxic damage sound should be played or not

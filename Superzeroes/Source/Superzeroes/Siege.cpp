@@ -23,6 +23,7 @@ ASiege::ASiege()
 	modeIsActive = false;
 	shotFired = false;
 	inputAvailable = false;
+	isSpawningProjectileAvailable = true;
 	state = SiegeState::Idle;
 
 	flipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
@@ -35,10 +36,6 @@ ASiege::ASiege()
 		flipbook->SetCollisionProfileName(TEXT("NoCollision"));
 		flipbook->SetGenerateOverlapEvents(false);
 	}
-}
-
-ASiege::~ASiege()
-{
 }
 
 void ASiege::BeginPlay()
@@ -99,7 +96,7 @@ void ASiege::Tick(float DeltaTime)
 	inititationAnimationTimer = InitiationAnimationLength;
 	executionTimer = SiegeModeExecutionLength;
 	inputAvailable = false;
-	SetActorLocation(FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y, boomBoom->GetActorLocation().Z + 50.f));
+	SetActorLocation(FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y, boomBoom->GetActorLocation().Z + 100.f));
 }
 
 void ASiege::SetupBoomBoomInputComponent(UInputComponent* bbInput)
@@ -203,7 +200,10 @@ void ASiege::ExecuteSiegeMode()
 
 				UParticleSystemComponent* muzzleFlashParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlash, muzzleFlashLocation, FRotator(0.f, 0.f, 0.f), FVector(.6f, .6f, .6f));
 				muzzleFlashParticle->CustomTimeDilation = 3.f;
-				AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
+				if ((isSpawningProjectileAvailable) || (!isSpawningProjectileAvailable && rotation.Yaw > 0.f))
+				{
+					AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
+				}
 				UGameplayStatics::PlaySound2D(GetWorld(), siegeShoot);
 				UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, .2f, true, true, true, true);
 				UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(1.f, .2f, true, true, true, true);
@@ -344,9 +344,18 @@ void ASiege::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherActo
 			boomBoom->Respawn();
 			zipZap->Respawn();
 		}
+
+		if (otherActor->ActorHasTag("EndLevel") || otherActor->ActorHasTag("LevelTrigger"))
+		{
+			isSpawningProjectileAvailable = false;
+		}
 	}
 }
 
 void ASiege::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex)
 {
+	if (otherActor->ActorHasTag("EndLevel") || otherActor->ActorHasTag("LevelTrigger"))
+	{
+		isSpawningProjectileAvailable = true;
+	}
 }

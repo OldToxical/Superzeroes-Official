@@ -34,9 +34,13 @@ void AEnemySpawner::BeginPlay()
 void AEnemySpawner::SpawnEnemy()
 {
 	AEnemy* spawn = GetWorld()->SpawnActor<AEnemy>(EnemyClass, GetActorLocation(), FRotator(0.f, 0.f, 0.f));
-	spawn->SpawnDefaultController();
-	enemies.Add(spawn);
-	spawn->LaunchCharacter(FVector(200.f, 100.f, 0.f), false, false);
+
+	if (IsValid(spawn))
+	{
+		spawn->SpawnDefaultController();
+		enemies.Add(spawn);
+		spawn->LaunchCharacter(FVector(200.f, 100.f, 0.f), false, false);
+	}
 
 	if (!isInfinite)
 	{
@@ -45,8 +49,11 @@ void AEnemySpawner::SpawnEnemy()
 
 	for (AEnemy* enemy : enemies)
 	{
-		spawn->AddToGetActorsToIgnore(enemy->GetOwner());
-		spawn->SetSpawner(this);
+		if (IsValid(enemy))
+		{
+			spawn->AddToGetActorsToIgnore(enemy->GetOwner());
+				spawn->SetSpawner(this);
+		}
 	}
 }
 
