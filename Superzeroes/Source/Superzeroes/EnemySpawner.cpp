@@ -51,8 +51,8 @@ void AEnemySpawner::SpawnEnemy()
 	{
 		if (IsValid(enemy))
 		{
-			spawn->AddToGetActorsToIgnore(enemy->GetOwner());
-				spawn->SetSpawner(this);
+			enemy->AddToGetActorsToIgnore(enemy->GetOwner());
+				enemy->SetSpawner(this);
 		}
 	}
 }
