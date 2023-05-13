@@ -97,7 +97,7 @@ void ABullet::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 
 		if (otherActor->IsA(ABoxTrigger::StaticClass()) && !otherActor->IsA(AEnemy::StaticClass()))
 		{
-			if (!otherActor->ActorHasTag("BulletWall"))
+			if (!otherActor->ActorHasTag("BulletWall") && !otherActor->ActorHasTag("LevelTrigger"))
 			{
 				FVector impactDebrisSpawnLocation = FVector(GetActorLocation().X, 1.f, GetActorLocation().Z);
 				UParticleSystemComponent* impactDebris = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), impactParticle, impactDebrisSpawnLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));

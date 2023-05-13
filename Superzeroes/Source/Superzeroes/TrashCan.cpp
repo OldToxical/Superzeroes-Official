@@ -19,7 +19,7 @@ ATrashCan::ATrashCan()
 	hitbox->SetupAttachment(RootComponent); 
 	trashMovingLeft = false;
 	canSpawn = true;
-	health = 20.f;
+	health = 100.f;
 	hurtTime = 0.0f; 
 
 }
@@ -70,7 +70,7 @@ void ATrashCan::Tick(float DeltaTime)
 		if (Trash_BP)
 		{
 			ATrash* trash = GetWorld()->SpawnActor<ATrash>(Trash_BP,location,GetActorRotation());
-			if (trashMovingLeft)
+			if (trashMovingLeft && trash)
 			{
 				trash->movingLeft = true;
 			}

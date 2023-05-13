@@ -5,10 +5,11 @@
 #include "TrashCan.h"
 #include "Siege.h"
 #include "ComicFX.h"
+#include "LAdder.h"
 
 AElectricCharge::AElectricCharge()
 {
-	damage = 20.f;
+	damage = 25.f;
 	startPos = FVector(0.f, 0.f, 0.f);
 }
 
@@ -26,6 +27,7 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 {
 	if (otherActor && (otherActor != this))
 	{
+		
 		if (otherActor->IsA(AEnemy::StaticClass()))
 		{
 			if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
@@ -64,14 +66,19 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 		{
 			if (ATrashCan* can = Cast<ATrashCan>(otherActor))
 			{
-				can->setHealth(-2.f);
+				can->setHealth(-25.f);
 			}
 		}
 
-		if (!otherActor->IsA(ABoxTrigger::StaticClass()) && !otherActor->IsA(ABoomBoom::StaticClass()) && !otherActor->IsA(AZipZap::StaticClass()) && !otherActor->IsA(ASiege::StaticClass()))
+		if (!otherActor->IsA(ABoxTrigger::StaticClass()) && !otherActor->IsA(ABoomBoom::StaticClass()) && !otherActor->IsA(AZipZap::StaticClass()) && !otherActor->IsA(ASiege::StaticClass()) && !otherActor->IsA(ALAdder::StaticClass()))
 		{
 			FVector impactDebrisSpawnLocation = FVector(GetActorLocation().X, 1.f, GetActorLocation().Z);
 			UParticleSystemComponent* impactDebris = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), impactParticle, impactDebrisSpawnLocation, FRotator(0.f, 0.f, 0.f), FVector(.5f, .5f, .5f));
+			Destroy();
+		}
+
+		if (otherActor->ActorHasTag("EndLevel") && !otherActor->IsA(ALAdder::StaticClass()))
+		{
 			Destroy();
 		}
 	}

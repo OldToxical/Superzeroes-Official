@@ -11,7 +11,7 @@
 #include "TrashCan.generated.h"
 
 
-#define ShootTime 5
+#define ShootTime 3
 
 /**
  * 

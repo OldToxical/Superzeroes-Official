@@ -45,9 +45,9 @@ AEnemy_Mouse::AEnemy_Mouse()
 	chooseActionTimeoutTimer = FMath::RandRange(1, 6);
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
-	damage = 30.f;
+	damage = 50.f;
 	TimeBetweenWalkSounds = 5.0f;
-	healthPoints = 100.f;
+	healthPoints = 125.f;
 	hitAvailable = true;
 	inCombat = false;
 	deathFXcompleted = false;
@@ -437,7 +437,7 @@ void AEnemy_Mouse::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* oth
 		Destroy();
 	}
 
-	if (currentState != State4::Dead && !otherActor->IsA(AEnemy::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
+	if (currentState != State4::Dead && currentState != State4::Jumping && !otherActor->IsA(AEnemy::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
 	{
 		isColliding = true;
 		chooseActionTimeoutTimer = 5.f;

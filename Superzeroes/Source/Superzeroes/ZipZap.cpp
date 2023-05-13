@@ -41,6 +41,7 @@ AZipZap::AZipZap()
 	isShooting = false;
 	toxicDamage = false;
 	damageDealt = false;
+	isSpawningProjectileAvailable = true;
 	savageInitiated = false;
 	inputAvailable = true;
 	canClimb = false;
@@ -74,6 +75,11 @@ void AZipZap::setHealth(float newHealth)
 			characterState = ZZ_State::Hurt;
 			flipbook->SetFlipbook(hurt);
 			flipbook->SetLooping(false);
+
+			if (IsValid(healthBarParticle))
+			{
+				healthBarParticle->ActivateSystem(true);
+			}
 
 			//hurt clip will play over and over without this
 			if (!toxicDamage)
@@ -606,7 +612,7 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 			loc.Z += 30;
 			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(zap, loc, GetActorRotation());
 			cfx->spriteChanger(5);
-			setHealth(health - 10.f);
+			setHealth(health - 20.f);
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))
 		{
@@ -620,13 +626,13 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 					{
 						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(1.f, 1.f, 1.f));
 						impact->CustomTimeDilation = 3.f;
-						Enemy->TakeEnemyDamage(90.f);
+						Enemy->TakeEnemyDamage(50.f);
 						impactForce.X += 100.f;
 					}
 					else
 					{
 						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyImpact, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(.9f, .9f, .9f));
-						Enemy->TakeEnemyDamage(60.f);
+						Enemy->TakeEnemyDamage(50.f);
 					}
 
 					if (rotation.Yaw > 0.f) // Looking left
@@ -654,6 +660,10 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 				Respawn();
 			}
 		}
+		if (otherActor->ActorHasTag("EndLevel") || otherActor->ActorHasTag("LevelTrigger"))
+		{
+			isSpawningProjectileAvailable = false;
+		}
 	}
 }
 
@@ -676,6 +686,11 @@ void AZipZap::overlapEnd(UPrimitiveComponent* overlappedComp, AActor* otherActor
 				charMove->GravityScale = 1.0f;
 				charMove->MovementMode = (TEnumAsByte<EMovementMode>)1;
 			}
+		}
+
+		if (otherActor->ActorHasTag("EndLevel") || otherActor->ActorHasTag("LevelTrigger"))
+		{
+			isSpawningProjectileAvailable = true;
 		}
 	}
 }
@@ -730,7 +745,10 @@ void AZipZap::ProcessShoot(float damage_, bool inAir)
 	muzzleFlash->CustomTimeDilation = 3.f;
 
 	// Spawn electric charge
-	AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
+	if ((isSpawningProjectileAvailable) || (!isSpawningProjectileAvailable && rotation.Yaw > 0.f))
+	{
+		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(electricChargeClass, muzzleFlashLocation, rotation);
+	}
 
 	// Spawn Comic VFX
 	float zOffset = 70.f;
@@ -775,7 +793,7 @@ void AZipZap::ProcessShoot(float damage_, bool inAir)
 
 		if (ATrashCan* can = Cast<ATrashCan>(HitActor))
 		{
-			can->setHealth(-7.0f);
+			can->setHealth(-25.0f);
 		}
 	}
 }

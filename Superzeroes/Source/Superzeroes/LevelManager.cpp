@@ -51,7 +51,7 @@ void ALevelManager::Checkhealth()
 	{
 		if (zipZap->getHealth() <= 0.f && boomBoom->getHealth() <= 0.f)
 		{
-			UGameplayStatics::OpenLevel(GetWorld(), TEXT("Sample2DLevel"));
+			UGameplayStatics::OpenLevel(GetWorld(), TEXT("Lose_Screen"));
 		}
 	}
 }
@@ -184,7 +184,19 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 
 	if (currentLevel == 17)
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), TEXT("Final_Cinematic"));
+		//UGameplayStatics::OpenLevel(GetWorld(), TEXT("Final_Cinematic"));
+
+		FSoftObjectPath LevelPath("/Game/Project/Maps/Final_Cinematic.Final_Cinematic");
+		UObject* LevelObject = LevelPath.TryLoad();
+		if (IsValid(LevelObject))
+		{
+			UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), LevelObject);
+			return;
+		}
+		else
+		{
+			return;
+		}
 	}
 
 	UKismetSystemLibrary::MoveComponentTo(cameraComp, cameraLocations[triggerNum], cameraComp->GetComponentRotation(), true, true, 0.2f, false, EMoveComponentAction::Move, LatentInfo);

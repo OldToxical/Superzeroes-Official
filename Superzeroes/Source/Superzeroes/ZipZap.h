@@ -222,6 +222,9 @@ protected:
 	UNiagaraSystemWidget* comboBarParticle;
 
 	UPROPERTY(BlueprintReadWrite)
+	UNiagaraSystemWidget* healthBarParticle;
+
+	UPROPERTY(BlueprintReadWrite)
 	UNiagaraSystemWidget* levelFinishedParticle;
 
 	 // Indicated whether or not a toxic damage sound should be played or not
@@ -233,6 +236,9 @@ protected:
 
 	// Variable to keep track of when UI combo particle is active
 	bool isComboParticleActive;
+
+	// Variable to keep track of whether the character is colliding with a next level trigger
+	bool isSpawningProjectileAvailable;
 
 	// Timers for health management
 	float healTimer;

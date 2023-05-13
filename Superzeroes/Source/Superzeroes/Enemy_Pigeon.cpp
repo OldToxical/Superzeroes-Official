@@ -59,15 +59,15 @@ AEnemy_Pigeon::AEnemy_Pigeon()
 	chooseActionTimeoutTimer = FMath::RandRange(1, 6);
 	stateUpdateTimer = 0.f;
 	speed = 0.f;
-	damage = 20.f;
+	damage = 30.f;
 	TimeBetweenWalkSounds = 5.0f;
 	MinimumDistanceToGetIntoCombatX = 500.f;
 	MinimumDistanceToGetIntoCombatZ = 40.f;
 
 	Q_EstimatedOptimalFutureValue = 12.f;
-	Q_DiscountFactor = 0.17f;
-	Q_LearningRate = 0.9f;
-	difficulty = 1;
+	Q_DiscountFactor = 0.54f;
+	Q_LearningRate = 0.8f;
+	difficulty = 2;
 	inCombat = false;
 	shootAvailable = true;
 }
@@ -81,7 +81,7 @@ void AEnemy_Pigeon::AI()
 void AEnemy_Pigeon::BeginPlay()
 {
 	Super::BeginPlay();
-	healthPoints = 50.f;
+	healthPoints = 75.f;
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy_Pigeon::OverlapBegin);
 	TimeBetweenWalkSounds = 5.0f;
 	walkSoundTimer = TimeBetweenWalkSounds;
@@ -934,7 +934,7 @@ void AEnemy_Pigeon::CalculateReward()
 
 void AEnemy_Pigeon::UpdateQ(float reward)
 {
-	if (healthPoints < 25.f)
+	if (healthPoints <= 45.f)
 	{
 		// The bigger the discount factor, the harder it will be (between 0 and 1)
 		Q_DiscountFactor -= GetWorld()->GetDeltaSeconds() * 0.1f;
@@ -966,7 +966,7 @@ void AEnemy_Pigeon::UpdateQ(float reward)
 	}
 	else if (currentAction == Action::Attack)
 	{
-		Q_EstimatedOptimalFutureValue = 30.f;
+		Q_EstimatedOptimalFutureValue = 33.f;
 	}
 
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("State: ") + FString::SanitizeFloat(currentState));
@@ -1009,10 +1009,11 @@ void AEnemy_Pigeon::ExecuteAction()
 	else if (currentAction == Action::Attack)
 	{
 		currentState = State3::Attacking;
-		stateUpdateTimer = 1.f;
+		stateUpdateTimer = 0.98f;
 		chooseActionTimeoutTimer = stateUpdateTimer;
 		shootAvailable = true;
 	}
+
 }
 
 void AEnemy_Pigeon::UpdateState()
@@ -1175,7 +1176,7 @@ void AEnemy_Pigeon::Attack()
 		{
 			FaceNearestPlayer();
 
-			FVector muzzleFlashLocation = FVector(GetActorLocation().X - 81.34f, GetActorLocation().Y, GetActorLocation().Z + 21.f);
+			FVector muzzleFlashLocation = FVector(GetActorLocation().X - 81.34f, GetActorLocation().Y, GetActorLocation().Z + 24.f);
 			FRotator bulletLookAtVector = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerToAttack->GetActorLocation());
 
 			if (rotation.Yaw > 0.f) // Right
@@ -1242,7 +1243,7 @@ void AEnemy_Pigeon::OverlapBegin(UPrimitiveComponent* overlappedComp, AActor* ot
 		Destroy();
 	}
 
-	if (currentState != State3::Dead && !otherActor->IsA(AEnemy::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
+	if (currentState != State3::Dead && currentState != State3::Jumping && !otherActor->IsA(AEnemy::StaticClass()) && flipbookComponent->GetFlipbook() != hurtAnim)
 	{
 		isColliding = true;
 		chooseActionTimeoutTimer = 5.f;
@@ -1290,6 +1291,7 @@ void AEnemy_Pigeon::EndAttack()
 
 	if (currentState != State3::Jumping && currentState != State3::Dead)
 	{
+		flipbookComponent->SetFlipbook(idle);
 		flipbookComponent->SetLooping(true);
 		flipbookComponent->Play();
 	}

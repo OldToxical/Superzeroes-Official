@@ -11,9 +11,9 @@
 #include "Components/Image.h"
 #include "Siege.generated.h"
 
-#define SiegeModeExecutionLength 22
+#define SiegeModeExecutionLength 10.2
 #define InputTime 1.3
-#define ShootCooldownTime 0.5
+#define ShootCooldownTime 2
 #define MaximumXDistanceBetweenPlayersForInitiatingSiegeMode 120
 #define MaximumZDistanceBetweenPlayersForInitiatingSiegeMode 40
 #define InitiationAnimationLength 2.2
@@ -37,7 +37,6 @@ class SUPERZEROES_API ASiege : public APaperCharacter
 
 public:
 	ASiege();
-	~ASiege();
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -118,6 +117,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool inputAvailable;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		bool isSpawningProjectileAvailable;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float boomBoomInputTimer;
