@@ -203,7 +203,7 @@ void ALevelManager::SwitchToNextLevel(AActor* triggerToDestroy)
 	LatentInfo.UUID = 1;
 	UKismetSystemLibrary::MoveComponentTo(boomBoom->GetRootComponent(), levelStartLocations[triggerNum], boomBoom->GetRootComponent()->GetComponentRotation(), true, true, 0.2f, false, EMoveComponentAction::Move, LatentInfo);
 	LatentInfo.UUID = 2;
-	UKismetSystemLibrary::MoveComponentTo(zipZap->GetRootComponent(), FVector(levelStartLocations[triggerNum].X + 120.f, levelStartLocations[triggerNum].Y, levelStartLocations[triggerNum].Z - 23.281904f), zipZap->GetRootComponent()->GetComponentRotation(), true, true, 0.2f, false, EMoveComponentAction::Move, LatentInfo);
+	UKismetSystemLibrary::MoveComponentTo(zipZap->GetRootComponent(), FVector(levelStartLocations[triggerNum].X + 120.f, levelStartLocations[triggerNum].Y + .01f, levelStartLocations[triggerNum].Z - 23.281904f), zipZap->GetRootComponent()->GetComponentRotation(), true, true, 0.2f, false, EMoveComponentAction::Move, LatentInfo);
 
 	// Set characters' level indexes
 	boomBoom->SetLevelIndex(currentLevel);;

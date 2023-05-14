@@ -296,6 +296,7 @@ void ABoomBoom::UpdateState()
 			launchZipZap = false;
 			punchPreludeTimer = 0.f;
 			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zipZapImpact, FVector(zipZap->GetActorLocation().X, zipZap->GetActorLocation().Y + 30.f, zipZap->GetActorLocation().Z), FRotator(0, 0, 0), FVector(.8f, .8f, .8f));
+			UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 		}
 		else
 		{
@@ -612,6 +613,7 @@ void ABoomBoom::InitiateComboAttack_Savage(float directionRotation)
 	rotation.Yaw = directionRotation;
 	flipbook->SetWorldRotation(rotation);
 	characterSpeed = 350.f;
+	stepMade = false;
 	int growlNum = rand() % 4 + 1;
 
 	switch (growlNum)
@@ -630,7 +632,7 @@ void ABoomBoom::InitiateZipZapComboAttack_Projectile()
 {
 	if (IsValid(zipZap) && meter >= skillCost)
 	{
-		if ((characterState != BB_State::Combo_Savage) && (characterState != BB_State::Attacking) && !charMove->IsFalling() && (characterState != BB_State::Siege) && inputAvailable)
+		if ((characterState != BB_State::Combo_Savage) && (characterState != BB_State::Attacking) && !charMove->IsFalling() && (characterState != BB_State::Siege) && (characterState != BB_State::Dead) && (zipZap->GetState() != ZZ_State::Dead) && inputAvailable && !canClimb && !zipZap->IsOnLadder())
 		{
 			float proximityToZipZapX = abs(zipZap->GetActorLocation().X - GetActorLocation().X);
 			float proximityToZipZapZ = abs(zipZap->GetActorLocation().Z - GetActorLocation().Z);
@@ -693,6 +695,26 @@ void ABoomBoom::UpdateComboAttack_Savage()
 		{
 			AddMovementInput(FVector(-1.0f, 0.0f, 0.0f), 1.f, false);
 		}
+
+		if ((flipbook->GetPlaybackPositionInFrames() == 1 || flipbook->GetPlaybackPositionInFrames() == 10) && !stepMade)
+		{
+			int walknum = rand() % 4 + 1;
+
+			switch (walknum)
+			{
+				case 1: UGameplayStatics::PlaySound2D(GetWorld(), walkSFX, 1.5f); break;
+				case 2: UGameplayStatics::PlaySound2D(GetWorld(), walk2SFX, 1.5f); break;
+				case 3: UGameplayStatics::PlaySound2D(GetWorld(), walk3SFX, 1.5f); break;
+				case 4: UGameplayStatics::PlaySound2D(GetWorld(), walk4SFX, 1.5f); break;
+			}
+
+			stepMade = true;
+		}
+
+		if ((flipbook->GetPlaybackPositionInFrames() == 2 || flipbook->GetPlaybackPositionInFrames() == 11))
+		{
+			stepMade = false;
+		}
 	}
 	else // There's no more time, end the savage attack
 	{
@@ -718,6 +740,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 			AComicFX* cfx = GetWorld()->SpawnActor<AComicFX>(comicFX, loc, GetActorRotation());
 			cfx->spriteChanger(4);
 			setHealth(health - 20.f);
+			UGameplayStatics::PlaySound2D(GetWorld(), attackSFX, 0.7f);
 		}
 		if (otherActor->IsA(AEnemy::StaticClass()))
 		{
@@ -728,6 +751,7 @@ void ABoomBoom::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherA
 					Enemy->TakeEnemyDamage(50.f);
 					UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyImpact, FVector(Enemy->GetActorLocation().X, Enemy->GetActorLocation().Y + 30.f, Enemy->GetActorLocation().Z), FRotator(0, 0, 0), FVector(.9f, .9f, .9f));
 					UGameplayStatics::GetPlayerController(GetWorld(), 0)->PlayDynamicForceFeedback(1.f, 0.2f, true, true, true, true);
+					UGameplayStatics::PlaySound2D(GetWorld(), attackSFX, 1.2f);
 				}
 			}
 		}
@@ -819,6 +843,7 @@ void ABoomBoom::ProcessHit(float damage_)
 	{
 		FRotator rot = OutHit.GetActor()->GetActorRotation();
 		AActor* HitActor = OutHit.GetActor();
+		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 
 		if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
 		{
@@ -856,7 +881,6 @@ void ABoomBoom::ProcessHit(float damage_)
 			can->setHealth(-25.0f);
 		}
 
-		UGameplayStatics::PlaySound2D(GetWorld(), attackSFX);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), smokeParticle->GetAsset(), endPoint, FRotator(0.f, 0.f, 0.f), FVector(5.f, 5.f, 5.f));
 	}
 	else 
@@ -865,10 +889,10 @@ void ABoomBoom::ProcessHit(float damage_)
 
 		switch (jumpnum)
 		{
-			case 1: UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX); break;
-			case 2: UGameplayStatics::PlaySound2D(GetWorld(), jump2SFX); break;
-			case 3: UGameplayStatics::PlaySound2D(GetWorld(), jump3SFX); break;
-			case 4: UGameplayStatics::PlaySound2D(GetWorld(), jump4SFX); break;
+			case 1: UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX, 1.5f); break;
+			case 2: UGameplayStatics::PlaySound2D(GetWorld(), jump2SFX, 1.5f); break;
+			case 3: UGameplayStatics::PlaySound2D(GetWorld(), jump3SFX, 1.5f); break;
+			case 4: UGameplayStatics::PlaySound2D(GetWorld(), jump4SFX, 1.5f); break;
 		}
 	}
 }

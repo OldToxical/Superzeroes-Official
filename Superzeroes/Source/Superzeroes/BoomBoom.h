@@ -136,6 +136,8 @@ public:
 	void EnableSiegeInitiationParticle() { if (!siegeInitiationParticle->IsActive() && IsValid(siegeInitiationParticle)) { siegeInitiationParticle->ActivateSystem(); } }
 	UFUNCTION(BlueprintCallable)
 	void DisableSiegeInitiationParticle() { if (IsValid(siegeInitiationParticle)) { siegeInitiationParticle->DeactivateSystem(); } }
+	UFUNCTION(BlueprintCallable)
+	bool IsOnLadder() { return canClimb; }
 
 protected:
 	// Called when the game starts or when spawned

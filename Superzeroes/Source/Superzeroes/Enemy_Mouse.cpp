@@ -183,7 +183,7 @@ void AEnemy_Mouse::ExecuteAction()
 
 void AEnemy_Mouse::UpdateState()
 {
-	SetActorLocation(FVector(GetActorLocation().X, .5f, GetActorLocation().Z));
+	SetActorLocation(FVector(GetActorLocation().X, .505f, GetActorLocation().Z));
 
 	switch (currentState)
 	{
@@ -508,6 +508,13 @@ void AEnemy_Mouse::Landed(const FHitResult& Hit)
 		currentState = State4::Idle;
 		flipbookComponent->SetFlipbook(idle);
 		flipbookComponent->SetLooping(true);
+		flipbookComponent->Play();
+	}
+
+	if (currentState == State4::Dead)
+	{
+		flipbookComponent->SetFlipbook(dead);
+		flipbookComponent->SetLooping(false);
 		flipbookComponent->Play();
 	}
 }

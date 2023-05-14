@@ -37,7 +37,6 @@ AZipZap::AZipZap()
 	refillTime = 0.1f;
 	skillCost = 50.f;
 	currentLevel = 0;
-	isElectrified = false;
 	isShooting = false;
 	toxicDamage = false;
 	damageDealt = false;
@@ -132,23 +131,23 @@ void AZipZap::BeginPlay()
 	}
 
 	spawnLoc.Empty();
-	spawnLoc.Add(FVector(0.f, .5f, -400.f)); //1
-	spawnLoc.Add(FVector(1058.f, .5f, -400.f)); //2
-	spawnLoc.Add(FVector(3043.f, .5f, -58.f)); //3
-	spawnLoc.Add(FVector(5028.f, .5f, -400.f)); //4
-	spawnLoc.Add(FVector(7008.f, .5f, -400.f)); //5
-	spawnLoc.Add(FVector(8998.f, .5f, -400.f)); //6
-	spawnLoc.Add(FVector(10978.f, .5f, 50.f)); //7
-	spawnLoc.Add(FVector(10948.f, .5f, 880.f)); //8
-	spawnLoc.Add(FVector(11178.f, .5f, 1580.f)); //9
-	spawnLoc.Add(FVector(13168.f, .5f, 2080.f)); //10
-	spawnLoc.Add(FVector(15148.f, .5f, 1580.f)); //11
-	spawnLoc.Add(FVector(17098.f, .5f, 860.f)); //12
-	spawnLoc.Add(FVector(19128.f, .5f, 320.f)); //13
-	spawnLoc.Add(FVector(21128.f, .5f, 290.f)); //14
-	spawnLoc.Add(FVector(23078.f, .5f, 660.f)); //15
-	spawnLoc.Add(FVector(25068.f, .5f, 930.f)); //16
-	spawnLoc.Add(FVector(27048.f, .5f, 1590.f)); //17
+	spawnLoc.Add(FVector(0.f, .51f, -400.f)); //1
+	spawnLoc.Add(FVector(1058.f, .51f, -400.f)); //2
+	spawnLoc.Add(FVector(3043.f, .51f, -58.f)); //3
+	spawnLoc.Add(FVector(5028.f, .51f, -400.f)); //4
+	spawnLoc.Add(FVector(7008.f, .51f, -400.f)); //5
+	spawnLoc.Add(FVector(8998.f, .51f, -400.f)); //6
+	spawnLoc.Add(FVector(10978.f, .51f, 50.f)); //7
+	spawnLoc.Add(FVector(10948.f, .51f, 880.f)); //8
+	spawnLoc.Add(FVector(11178.f, .51f, 1580.f)); //9
+	spawnLoc.Add(FVector(13168.f, .51f, 2080.f)); //10
+	spawnLoc.Add(FVector(15148.f, .51f, 1580.f)); //11
+	spawnLoc.Add(FVector(17098.f, .51f, 860.f)); //12
+	spawnLoc.Add(FVector(19128.f, .51f, 320.f)); //13
+	spawnLoc.Add(FVector(21128.f, .51f, 290.f)); //14
+	spawnLoc.Add(FVector(23078.f, .51f, 660.f)); //15
+	spawnLoc.Add(FVector(25068.f, .51f, 930.f)); //16
+	spawnLoc.Add(FVector(27048.f, .51f, 1590.f)); //17
 }
 
 // Called every frame
@@ -237,7 +236,6 @@ void AZipZap::Landed(const FHitResult& Hit)
 
 	if (characterState == ZZ_State::Combo_Projectile)
 	{
-		isElectrified = false;
 		audComp->Stop();
 	}
 
@@ -375,9 +373,9 @@ void AZipZap::InitiateComboAttack_Savage()
 {
 	if (boomBoom != nullptr && meter >= skillCost)
 	{
-		if (characterState != ZZ_State::Dead)
+		if (characterState != ZZ_State::Dead && characterState != ZZ_State::Siege)
 		{
-			if (characterState != ZZ_State::Siege && characterState != ZZ_State::Attacking && characterState != ZZ_State::Combo_Projectile && boomBoom->GetState() != BB_State::Combo_Savage && boomBoom->GetState() != BB_State::Dead && !boomBoom->charMove->IsFalling() && inputAvailable)
+			if (characterState != ZZ_State::Siege && characterState != ZZ_State::Attacking && characterState != ZZ_State::Combo_Projectile && boomBoom->GetState() != BB_State::Combo_Savage && boomBoom->GetState() != BB_State::Dead && !boomBoom->charMove->IsFalling() && inputAvailable && !canClimb && !boomBoom->IsOnLadder())
 			{
 				float proximityToBoomBoom = abs(boomBoom->GetActorLocation().X - GetActorLocation().X);
 
@@ -418,15 +416,6 @@ void AZipZap::InitiateComboAttack_Projectile(float directionRotation)
 	LaunchCharacter(FVector(X_ImpulseDirection, 0.f, 350.f), false, false);
 }
 
-void AZipZap::Electrify()
-{
-	if (characterState == ZZ_State::Combo_Projectile)
-	{
-		isElectrified = true;
-		flipbook->SetFlipbook(projectileFlyElectrified);
-	}
-}
-
 void AZipZap::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	//Input = input_;
@@ -443,7 +432,6 @@ void AZipZap::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("ClimbZipZap", this, &AZipZap::climb);
 	PlayerInputComponent->BindAction("JumpZipZap", IE_Pressed, this, &AZipZap::ExecuteJump);
 	PlayerInputComponent->BindAction("InitiateComboAttack_Savage", IE_Pressed, this, &AZipZap::InitiateComboAttack_Savage);
-	PlayerInputComponent->BindAction("ElectrifyZipZap", IE_Pressed, this, &AZipZap::Electrify);
 	PlayerInputComponent->BindAction("ShootZipZap", IE_Pressed, this, &AZipZap::Shoot);
 
 	FActorSpawnParameters spawnParameters;
@@ -503,6 +491,7 @@ void AZipZap::UpdateState()
 
 			UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), boomBoomImpact, FVector(boomBoom->GetActorLocation().X, boomBoom->GetActorLocation().Y + 30.f, boomBoom->GetActorLocation().Z), FRotator(0, 0, 0), FVector(1.3f, 1.3f, 1.3f));
 			UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(1.f, 0.2f, true, true, true, true);
+			UGameplayStatics::PlaySound2D(GetWorld(), attackSFX, 0.85f);
 		}
 	}
 
@@ -544,18 +533,13 @@ void AZipZap::ExecuteJump()
 	{
 		if ((characterState != ZZ_State::Combo_Projectile) && (characterState != ZZ_State::Attacking) && !charMove->IsFalling() && characterState != ZZ_State::Hurt && characterState != ZZ_State::Siege && inputAvailable && !canClimb)
 		{
-			/*if (canClimb)
-			{
-				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 10.f));
-				return;
-			}*/
-
 			Jump();
 			characterState = ZZ_State::Jumping;
 			flipbook->SetLooping(false);
 			flipbook->SetFlipbook(jumping);
 
 			int jumpnum = rand() % 3 + 1;
+
 			switch (jumpnum)
 			{
 				case 1: UGameplayStatics::PlaySound2D(GetWorld(), jumpSFX); break;
@@ -620,28 +604,18 @@ void AZipZap::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* otherAct
 			{
 				if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 				{
-					FVector impactForce = FVector(400.f, 0.f, 180.f);
-
-					if (isElectrified)
-					{
-						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), muzzleFlashParticle, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(1.f, 1.f, 1.f));
-						impact->CustomTimeDilation = 3.f;
-						Enemy->TakeEnemyDamage(50.f);
-						impactForce.X += 100.f;
-					}
-					else
-					{
-						UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyImpact, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(.9f, .9f, .9f));
-						Enemy->TakeEnemyDamage(50.f);
-					}
-
+					FVector impactForce = FVector(450.f, 0.f, 180.f);
+					UParticleSystemComponent* impact = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyImpact, Enemy->GetActorLocation(), FRotator(0.f, 0.f, 0.f), FVector(.9f, .9f, .9f));
+					
 					if (rotation.Yaw > 0.f) // Looking left
 					{
 						impactForce.X *= -1.f;
 					}
 
-					UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.5f, 0.2f, true, true, true, true);
+					Enemy->TakeEnemyDamage(50.f);
 					Enemy->LaunchCharacter(impactForce, false, false);
+					UGameplayStatics::GetPlayerController(GetWorld(), 1)->PlayDynamicForceFeedback(.5f, 0.2f, true, true, true, true);
+					UGameplayStatics::PlaySound2D(GetWorld(), hitSFX);
 				}
 			}
 		}
