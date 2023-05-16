@@ -32,7 +32,7 @@ void AElectricCharge::overlapBegin(UPrimitiveComponent* overlappedComp, AActor* 
 		{
 			if (AEnemy* Enemy = Cast<AEnemy>(otherActor))
 			{
-				if (Enemy->GetHealth() > 0.f)
+				if (Enemy->GetHealth() > 0.01f)
 				{
 					FVector impactForce = FVector(330.f, 0.f, 180.f);
 					if (GetActorLocation().X > Enemy->GetActorLocation().X) // Looking left

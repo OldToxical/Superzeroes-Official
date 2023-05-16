@@ -1018,7 +1018,7 @@ void AEnemy_Pigeon::ExecuteAction()
 
 void AEnemy_Pigeon::UpdateState()
 {
-	SetActorLocation(FVector(GetActorLocation().X, .5f, GetActorLocation().Z));
+	SetActorLocation(FVector(GetActorLocation().X, .505f, GetActorLocation().Z));
 
 	switch (currentState)
 	{
@@ -1311,6 +1311,14 @@ void AEnemy_Pigeon::Landed(const FHitResult& Hit)
 	{
 		flipbookComponent->SetFlipbook(idle);
 		flipbookComponent->SetLooping(true);
+		flipbookComponent->Play();
+		return;
+	}
+
+	if (currentState == State3::Dead)
+	{
+		flipbookComponent->SetFlipbook(dead);
+		flipbookComponent->SetLooping(false);
 		flipbookComponent->Play();
 	}
 }

@@ -169,7 +169,7 @@ void ASiege::ExecuteSiegeMode()
 			zipZap->SetState(ZZ_State::Siege);
 
 			boomBoom->SetActorLocation(GetActorLocation());
-			zipZap->SetActorLocation(FVector(GetActorLocation().X + 50.f, GetActorLocation().Y, GetActorLocation().Z));
+			zipZap->SetActorLocation(FVector(GetActorLocation().X + 50.f, GetActorLocation().Y + .01f, GetActorLocation().Z));
 
 			if (flipbook->GetPlaybackPositionInFrames() == 4 && shotFired)
 			{

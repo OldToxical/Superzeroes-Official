@@ -58,8 +58,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UPaperFlipbook* projectileFly;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UPaperFlipbook* projectileFlyElectrified;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UPaperFlipbook* hurt;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UPaperFlipbook* dead;
@@ -85,8 +83,6 @@ public:
 	void InitiateComboAttack_Savage();
 	UFUNCTION(BlueprintCallable)
 	void InitiateComboAttack_Projectile(float directionRotation);
-	UFUNCTION(BlueprintCallable)
-	void Electrify();
 	UFUNCTION(BlueprintCallable)
 	bool IsFacingBoomBoom();
 	UFUNCTION(BlueprintCallable)
@@ -124,9 +120,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DisableLevelFinishedParticle() { levelFinishedParticle->DeactivateSystem(); }
 	UFUNCTION(BlueprintCallable)
-		void EnableSiegeInitiationParticle() { if (!siegeInitiationParticle->IsActive() && IsValid(siegeInitiationParticle)) { siegeInitiationParticle->ActivateSystem(); } }
+	void EnableSiegeInitiationParticle() { if (!siegeInitiationParticle->IsActive() && IsValid(siegeInitiationParticle)) { siegeInitiationParticle->ActivateSystem(); } }
 	UFUNCTION(BlueprintCallable)
-		void DisableSiegeInitiationParticle() { if (IsValid(siegeInitiationParticle)) { siegeInitiationParticle->DeactivateSystem(); } }
+	void DisableSiegeInitiationParticle() { if (IsValid(siegeInitiationParticle)) { siegeInitiationParticle->DeactivateSystem(); } }
+	UFUNCTION(BlueprintCallable)
+	bool IsOnLadder() { return canClimb; }
 
 	UInputComponent* GetInputComponent() { return InputComponent; }
 
@@ -169,10 +167,6 @@ protected:
 	// Variable to keep track of what time should pass to start following whether zip zap is falling when he's in projectile attack state
 	UPROPERTY(EditAnywhere)
 	float projectileAttackResetStateTimeoutTimer;
-
-	// Variable to keep track whether zip zap is electrified while he's executing his projectile combo attack
-	UPROPERTY(EditAnywhere)
-	bool isElectrified;
 
 	// Variable to keep track whether zip zap is shooting or not during the current attack stage
 	UPROPERTY(EditAnywhere)
@@ -312,6 +306,8 @@ protected:
 	class USoundBase* flyingSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 	class USoundBase* attackSFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	class USoundBase* hitSFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 	class UAudioComponent* audComp;
 
